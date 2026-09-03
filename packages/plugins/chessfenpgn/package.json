@@ -1,0 +1,49 @@
+{
+	"name": "@emdash-cms/plugin-chessfenpgn",
+	"version": "0.1.0",
+	"description": "Chess FEN/PGN diagrams and games for EmDash CMS",
+	"type": "module",
+	"main": "src/index.ts",
+	"exports": {
+		".": "./src/index.ts",
+		"./admin": "./src/admin.tsx",
+		"./astro": "./src/astro.ts"
+	},
+	"files": [
+		"src"
+	],
+	"keywords": [
+		"emdash",
+		"cms",
+		"plugin",
+		"chess",
+		"fen",
+		"pgn"
+	],
+	"author": "Antigravity",
+	"license": "MIT",
+	"peerDependencies": {
+		"@cloudflare/kumo": "catalog:",
+		"@phosphor-icons/react": "^2.1.10",
+		"emdash": "workspace:>=0.9.0",
+		"react": "^18.0.0 || ^19.0.0"
+	},
+	"dependencies": {
+		"chess.js": "^1.0.0-beta.8",
+		"react-chessboard": "^4.7.2"
+	},
+	"devDependencies": {
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"react": "catalog:",
+		"react-dom": "catalog:"
+	},
+	"scripts": {
+		"typecheck": "tsgo --noEmit"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/emdash-cms/emdash.git",
+		"directory": "packages/plugins/chessfenpgn"
+	}
+}

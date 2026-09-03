@@ -2,6 +2,13 @@ import node from "@astrojs/node";
 import react from "@astrojs/react";
 import auditLog from "@emdash-cms/plugin-audit-log";
 import { mcpSmokePlugin } from "@emdash-cms/plugin-mcp-smoke";
+import { formsPlugin } from "@emdash-cms/plugin-forms";
+import { embedsPlugin } from "@emdash-cms/plugin-embeds";
+import { colorPlugin } from "@emdash-cms/plugin-color";
+import { fieldKitPlugin } from "@emdash-cms/plugin-field-kit";
+import webhookNotifier from "@emdash-cms/plugin-webhook-notifier";
+import { myLocalPlugin } from "./src/plugins/my-local-plugin/index.ts";
+import { chessfenpgnPlugin } from "@emdash-cms/plugin-chessfenpgn";
 import { defineConfig, fontProviders } from "astro/config";
 import emdash, { local } from "emdash/astro";
 import { sqlite } from "emdash/db";
@@ -23,7 +30,9 @@ export default defineConfig({
 				directory: "./uploads",
 				baseUrl: "/_emdash/api/media/file",
 			}),
-			plugins: [auditLog, mcpSmokePlugin()],
+			marketplace: "https://marketplace.emdashcms.com",
+			sandboxRunner: "@emdash-cms/sandbox-workerd",
+			plugins: [auditLog, mcpSmokePlugin(), formsPlugin(), embedsPlugin(), colorPlugin(), fieldKitPlugin(), webhookNotifier, myLocalPlugin(), chessfenpgnPlugin()],
 		}),
 	],
 	fonts: [

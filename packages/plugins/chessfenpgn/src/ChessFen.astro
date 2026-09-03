@@ -1,0 +1,6 @@
+---
+import { ChessBoardIsland } from "./ChessBoardIsland.tsx";
+const { node } = Astro.props;
+---
+{import.meta.env.DEV && <div style="display:none" data-debug={JSON.stringify(node)}></div>}
+<ChessBoardIsland client:visible fen={node?.fen || ""} />

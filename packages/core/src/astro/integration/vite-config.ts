@@ -88,15 +88,20 @@ function linguiMacroPlugin(adminSourcePath: string, adminDistPath: string): Plug
 			// Redirect relative locale catalog imports (e.g. ./de/messages.mjs) from
 			// within admin source to the compiled dist/locales/ directory, since
 			// lingui compile only runs during build — not in dev watch mode.
-			if (!importer?.startsWith(adminSourcePath)) return;
+			const normalizedImporter = importer?.replaceAll("\\", "/");
+			const normalizedAdminSource = adminSourcePath.replaceAll("\\", "/");
+			if (!normalizedImporter?.startsWith(normalizedAdminSource)) return;
 			const match = id.match(LOCALE_MESSAGES_RE);
 			if (match?.[1]) {
 				return resolve(adminDistPath, "locales", match[1], "messages.mjs");
 			}
 		},
 		async transform(code, id) {
-			if (!id.startsWith(adminSourcePath) || !code.includes("@lingui")) return;
-			const { transformAsync } = (await import(babelCorePath)) as typeof import("@babel/core");
+			const normalizedId = id.replaceAll("\\", "/");
+			const normalizedAdminSource = adminSourcePath.replaceAll("\\", "/");
+			if (!normalizedId.startsWith(normalizedAdminSource) || !code.includes("@lingui")) return;
+			const { pathToFileURL } = await import("node:url");
+			const { transformAsync } = (await import(pathToFileURL(babelCorePath).href)) as typeof import("@babel/core");
 			const result = await transformAsync(code, {
 				filename: id,
 				plugins: ["@lingui/babel-plugin-lingui-macro"],

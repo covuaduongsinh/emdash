@@ -1,0 +1,7 @@
+{
+  "tool_name": "Agent",
+  "tool_input_preview": "{\"description\":\"Viết 5 chương Giai đoạn 1\",\"prompt\":\"Thực thi Giai đoạn 1 của việc viết sổ tay EmDash, theo đúng file `D:\\\\code\\\\emdash\\\\book\\\\giai-doan\\\\GD01-nhap-mon-cai-dat.md` (đọc file này trước ...",
+  "error": "Fork is not available inside a forked worker. Complete your task directly using your tools.",
+  "timestamp": "2026-09-02T11:14:28.885Z",
+  "retry_count": 1
+}

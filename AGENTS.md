@@ -425,3 +425,6 @@ In agent-browser:
 ```typescript
 await page.goto("http://localhost:4321/_emdash/api/setup/dev-bypass?redirect=/_emdash/admin");
 ```
+
+## Vị trí lưu Plan Artifacts
+Khi nhận lệnh /plan, KHÔNG lưu file kế hoạch vào thư mục nội bộ (brain/artifacts). LUÔN LUÔN dùng tool write_to_file (KHÔNG truyền ArtifactMetadata) để lưu thẳng file vào docs/plans/<tên_file>.md của dự án.

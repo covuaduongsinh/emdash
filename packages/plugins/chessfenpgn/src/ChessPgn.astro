@@ -1,0 +1,5 @@
+---
+import { ChessBoardIsland } from "./ChessBoardIsland.tsx";
+const { node } = Astro.props;
+---
+<ChessBoardIsland client:visible pgn={node?.pgn || ""} />

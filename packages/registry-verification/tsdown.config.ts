@@ -7,7 +7,7 @@ const rebundleSafeRequire = {
 	renderChunk(code: string) {
 		return code.replace(
 			"createRequire(import.meta.url)",
-			'createRequire("file:///emdash-registry-verification.js")',
+			'createRequire("file:///C:/emdash-registry-verification.js")',
 		);
 	},
 };
