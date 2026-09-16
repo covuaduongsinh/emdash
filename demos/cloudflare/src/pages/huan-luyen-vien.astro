@@ -1,0 +1,284 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import ConsultForm from '../components/ConsultForm.astro';
+
+const coaches = [
+  {
+    name: 'Thầy Bùi Việt Anh',
+    role: 'GIÁO VIÊN PHỤ TRÁCH · CƠ SỞ KIM LIÊN',
+    title: 'ELO 1900 · Cựu Phó Chủ Nhiệm CLB Cờ Vua ĐH Bách Khoa Hà Nội',
+    bio: 'Tốt nghiệp Đại học Bách Khoa Hà Nội, giàu kinh nghiệm quản lý và huấn luyện đội tuyển cờ vua sinh viên. Thầy có phương pháp giảng dạy giàu tính tư duy, giúp học sinh nắm vững các đòn phối hợp chiến thuật và kỹ năng phân tích thế trận sâu sắc.',
+    icon: '/brand/pieces/wk.svg',
+    strengths: ['Chiến thuật trung cuộc & đòn phối hợp', 'Tư duy logic & giải bài tập thế cờ', 'Lập kế hoạch và quản lý thời gian thi đấu'],
+  },
+  {
+    name: 'Thầy Bùi Đức Huy',
+    role: 'GIÁO VIÊN / HLV · CƠ SỞ VĨNH PHÚC',
+    title: 'ELO 2000 · Huy Chương Đồng Hội Khỏe Phù Đổng cấp Tỉnh',
+    bio: 'Đạt đẳng cấp ELO 2000 với bề dày thành tích thi đấu tại các giải cờ vua trẻ và Hội khỏe Phù Đổng. Phong cách giảng dạy nhiệt huyết, truyền cảm hứng và khơi gợi niềm say mê khám phá nước đi hay cho học viên.',
+    icon: '/brand/pieces/wn.svg',
+    strengths: ['Khai cuộc hiện đại & phản xạ cờ nhanh', 'Kỹ thuật tấn công cánh Vua', 'Phân tích ván đấu thực chiến qua máy tính'],
+  },
+  {
+    name: 'Cô Mai Thị Thu',
+    role: 'CHUYÊN GIA SƯ PHẠM MẦM NON · CƠ SỞ VĨNH PHÚC',
+    title: 'Cử nhân GD Mầm non & Sư phạm Tiếng Anh · HCB HKPĐ Tỉnh',
+    bio: 'Tốt nghiệp Đại học Sư phạm chuyên ngành Giáo dục Mầm non, từng đạt Huy chương Bạc HKPĐ cấp tỉnh. Cô có chuyên môn sâu về tâm lý trẻ nhỏ lứa tuổi 4–6, áp dụng phương pháp cờ vua kể chuyện giúp trẻ rèn luyện tính kiên nhẫn và phản xạ tập trung.',
+    icon: '/brand/pieces/wb.svg',
+    strengths: ['Phương pháp dạy cờ qua câu chuyện & hình ảnh', 'Tâm lý học lứa tuổi mầm non và tiểu học', 'Rèn luyện thói quen tập trung và tính kỷ luật'],
+  },
+  {
+    name: 'Thầy Dương Văn Duy',
+    role: 'GIÁO VIÊN · CƠ SỞ KIM LIÊN',
+    title: 'ELO 2000 · Đại học Bách Khoa Hà Nội',
+    bio: 'Đạt đẳng cấp ELO 2000, nhiều năm kinh nghiệm quản lý lớp học và hướng dẫn học viên nhập môn. Luôn kiên nhẫn, gần gũi và theo sát tiến độ từng buổi học của từng học viên.',
+    icon: '/brand/pieces/wq.svg',
+    strengths: ['Kỹ năng nắm bắt tâm lý học viên', 'Phương pháp kèm cặp tiến độ cá nhân hóa', 'Đồng hành rèn luyện tác phong thi đấu nghiêm túc'],
+  },
+  {
+    name: 'Cô Đỗ Nhật Quyên',
+    role: 'GIÁO VIÊN · CƠ SỞ VĨNH PHÚC',
+    title: 'ELO 1800 · Chuyên trách lớp Cơ bản',
+    bio: 'Đạt đẳng cấp ELO 1800, phụ trách các lớp vỡ lòng và cơ bản tại cơ sở Vĩnh Phúc. Tận tâm, chu đáo và luôn tạo không khí lớp học sôi nổi, hào hứng cho các kỳ thủ nhí.',
+    icon: '/brand/pieces/wr.svg',
+    strengths: ['Hướng dẫn luật cờ & biên bản chuẩn FIDE', 'Bài tập phát hiện đòn chiến thuật cơ bản', 'Tạo động lực và sự tự tin cho học viên mới'],
+  },
+  {
+    name: 'Thầy Phạm Quốc An',
+    role: 'GIÁO VIÊN / TRỢ GIẢNG · CƠ SỞ KIM LIÊN',
+    title: 'HLV Trẻ Nhiệt Huyết · Khối Phong Trào',
+    bio: 'Tham gia giảng dạy và hỗ trợ học vụ tại cơ sở Kim Liên, đồng hành cùng các bạn nhỏ trong các giờ luyện giải đố và thi đấu giao hữu nội bộ.',
+    icon: '/brand/pieces/wp.svg',
+    strengths: ['Hỗ trợ thực hành thế cờ 1-1', 'Tổ chức giải đấu mini trong lớp', 'Theo dõi và ghi nhận tiến độ học viên'],
+  },
+];
+---
+
+<Layout title="Đội ngũ Giáo viên & Huấn luyện viên — dsc.edu.vn">
+  <PageHero
+    title="Đội ngũ Giáo viên & Huấn luyện viên DSC"
+    lead="Đội ngũ thầy cô tại Học viện Cờ Vua Dương Sinh là những kỳ thủ đạt đẳng cấp ELO cao (1800–2000), được đào tạo bài bản về chuyên môn và nghiệp vụ sư phạm mầm non, tiểu học."
+    crumbCurrent="Huấn luyện viên"
+    badge="ĐỘI NGŨ CHUYÊN MÔN DSC"
+    chips={['Giàu thành tích thi đấu (ELO 1800–2000)', 'Tốt nghiệp ĐH Sư Phạm & Bách Khoa', 'Tận tâm, kiên nhẫn & yêu trẻ']}
+  />
+
+  <!-- Stats Strip -->
+  <section class="sec alt" style="padding: 40px 0; border-bottom: 1px solid var(--line);">
+    <div class="wrap">
+      <div class="stats-strip">
+        <div class="stat-box">
+          <div class="stat-val">100%</div>
+          <div class="stat-lbl">Giáo viên đạt chuẩn ELO & Sư phạm</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">2000</div>
+          <div class="stat-lbl">Mức ELO tối đa của đội ngũ HLV</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">2</div>
+          <div class="stat-lbl">Cơ sở đào tạo (Vĩnh Phúc & Kim Liên)</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">100%</div>
+          <div class="stat-lbl">Đánh giá tiến độ học viên định kỳ</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Coach Cards Grid -->
+  <section class="sec reveal">
+    <div class="wrap">
+      <div class="shead">
+        <div class="overline overline--teal">HỒ SƠ GIẢNG VIÊN</div>
+        <h2>Gặp gỡ các Thầy Cô tại Dương Sinh</h2>
+        <p>Những người thầy thắp lửa đam mê trí tuệ và đồng hành cùng sự trưởng thành của con</p>
+      </div>
+
+      <div class="coaches-grid">
+        {coaches.map((c) => (
+          <div class="c-card">
+            <div class="c-top">
+              <div class="c-avatar-box">
+                <img src={c.icon} alt={c.name} class="c-icon" />
+              </div>
+              <div class="c-top-info">
+                <span class="c-role">{c.role}</span>
+                <h3 class="c-name">{c.name}</h3>
+                <span class="c-title-badge">{c.title}</span>
+              </div>
+            </div>
+
+            <p class="c-bio">{c.bio}</p>
+
+            <div class="c-strengths">
+              <div class="strength-heading">Thế mạnh giảng dạy:</div>
+              <ul>
+                {c.strengths.map((s) => (
+                  <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span>{s}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Form thu lead -->
+  <section class="sec alt reveal">
+    <div class="wrap">
+      <ConsultForm id="tu-van" />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-family: var(--font-cond);
+    font-size: 42px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-lbl {
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .coaches-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+
+  .c-card {
+    background: #fff;
+    border-radius: var(--r-xl);
+    padding: 32px;
+    border: 1px solid var(--line);
+    box-shadow: var(--sh-sm);
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--dur);
+  }
+
+  .c-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--sh-md);
+  }
+
+  .c-top {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 16px;
+  }
+
+  .c-avatar-box {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--r-lg);
+    background: linear-gradient(135deg, var(--navy), var(--navy-ink));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .c-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .c-role {
+    font-family: var(--font-cond);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--teal-deep);
+  }
+
+  .c-name {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--navy);
+    margin: 3px 0 6px;
+  }
+
+  .c-title-badge {
+    display: inline-block;
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .c-bio {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--muted);
+    margin-bottom: 20px;
+    flex-grow: 1;
+  }
+
+  .c-strengths {
+    background: var(--bg);
+    border-radius: var(--r-md);
+    padding: 16px 20px;
+  }
+
+  .strength-heading {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .c-strengths ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .c-strengths li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    color: var(--text-secondary);
+  }
+
+  .c-strengths svg {
+    width: 15px;
+    height: 15px;
+    color: var(--teal);
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 900px) {
+    .stats-strip {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .coaches-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

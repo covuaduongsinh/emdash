@@ -1,0 +1,363 @@
+---
+interface Props {
+  id?: string;
+  hasNote?: boolean;
+}
+
+const { id = 'tu-van', hasNote = false } = Astro.props;
+---
+
+<div class="cform" id={id}>
+  <!-- Cột trái Navy -->
+  <div class="cform-l">
+    <div class="pat" aria-hidden="true"></div>
+    <div class="overline overline--light" style="margin-bottom: 12px;">TƯ VẤN & TUYỂN SINH</div>
+    <h2>Đăng ký học thử & Đánh giá năng lực miễn phí</h2>
+    <p>
+      Hãy để đội ngũ giáo viên giàu chuyên môn của DSC kiểm tra trình độ cờ vua và tư vấn lộ trình học tối ưu nhất cho sự phát triển tư duy của con bạn.
+    </p>
+
+    <div class="perks">
+      <div class="perk">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span><strong>1 buổi học thử trực tiếp</strong> cùng giáo viên chuyên trách</span>
+      </div>
+      <div class="perk">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span>Báo cáo <strong>đánh giá chỉ số tư duy & khả năng tập trung</strong></span>
+      </div>
+      <div class="perk">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span>Lộ trình cá nhân hóa theo <strong>6 cấp độ chuẩn hóa</strong></span>
+      </div>
+    </div>
+
+    <img src="/brand/symbol-white.svg" alt="" class="pcrown" aria-hidden="true" />
+  </div>
+
+  <!-- Cột phải Form -->
+  <div class="cform-r">
+    <form class="consult-form" id="consult-form-element">
+      <div class="fld" id="fld-name">
+        <label for="consult-name">Họ và tên phụ huynh / học viên *</label>
+        <input type="text" id="consult-name" name="name" placeholder="Ví dụ: Nguyễn Văn A" required minlength="2" />
+        <div class="emsg">Vui lòng nhập họ tên hợp lệ (ít nhất 2 ký tự)</div>
+      </div>
+
+      <div class="fld">
+        <div class="row2">
+          <div id="fld-phone">
+            <label for="consult-phone">Số điện thoại liên hệ *</label>
+            <input type="tel" id="consult-phone" name="phone" placeholder="0983xxxxxx" required pattern="[0-9]{9,11}" />
+            <div class="emsg">Số điện thoại từ 9-11 số</div>
+          </div>
+          <div>
+            <label for="consult-age">Độ tuổi của con</label>
+            <select id="consult-age" name="age">
+              <option value="4-6">Mầm non (4–6 tuổi)</option>
+              <option value="6-8" selected>Tiểu học (6–8 tuổi)</option>
+              <option value="9-12">Tiểu học (9–12 tuổi)</option>
+              <option value="12+">Trung học (trên 12 tuổi)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="fld">
+        <label for="consult-branch">Cơ sở đăng ký học</label>
+        <select id="consult-branch" name="branch">
+          <option value="vinh_phuc">Cơ sở 1: Số 16 Vĩnh Phúc, Ba Đình, Hà Nội</option>
+          <option value="kim_lien">Cơ sở 2: Số 22/11 Lương Định Của, Đống Đa, Hà Nội</option>
+          <option value="online">Lớp học Cờ vua Trực tuyến (Online Toàn quốc)</option>
+        </select>
+      </div>
+
+      {hasNote && (
+        <div class="fld">
+          <label for="consult-note">Ghi chú thêm về học viên (nếu có)</label>
+          <textarea id="consult-note" name="note" placeholder="Ví dụ: Bé đã biết đi quân cơ bản, muốn học ca tối thứ 6..."></textarea>
+        </div>
+      )}
+
+      <button type="submit" class="btn btn--primary btn--lg" style="width: 100%; margin-top: 6px;">
+        <span>Gửi đăng ký tư vấn</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </button>
+
+      <p class="privacy">
+        🔒 Cam kết bảo mật thông tin. DSC liên hệ lại trong vòng 2 giờ làm việc.
+      </p>
+    </form>
+
+    <div class="csuccess" id="consult-success" style="display: none;">
+      <div class="big">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h3>Đã gửi đăng ký thành công!</h3>
+      <p id="success-msg">
+        Cảm ơn Quý phụ huynh! Đội ngũ tư vấn học vụ Dương Sinh Chess Academy sẽ liên hệ sớm nhất để xác nhận lịch học thử cho bé.
+      </p>
+      <button type="button" class="btn btn--ghost btn--sm" id="btn-reset-form">
+        Gửi đăng ký khác
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cform {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: #fff;
+    border-radius: var(--r-2xl);
+    overflow: hidden;
+    box-shadow: var(--sh-lg);
+    border: 1px solid var(--line);
+  }
+
+  .cform-l {
+    background: var(--navy);
+    color: #fff;
+    padding: 48px 44px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cform-l .pat {
+    position: absolute;
+    inset: 0;
+    background-image: url('/brand/pattern-tile-white.svg');
+    background-size: 54px;
+    opacity: 0.07;
+    pointer-events: none;
+  }
+
+  .cform-l h2 {
+    position: relative;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 14px;
+  }
+
+  .cform-l p {
+    position: relative;
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 26px;
+  }
+
+  .perks {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .perk {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 15px;
+  }
+
+  .perk svg {
+    width: 20px;
+    height: 20px;
+    color: var(--teal);
+    flex-shrink: 0;
+  }
+
+  .pcrown {
+    position: absolute;
+    right: -30px;
+    bottom: -30px;
+    width: 170px;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .cform-r {
+    padding: 42px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .fld {
+    margin-bottom: 16px;
+  }
+
+  .fld label {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #3a3f52;
+    margin-bottom: 7px;
+  }
+
+  .fld input, .fld select, .fld textarea {
+    width: 100%;
+    font-family: var(--font);
+    font-size: 15px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--line);
+    border-radius: var(--r-md);
+    background: #fff;
+    color: var(--ink);
+    transition: border-color var(--dur), box-shadow var(--dur);
+  }
+
+  .fld textarea {
+    resize: vertical;
+    min-height: 84px;
+  }
+
+  .fld input:focus, .fld select:focus, .fld textarea:focus {
+    outline: none;
+    border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(43, 57, 144, 0.14);
+  }
+
+  .row2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .emsg {
+    font-size: 12.5px;
+    color: #cf3b32;
+    margin-top: 5px;
+    display: none;
+  }
+
+  .bad input {
+    border-color: #cf3b32 !important;
+    box-shadow: 0 0 0 3px rgba(207, 59, 50, 0.13) !important;
+  }
+
+  .bad .emsg {
+    display: block;
+  }
+
+  .privacy {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 14px;
+    text-align: center;
+  }
+
+  .csuccess {
+    text-align: center;
+    padding: 24px 8px;
+  }
+
+  .csuccess .big {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--teal-soft);
+    color: var(--teal-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+  }
+
+  .csuccess .big svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .csuccess h3 {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .csuccess p {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0 auto 20px;
+    max-width: 360px;
+  }
+
+  @media (max-width: 860px) {
+    .cform {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .row2 {
+      grid-template-columns: 1fr;
+    }
+    .cform-r {
+      padding: 28px 20px;
+    }
+    .cform-l {
+      padding: 32px 20px;
+    }
+  }
+</style>
+
+<script>
+  const form = document.getElementById('consult-form-element') as HTMLFormElement | null;
+  const successBox = document.getElementById('consult-success');
+  const resetBtn = document.getElementById('btn-reset-form');
+
+  if (form && successBox && resetBtn) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const nameInput = document.getElementById('consult-name') as HTMLInputElement;
+      const phoneInput = document.getElementById('consult-phone') as HTMLInputElement;
+
+      let valid = true;
+
+      const fldName = document.getElementById('fld-name');
+      const fldPhone = document.getElementById('fld-phone');
+
+      if (!nameInput.value.trim() || nameInput.value.trim().length < 2) {
+        fldName?.classList.add('bad');
+        valid = false;
+      } else {
+        fldName?.classList.remove('bad');
+      }
+
+      const phoneRegex = /^[0-9]{9,11}$/;
+      if (!phoneRegex.test(phoneInput.value.replace(/\s+/g, ''))) {
+        fldPhone?.classList.add('bad');
+        valid = false;
+      } else {
+        fldPhone?.classList.remove('bad');
+      }
+
+      if (valid) {
+        form.style.display = 'none';
+        successBox.style.display = 'block';
+      }
+    });
+
+    resetBtn.addEventListener('click', () => {
+      form.reset();
+      form.style.display = 'block';
+      successBox.style.display = 'none';
+    });
+  }
+</script>

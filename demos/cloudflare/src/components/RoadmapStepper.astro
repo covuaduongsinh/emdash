@@ -1,0 +1,177 @@
+---
+const levels = [
+  { step: 1, name: 'Tốt', note: 'Nhập môn', icon: '/brand/pieces/wp.svg', desc: 'Làm quen bàn cờ & luật chơi' },
+  { step: 2, name: 'Mã', note: 'Cơ bản 1', icon: '/brand/pieces/wn.svg', desc: 'Đòn chiến thuật & tư duy không gian' },
+  { step: 3, name: 'Tượng', note: 'Cơ bản 2', icon: '/brand/pieces/wb.svg', desc: 'Kiểm soát đường chéo & phối hợp' },
+  { step: 4, name: 'Xe', note: 'Cơ bản 3', icon: '/brand/pieces/wr.svg', desc: 'Chiến lược tấn công cột mở & tàn cuộc' },
+  { step: 5, name: 'Hậu', note: 'Nâng cao 1', icon: '/brand/pieces/wq.svg', desc: 'Phối hợp lực lượng toàn năng' },
+  { step: 6, name: 'Vua', note: 'Nâng cao 2', icon: '/brand/pieces/wk.svg', desc: 'Bản lĩnh giải đấu & tư duy thủ lĩnh' },
+];
+---
+
+<div class="roadmap-container">
+  <div class="stepper-track" aria-hidden="true"></div>
+  <div class="stepper-grid">
+    {levels.map((lvl) => (
+      <div class="step-card">
+        <div class="step-circle-wrap">
+          <div class="step-badge">{lvl.step}</div>
+          <div class={`step-circle ${lvl.step === 1 ? 'is-start' : ''} ${lvl.step === 6 ? 'is-end' : ''}`}>
+            <img src={lvl.icon} alt={lvl.name} class="piece-img" />
+          </div>
+        </div>
+        <div class="step-info">
+          <span class="step-name">{lvl.name}</span>
+          <span class="step-note">{lvl.note}</span>
+          <p class="step-desc">{lvl.desc}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .roadmap-container {
+    position: relative;
+    padding: 20px 0;
+  }
+
+  .stepper-track {
+    position: absolute;
+    top: 58px;
+    left: 40px;
+    right: 40px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--navy), var(--teal));
+    opacity: 0.25;
+    z-index: 0;
+  }
+
+  .stepper-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+  }
+
+  .step-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform var(--dur) var(--ease);
+  }
+
+  .step-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .step-circle-wrap {
+    position: relative;
+    margin-bottom: 14px;
+  }
+
+  .step-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--sh-xs);
+    z-index: 2;
+  }
+
+  .step-circle {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--sh-sm);
+    transition: all var(--dur) var(--ease);
+  }
+
+  .step-circle.is-start {
+    background: var(--navy);
+    border-color: var(--navy);
+  }
+
+  .step-circle.is-start .piece-img {
+    filter: brightness(0) invert(1);
+  }
+
+  .step-circle.is-end {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px var(--teal-soft);
+  }
+
+  .step-card:hover .step-circle {
+    border-color: var(--navy);
+    box-shadow: var(--sh-md);
+  }
+
+  .piece-img {
+    width: 44px;
+    height: 44px;
+  }
+
+  .step-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .step-name {
+    font-family: var(--font-cond);
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--navy);
+  }
+
+  .step-note {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--teal-deep);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .step-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.4;
+    margin-top: 4px;
+    max-width: 140px;
+  }
+
+  @media (max-width: 900px) {
+    .stepper-track {
+      display: none;
+    }
+
+    .stepper-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .stepper-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+  }
+</style>

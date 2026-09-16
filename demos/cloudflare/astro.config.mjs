@@ -87,12 +87,6 @@ export default defineConfig({
 					},
 				}),
 			],
-			// Sandboxed plugins (run in isolated workers)
-			sandboxed: [webhookNotifier],
-			// Sandbox runner for Cloudflare
-			sandboxRunner: sandbox(),
-			// Plugin marketplace
-			marketplace: "https://marketplace.emdashcms.com",
 		}),
 	],
 	// Preferred edge HTML cache: native Workers Caching via the Astro Cloudflare
@@ -117,17 +111,17 @@ export default defineConfig({
 	fonts: [
 		{
 			provider: fontProviders.google(),
-			name: "Inter",
+			name: "Roboto",
 			cssVariable: "--font-sans",
-			weights: [400, 500, 600, 700],
+			weights: [300, 400, 500, 700, 900],
 			fallbacks: ["sans-serif"],
 		},
 		{
 			provider: fontProviders.google(),
-			name: "JetBrains Mono",
-			cssVariable: "--font-mono",
-			weights: [400, 500],
-			fallbacks: ["monospace"],
+			name: "Roboto Condensed",
+			cssVariable: "--font-cond",
+			weights: [700, 900],
+			fallbacks: ["sans-serif"],
 		},
 	],
 	devToolbar: { enabled: false },

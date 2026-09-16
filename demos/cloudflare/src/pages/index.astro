@@ -1,463 +1,553 @@
 ---
-import {
-	getEmDashCollection,
-	getTermsForEntries,
-	getSiteSettings,
-} from "emdash";
-import { Image } from "emdash/ui";
-import Base from "../layouts/Base.astro";
-import PostCard from "../components/PostCard.astro";
-import { getReadingTime } from "../utils/reading-time";
-import { resolveBlogSiteIdentity } from "../utils/site-identity";
-
-// Limit to what we render (1 featured + 6 grid). The DB does the slicing
-// instead of fetching every post and discarding the tail in JS.
-const POSTS_PER_PAGE = 7;
-
-const [{ entries: posts, cacheHint }, settings] = await Promise.all([
-	getEmDashCollection("posts", {
-		orderBy: { published_at: "desc" },
-		limit: POSTS_PER_PAGE + 1, // +1 to detect "view all" need
-	}),
-	getSiteSettings(),
-]);
-const { siteTitle, siteTagline } = resolveBlogSiteIdentity(settings);
-
-Astro.cache.set(cacheHint);
-
-// Trim the lookahead post used to detect overflow
-const visiblePosts = posts.slice(0, POSTS_PER_PAGE);
-const hasMorePosts = posts.length > POSTS_PER_PAGE;
-
-// Find the first post with a featured image for the hero
-const featuredPost = visiblePosts.find((p) => p.data.featured_image);
-const featuredIndex = featuredPost ? visiblePosts.indexOf(featuredPost) : -1;
-
-// Get remaining posts (exclude featured if found, limit to 6 for grid)
-const gridPosts = visiblePosts.filter((_, i) => i !== featuredIndex).slice(0, 6);
-
-// Single batched query for tags across the featured post + grid posts.
-// Avoids the N+1 pattern of calling getEntryTerms() per entry.
-// Bylines are already hydrated on entry.data.bylines by getEmDashCollection.
-const tagEntryIds = [
-	...(featuredPost ? [featuredPost.data.id] : []),
-	...gridPosts.map((p) => p.data.id),
-];
-const tagsByEntry = await getTermsForEntries("posts", tagEntryIds, "tag");
-
-const featuredTags = featuredPost
-	? (tagsByEntry.get(featuredPost.data.id) ?? []).map((t) => ({
-			slug: t.slug,
-			label: t.label,
-		}))
-	: [];
-const featuredBylines = featuredPost?.data.bylines ?? [];
-
-const gridPostsWithTags = gridPosts.map((post) => ({
-	post,
-	tags: (tagsByEntry.get(post.data.id) ?? []).map((t) => ({
-		slug: t.slug,
-		label: t.label,
-	})),
-	bylines: post.data.bylines ?? [],
-}));
-
-// Format date helper
-function formatDate(date: Date | null | undefined) {
-	if (!date) return null;
-	return date.toLocaleDateString("en-US", {
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	});
-}
+import Layout from '../layouts/Layout.astro';
+import ChessBoard from '../components/ChessBoard.astro';
+import RoadmapStepper from '../components/RoadmapStepper.astro';
+import ConsultForm from '../components/ConsultForm.astro';
 ---
 
-<Base title={siteTitle} description={siteTagline}>
-	{
-		posts.length === 0 ? (
-			<section class="empty-state">
-				<h2>No posts yet</h2>
-				<p>Create your first post in the admin panel.</p>
-				<a href="/_emdash/admin/content/posts/new" class="btn">
-					Create a post
-				</a>
-			</section>
-		) : (
-			<div class="home-content">
-				{/* Featured Post - Side by side */}
-				{featuredPost && (
-					<section class="featured-section">
-						<div class="featured-grid">
-							<a href={`/posts/${featuredPost.id}`} class="featured-image-link">
-								<div class="featured-image">
-									<Image image={featuredPost.data.featured_image} />
-								</div>
-							</a>
-							<div class="featured-content">
-								<div class="featured-meta">
-									{featuredBylines.length > 0 && (
-										<>
-											<div class="featured-bylines">
-												{featuredBylines.slice(0, 2).map((credit, index) => (
-													<>
-														{index > 0 && <span class="byline-sep">,</span>}
-														<span class="featured-byline">
-															{credit.byline.avatarMediaId && (
-																<img
-																	src={`/_emdash/api/media/file/${credit.byline.avatarMediaId}`}
-																	alt={credit.byline.displayName}
-																	class="featured-byline-avatar"
-																/>
-															)}
-															<span class="featured-byline-name">
-																{credit.byline.displayName}
-															</span>
-														</span>
-													</>
-												))}
-												{featuredBylines.length > 2 && (
-													<span class="byline-more">
-														+{featuredBylines.length - 2}
-													</span>
-												)}
-											</div>
-											<span class="meta-dot" />
-										</>
-									)}
-									{formatDate(featuredPost.data.publishedAt) && (
-										<time>{formatDate(featuredPost.data.publishedAt)}</time>
-									)}
-									<span class="meta-dot" />
-									<span>
-										{getReadingTime(featuredPost.data.content)} min read
-									</span>
-								</div>
-								<a
-									href={`/posts/${featuredPost.id}`}
-									class="featured-title-link"
-								>
-									<h1 class="featured-title">{featuredPost.data.title}</h1>
-								</a>
-								{featuredPost.data.excerpt && (
-									<p class="featured-excerpt">{featuredPost.data.excerpt}</p>
-								)}
-								{featuredTags.length > 0 && (
-									<div class="featured-tags">
-										{featuredTags.map((tag) => (
-											<a href={`/tag/${tag.slug}`} class="featured-tag">
-												{tag.label}
-											</a>
-										))}
-									</div>
-								)}
-							</div>
-						</div>
-					</section>
-				)}
+<Layout title="Dương Sinh Chess Academy — Vui Trí Tuệ (dsc.edu.vn)">
+  <!-- 1. Hero Section -->
+  <section class="hero-section">
+    <div class="hero-pat" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="hero-grid">
+        <!-- Cột chữ bên trái -->
+        <div class="hero-content">
+          <div class="overline">CHƯƠNG TRÌNH ĐÀO TẠO CỜ VUA CHUẨN QUỐC TẾ</div>
+          <h1 class="hero-title">
+            Vui trí tuệ — mỗi nước cờ <em class="title-em">nuôi dưỡng tư duy</em>
+          </h1>
+          <p class="hero-lead">
+            Học viện cờ vua DSC mang đến phương pháp giáo dục hiện đại tại Cơ sở Vĩnh Phúc (Ba Đình) và Cơ sở Kim Liên (Đống Đa), giúp trẻ từ 4–14 tuổi rèn luyện tư duy logic và tính kiên nhẫn.
+          </p>
 
-				{/* Latest Posts */}
-				{gridPostsWithTags.length > 0 && (
-					<section class="posts-section">
-						<header class="section-header">
-							<h2 class="section-title">Latest</h2>
-							{hasMorePosts && (
-								<a href="/posts" class="section-link">
-									View all
-								</a>
-							)}
-						</header>
-						<div class="posts-grid">
-							{gridPostsWithTags.map(({ post, tags, bylines }) => (
-								<PostCard
-									title={post.data.title ?? "Untitled"}
-									excerpt={post.data.excerpt}
-									featuredImage={post.data.featured_image}
-									href={`/posts/${post.id}`}
-									date={post.data.publishedAt ?? undefined}
-									readingTime={getReadingTime(post.data.content)}
-									tags={tags}
-									bylines={bylines}
-								/>
-							))}
-						</div>
-					</section>
-				)}
-			</div>
-		)
-	}
-</Base>
+          <div class="hero-actions">
+            <a href="#tu-van" class="btn btn--primary btn--lg">
+              <span>Đăng ký học thử miễn phí</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+            <a href="/dao-tao" class="btn btn--ghost btn--lg">
+              Xem lộ trình đào tạo →
+            </a>
+          </div>
+
+          <div class="hero-trust">
+            <div class="trust-item">
+              <span class="trust-num">6</span>
+              <span>Cấp độ chuẩn hoá</span>
+            </div>
+            <div class="trust-item">
+              <span class="trust-dot"></span>
+              <span>Lớp học tối đa 8–10 học viên</span>
+            </div>
+            <div class="trust-item">
+              <span class="trust-dot"></span>
+              <span>Giáo viên ĐH Sư Phạm & Bách Khoa</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cột bàn cờ phối cảnh bên phải -->
+        <div class="hero-visual">
+          <ChessBoard />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Lộ trình Đào tạo 6 Cấp -->
+  <section class="sec alt reveal">
+    <div class="wrap">
+      <div class="shead">
+        <div class="overline overline--teal">LỘ TRÌNH PHÁT TRIỂN NĂNG LỰC</div>
+        <h2>Lộ trình 6 cấp độ từ Tốt đến Vua</h2>
+        <p>Hệ thống bài giảng được thiết kế trực quan, khoa học từ cấp độ làm quen vỡ lòng đến trình độ thi đấu chuyên nghiệp.</p>
+      </div>
+
+      <RoadmapStepper />
+
+      <div style="text-align: center; margin-top: 42px;">
+        <a href="/dao-tao" class="btn btn--ghost">
+          Tìm hiểu chi tiết từng cấp độ đào tạo →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Các Lớp Học Nổi Bật -->
+  <section class="sec reveal">
+    <div class="wrap">
+      <div class="shead">
+        <div class="overline">CHƯƠNG TRÌNH NỔI BẬT</div>
+        <h2>Các khóa học cờ vua tại DSC</h2>
+        <p>Phân chia linh hoạt theo độ tuổi và trình độ thực tế của từng học viên</p>
+      </div>
+
+      <div class="course-grid">
+        <!-- Khóa 1: Mầm non -->
+        <div class="course-card">
+          <div class="card-thumb">
+            <img src="/brand/pieces/wn.svg" alt="Mầm non" class="card-piece" />
+            <span class="card-tag">4–6 tuổi</span>
+          </div>
+          <div class="card-body">
+            <div class="overline overline--teal">NHẬP MÔN THÔNG MINH</div>
+            <h3>Cờ vua Mầm non — Bé vui tư duy</h3>
+            <p>Phương pháp vừa học vừa chơi, nhân cách hoá quân cờ qua những câu chuyện sinh động, giúp bé rèn luyện tính tập trung.</p>
+            <div class="card-meta">
+              <div class="meta-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <span>60–75 phút / buổi · 2 buổi / tuần</span>
+              </div>
+              <div class="meta-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <span>CS Vĩnh Phúc & CS Kim Liên</span>
+              </div>
+            </div>
+            <div class="card-foot">
+              <div class="card-price">750.000đ <small>/ tháng</small></div>
+              <a href="#tu-van" class="btn btn--primary btn--sm">Đăng ký ngay</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Khóa 2: Cơ bản tiểu học -->
+        <div class="course-card featured">
+          <div class="featured-ribbon">Phổ biến nhất</div>
+          <div class="card-thumb" style="background: linear-gradient(135deg, var(--navy), var(--navy-deep));">
+            <img src="/brand/pieces/wb.svg" alt="Tiểu học" class="card-piece" />
+            <span class="card-tag">6–12 tuổi</span>
+          </div>
+          <div class="card-body">
+            <div class="overline overline--teal">TƯ DUY CHIẾN THUẬT</div>
+            <h3>Cờ vua Thiếu nhi — Tốt ➔ Xe</h3>
+            <p>Trang bị kiến thức chiến thuật căn bản (đòn đôi, giằng, xiên), bài tập giải thế cờ và chiến thuật khai cuộc – tàn cuộc chuẩn.</p>
+            <div class="card-meta">
+              <div class="meta-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <span>75–90 phút / buổi · 2 buổi / tuần</span>
+              </div>
+              <div class="meta-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <span>CS Vĩnh Phúc, CS Kim Liên & Online</span>
+              </div>
+            </div>
+            <div class="card-foot">
+              <div class="card-price">850.000đ <small>/ tháng</small></div>
+              <a href="#tu-van" class="btn btn--primary btn--sm">Đăng ký ngay</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Khóa 3: Nâng cao & Đội tuyển -->
+        <div class="course-card">
+          <div class="card-thumb" style="background: linear-gradient(135deg, var(--navy-deep), var(--navy-ink));">
+            <img src="/brand/pieces/wq.svg" alt="Nâng cao" class="card-piece" />
+            <span class="card-tag">Hậu & Vua</span>
+          </div>
+          <div class="card-body">
+            <div class="overline overline--teal">BẢN LĨNH ĐỈNH CAO</div>
+            <h3>Cờ vua Chuyên sâu & Luyện thi</h3>
+            <p>Huấn luyện trực tiếp cùng các thầy cô đạt ELO 1900–2000, phân tích sâu các ván đấu đỉnh cao, rèn tâm lý thi đấu các giải đấu.</p>
+            <div class="card-meta">
+              <div class="meta-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <span>90–120 phút / buổi · Kèm chuyên sâu</span>
+              </div>
+              <div class="meta-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <span>Cơ sở Kim Liên & Vĩnh Phúc</span>
+              </div>
+            </div>
+            <div class="card-foot">
+              <div class="card-price">1.050.000đ <small>/ tháng</small></div>
+              <a href="#tu-van" class="btn btn--primary btn--sm">Đăng ký ngay</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Đội ngũ Giáo viên tiêu biểu -->
+  <section class="sec alt reveal">
+    <div class="wrap">
+      <div class="shead">
+        <div class="overline overline--teal">ĐỘI NGŨ CHUYÊN MÔN</div>
+        <h2>Đội ngũ Giáo viên giàu kinh nghiệm & tâm huyết</h2>
+        <p>100% Thầy Cô tại DSC đều đạt chuẩn ELO cao (1800–2000) và tốt nghiệp từ các trường Đại học danh tiếng (ĐH Sư Phạm, ĐH Bách Khoa Hà Nội).</p>
+      </div>
+
+      <div class="coach-grid">
+        <div class="coach-card">
+          <div class="coach-avatar">
+            <img src="/brand/pieces/wk.svg" alt="Thầy Bùi Việt Anh" class="coach-piece" />
+          </div>
+          <div class="coach-info">
+            <div class="coach-role">GIÁO VIÊN PHỤ TRÁCH · CƠ SỞ KIM LIÊN</div>
+            <h3>Thầy Bùi Việt Anh</h3>
+            <span class="coach-badge">ELO 1900 · Cựu Phó CN CLB Cờ ĐHBK</span>
+            <p>Tốt nghiệp ĐH Bách Khoa Hà Nội, chuyên môn sâu về chiến thuật trung cuộc và phương pháp tư duy logic cho học sinh tiểu học.</p>
+          </div>
+        </div>
+
+        <div class="coach-card">
+          <div class="coach-avatar">
+            <img src="/brand/pieces/wn.svg" alt="Thầy Bùi Đức Huy" class="coach-piece" />
+          </div>
+          <div class="coach-info">
+            <div class="coach-role">GIÁO VIÊN · CƠ SỞ VĨNH PHÚC</div>
+            <h3>Thầy Bùi Đức Huy</h3>
+            <span class="coach-badge">ELO 2000 · HCĐ Hội khỏe Phù Đổng</span>
+            <p>Bề dày kinh nghiệm thi đấu đỉnh cao với ELO 2000, truyền cảm hứng và nhiệt huyết cho các bạn nhỏ qua từng nước cờ.</p>
+          </div>
+        </div>
+
+        <div class="coach-card">
+          <div class="coach-avatar">
+            <img src="/brand/pieces/wb.svg" alt="Cô Mai Thị Thu" class="coach-piece" />
+          </div>
+          <div class="coach-info">
+            <div class="coach-role">CHUYÊN GIA SƯ PHẠM MẦM NON</div>
+            <h3>Cô Mai Thị Thu</h3>
+            <span class="coach-badge">ĐH Sư Phạm · Chuyên trách Mầm non</span>
+            <p>Cử nhân Giáo dục Mầm non, phụ trách chương trình cờ vua kể chuyện cho trẻ từ 4–6 tuổi, rèn luyện tính kiên nhẫn và tập trung.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 36px;">
+        <a href="/huan-luyen-vien" class="btn btn--ghost">
+          Xem toàn bộ đội ngũ Giáo viên DSC →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Form Thu Lead & Tư Vấn -->
+  <section class="sec reveal" style="padding-top: 40px;">
+    <div class="wrap">
+      <ConsultForm id="tu-van" />
+    </div>
+  </section>
+</Layout>
 
 <style>
-	.home-content {
-		max-width: var(--wide-width);
-		margin: 0 auto;
-		padding: var(--spacing-16) var(--spacing-6);
-	}
+  /* Hero section */
+  .hero-section {
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(1100px 480px at 78% -8%, rgba(43, 57, 144, 0.07), transparent 60%), var(--bg);
+    padding: 60px 0 80px;
+  }
 
-	/* Featured Section - Side by side */
-	.featured-section {
-		margin-bottom: var(--spacing-16);
-	}
+  .hero-pat {
+    position: absolute;
+    inset: 0;
+    background-image: url('/brand/pattern-tile-navy.svg');
+    background-size: 64px;
+    opacity: 0.04;
+    pointer-events: none;
+  }
 
-	.featured-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: var(--spacing-8);
-		align-items: center;
-	}
+  .hero-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    align-items: center;
+    gap: 48px;
+  }
 
-	.featured-image-link {
-		grid-column: 1 / 3;
-		display: block;
-		/* Extend to viewport edge, but cap at -6rem minimum extension */
-		margin-left: min(
-			-6rem,
-			calc(-1 * (var(--spacing-6) + (100vw - var(--wide-width)) / 2))
-		);
-	}
+  .hero-title {
+    font-size: clamp(38px, 4.4vw, 58px);
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--navy);
+    margin-top: 14px;
+  }
 
-	.featured-image {
-		overflow: hidden;
-		border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
-		background: var(--color-surface);
-	}
+  .title-em {
+    font-style: normal;
+    color: var(--teal-deep);
+  }
 
-	.featured-image img {
-		width: 100%;
-		height: auto;
-		aspect-ratio: 4 / 3;
-		object-fit: cover;
-		transition: transform 0.4s ease;
-	}
+  .hero-lead {
+    font-size: 18.5px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin-top: 20px;
+    max-width: 540px;
+  }
 
-	.featured-image-link:hover .featured-image img,
-	.featured-grid:has(.featured-title-link:hover) .featured-image img {
-		transform: scale(1.02);
-	}
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+  }
 
-	.featured-content {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-4);
-	}
+  .hero-trust {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
 
-	.featured-meta {
-		display: flex;
-		align-items: center;
-		flex-wrap: wrap;
-		column-gap: var(--spacing-3);
-		row-gap: var(--spacing-1);
-		font-size: var(--font-size-sm);
-		color: var(--color-muted);
-	}
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
 
-	.meta-dot {
-		width: 3px;
-		height: 3px;
-		border-radius: 50%;
-		background: var(--color-muted);
-	}
+  .trust-num {
+    font-family: var(--font-cond);
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1;
+  }
 
-	/* Featured bylines */
-	.featured-bylines {
-		display: flex;
-		align-items: center;
-		gap: 2px;
-	}
+  .trust-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--teal);
+  }
 
-	.featured-byline {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--spacing-2);
-	}
+  /* Courses grid */
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
 
-	.featured-byline-avatar {
-		width: var(--avatar-size-md);
-		height: var(--avatar-size-md);
-		border-radius: 50%;
-		object-fit: cover;
-	}
+  .course-card {
+    background: #fff;
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    box-shadow: var(--sh-sm);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform var(--dur) var(--ease), box-shadow var(--dur);
+  }
 
-	.featured-byline-name {
-		font-weight: 500;
-		color: var(--color-text-secondary);
-	}
+  .course-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--sh-md);
+  }
 
-	.byline-sep {
-		color: var(--color-muted);
-		margin-right: 2px;
-	}
+  .course-card.featured {
+    border-color: var(--navy);
+    box-shadow: var(--sh-md);
+  }
 
-	.byline-more {
-		font-size: var(--font-size-xs);
-		color: var(--color-muted);
-		margin-left: 2px;
-	}
+  .featured-ribbon {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: var(--teal);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: var(--r-pill);
+    z-index: 5;
+  }
 
-	.featured-title-link {
-		text-decoration: none;
-		color: inherit;
-	}
+  .card-thumb {
+    height: 160px;
+    background: linear-gradient(135deg, var(--navy-deep), var(--navy));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
 
-	.featured-title {
-		font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-4xl));
-		font-weight: 700;
-		line-height: var(--leading-tight);
-		letter-spacing: var(--tracking-tight);
-		transition: color var(--transition-fast);
-	}
+  .card-piece {
+    width: 80px;
+    height: 80px;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3));
+  }
 
-	.featured-title-link:hover .featured-title,
-	.featured-grid:has(.featured-image-link:hover) .featured-title {
-		color: var(--color-accent);
-	}
+  .card-tag {
+    position: absolute;
+    bottom: 12px;
+    left: 14px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: var(--r-pill);
+  }
 
-	.featured-excerpt {
-		font-size: var(--font-size-lg);
-		line-height: var(--leading-relaxed);
-		color: var(--color-text-secondary);
-	}
+  .card-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
 
-	.featured-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--spacing-2);
-		margin-top: var(--spacing-2);
-	}
+  .card-body h3 {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--ink);
+    margin: 8px 0 10px;
+  }
 
-	.featured-tag {
-		display: inline-block;
-		padding: var(--tag-padding-y) var(--spacing-2);
-		font-size: var(--font-size-xs);
-		color: var(--color-text-secondary);
-		background: var(--color-surface);
-		border-radius: var(--radius);
-		text-decoration: none;
-		transition:
-			color var(--transition-fast),
-			background var(--transition-fast);
-	}
+  .card-body p {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: 20px;
+    flex-grow: 1;
+  }
 
-	.featured-tag:hover {
-		color: var(--color-text);
-		background: var(--color-border);
-	}
+  .card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--line-soft);
+  }
 
-	/* Section header */
-	.section-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: baseline;
-		margin-bottom: var(--spacing-8);
-		padding-bottom: var(--spacing-4);
-		border-bottom: 1px solid var(--color-border-subtle);
-	}
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    color: var(--text-secondary);
+  }
 
-	.section-title {
-		font-size: var(--font-size-sm);
-		font-weight: 500;
-		text-transform: uppercase;
-		letter-spacing: var(--tracking-wider);
-		color: var(--color-muted);
-	}
+  .meta-row svg {
+    width: 16px;
+    height: 16px;
+    color: var(--teal);
+  }
 
-	.section-link {
-		font-size: var(--font-size-sm);
-		color: var(--color-accent);
-		text-decoration: none;
-		transition: color var(--transition-fast);
-	}
+  .card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-	.section-link:hover {
-		color: var(--color-accent-hover);
-	}
+  .card-price {
+    font-family: var(--font-cond);
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--navy);
+  }
 
-	/* Posts Grid */
-	.posts-section {
-	}
+  .card-price small {
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+  }
 
-	.posts-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: var(--spacing-12) var(--spacing-8);
-	}
+  /* Coach grid */
+  .coach-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
 
-	/* Empty State */
-	.empty-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: var(--spacing-3);
-		text-align: center;
-		padding: var(--spacing-20) var(--spacing-6);
-		max-width: 400px;
-		margin: 0 auto;
-	}
+  .coach-card {
+    background: #fff;
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: var(--sh-sm);
+    transition: transform var(--dur);
+  }
 
-	.empty-state h2 {
-		font-size: var(--font-size-2xl);
-		font-weight: 600;
-	}
+  .coach-card:hover {
+    transform: translateY(-4px);
+  }
 
-	.empty-state p {
-		color: var(--color-muted);
-	}
+  .coach-avatar {
+    height: 180px;
+    background: linear-gradient(135deg, var(--navy), var(--navy-ink));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
 
-	.btn {
-		display: inline-block;
-		margin-top: var(--spacing-4);
-		padding: var(--spacing-3) var(--spacing-6);
-		background: var(--color-accent);
-		color: var(--color-on-accent);
-		text-decoration: none;
-		border-radius: var(--radius);
-		font-size: var(--font-size-sm);
-		font-weight: 500;
-		transition: background var(--transition-fast);
-	}
+  .coach-piece {
+    width: 96px;
+    height: 96px;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+  }
 
-	.btn:hover {
-		background: var(--color-accent-hover);
-	}
+  .coach-info {
+    padding: 24px;
+  }
 
-	/* Responsive */
-	@media (max-width: 900px) {
-		.home-content {
-			padding: var(--spacing-6) var(--spacing-4) var(--spacing-12);
-		}
+  .coach-role {
+    font-family: var(--font-cond);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--teal-deep);
+  }
 
-		.featured-image-link {
-			margin-left: 0;
-		}
+  .coach-info h3 {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--navy);
+    margin: 4px 0 8px;
+  }
 
-		.featured-grid {
-			grid-template-columns: 1fr;
-			gap: var(--spacing-6);
-		}
+  .coach-badge {
+    display: inline-block;
+    background: var(--navy-soft);
+    color: var(--navy);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: var(--r-pill);
+    margin-bottom: 12px;
+  }
 
-		.featured-image {
-			border-radius: var(--radius-lg);
-		}
+  .coach-info p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
 
-		.featured-image img {
-			aspect-ratio: 16 / 9;
-		}
-
-		.posts-grid {
-			grid-template-columns: repeat(2, 1fr);
-			gap: var(--spacing-8) var(--spacing-6);
-		}
-	}
-
-	@media (max-width: 600px) {
-		.featured-title {
-			font-size: var(--font-size-2xl);
-		}
-
-		.posts-grid {
-			grid-template-columns: 1fr;
-			gap: var(--spacing-8);
-		}
-	}
+  @media (max-width: 900px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    .hero-lead {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-actions {
+      justify-content: center;
+    }
+    .hero-trust {
+      justify-content: center;
+    }
+    .course-grid, .coach-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>

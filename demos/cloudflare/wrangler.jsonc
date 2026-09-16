@@ -12,20 +12,14 @@
 	"cache": {
 		"enabled": true,
 	},
-	// Static assets served from dist/
-	"routes": [
-		{
-			"pattern": "demo.emdashcms.com",
-			"zone_name": "demo.emdashcms.com",
-			"custom_domain": true,
-		},
-	],
+	"workers_dev": true,
 	// D1 Database binding
 	"d1_databases": [
 		{
 			"binding": "DB",
 			"database_name": "emdash_db",
-		},
+			"database_id": "ae446e38-3446-403a-a827-4e60f90fe9e7"
+		}
 	],
 	// R2 bucket for media storage
 	"r2_buckets": [
@@ -42,12 +36,6 @@
 	"observability": {
 		"enabled": true,
 	},
-	// Worker Loader for plugin sandboxing
-	"worker_loaders": [
-		{
-			"binding": "LOADER",
-		},
-	],
 	"ai_search_namespaces": [
 		{
 			"binding": "AI_SEARCH",
