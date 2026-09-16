@@ -1,0 +1,191 @@
+---
+---
+
+<div class="chessboard-wrapper">
+  <div class="board-frame">
+    <div class="board-grid">
+      {Array.from({ length: 64 }).map((_, i) => {
+        const row = Math.floor(i / 8);
+        const col = i % 8;
+        const isDark = (row + col) % 2 === 1;
+        return <div class={`square ${isDark ? 'dark' : 'light'}`}></div>;
+      })}
+    </div>
+
+    <!-- 3 quân cờ nghệ thuật đặt trên bàn -->
+    <div class="piece piece-knight">
+      <img src="/brand/pieces/wn.svg" alt="Quân Mã" />
+    </div>
+    <div class="piece piece-king">
+      <img src="/brand/pieces/wk.svg" alt="Quân Vua" />
+    </div>
+    <div class="piece piece-pawn">
+      <img src="/brand/pieces/wp.svg" alt="Quân Tốt" />
+    </div>
+  </div>
+
+  <!-- 2 Badge nổi bật -->
+  <div class="art-badge badge-top">
+    <span class="badge-icon">
+      <img src="/brand/symbol-navy.svg" alt="DSC Symbol" />
+    </span>
+    <span class="badge-text">
+      <b>Vui Trí Tuệ</b>
+      <small>Triết lý đào tạo</small>
+    </span>
+  </div>
+
+  <div class="art-badge badge-bottom">
+    <span class="badge-icon">
+      <img src="/brand/pieces/wq.svg" alt="Quân Hậu" />
+    </span>
+    <span class="badge-text">
+      <b>Tốt ➔ Vua</b>
+      <small>Lộ trình 6 cấp</small>
+    </span>
+  </div>
+</div>
+
+<style>
+  .chessboard-wrapper {
+    position: relative;
+    width: 380px;
+    height: 380px;
+    margin: 0 auto;
+    perspective: 1000px;
+  }
+
+  .board-frame {
+    position: relative;
+    width: 360px;
+    height: 360px;
+    background: var(--navy-ink);
+    border: 10px solid var(--navy-ink);
+    border-radius: var(--r-xl);
+    box-shadow: var(--sh-lg);
+    overflow: hidden;
+    transform: rotateX(12deg) rotateZ(-4deg);
+    transition: transform 0.4s var(--ease);
+  }
+
+  .chessboard-wrapper:hover .board-frame {
+    transform: rotateX(0deg) rotateZ(0deg);
+  }
+
+  .board-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    width: 100%;
+    height: 100%;
+    border-radius: var(--r-md);
+    overflow: hidden;
+  }
+
+  .square.light {
+    background-color: #EDEFF7;
+  }
+
+  .square.dark {
+    background-color: #33409A;
+  }
+
+  .piece {
+    position: absolute;
+    z-index: 2;
+    filter: drop-shadow(0 8px 12px rgba(21, 29, 73, 0.4));
+    transition: transform 0.3s var(--ease);
+  }
+
+  .piece:hover {
+    transform: scale(1.1) translateY(-4px);
+  }
+
+  .piece-knight {
+    top: 60px;
+    left: 70px;
+    width: 72px;
+    height: 72px;
+  }
+
+  .piece-king {
+    top: 130px;
+    right: 60px;
+    width: 88px;
+    height: 88px;
+  }
+
+  .piece-pawn {
+    bottom: 50px;
+    left: 110px;
+    width: 64px;
+    height: 64px;
+  }
+
+  .art-badge {
+    position: absolute;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #ffffff;
+    border-radius: var(--r-lg);
+    padding: 12px 18px;
+    box-shadow: var(--sh-lg);
+    border: 1px solid var(--line);
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .badge-top {
+    top: -10px;
+    left: -24px;
+  }
+
+  .badge-bottom {
+    bottom: -10px;
+    right: -20px;
+    animation-delay: 2s;
+  }
+
+  .badge-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--navy-soft);
+    border-radius: var(--r-md);
+  }
+
+  .badge-icon img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .badge-text b {
+    display: block;
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  .badge-text small {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .chessboard-wrapper {
+      display: none;
+    }
+  }
+</style>

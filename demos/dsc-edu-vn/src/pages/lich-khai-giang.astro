@@ -1,0 +1,276 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import ConsultForm from '../components/ConsultForm.astro';
+
+const upcomingClasses = [
+  {
+    code: 'LOP-VP-MN01',
+    level: 'Mầm non (4–6 tuổi)',
+    name: 'Cờ vua Vỡ lòng Kể chuyện K24',
+    branch: 'Cơ sở Vĩnh Phúc (16 Vĩnh Phúc, Ba Đình)',
+    time: 'Thứ 2 & Thứ 6 (Ca 1: 18h00 – 19h15)',
+    coach: 'Cô Mai Thị Thu (ĐH Sư Phạm)',
+    status: 'Còn 3 chỗ',
+    statusType: 'available',
+  },
+  {
+    code: 'LOP-VP-CB01',
+    level: 'Cơ bản (Tốt ➔ Mã)',
+    name: 'Lớp Cờ vua Nhập môn Thiếu nhi K32',
+    branch: 'Cơ sở Vĩnh Phúc (16 Vĩnh Phúc, Ba Đình)',
+    time: 'Thứ 2 & Thứ 6 (Ca 2: 19h15 – 20h30)',
+    coach: 'Thầy Bùi Đức Huy (ELO 2000)',
+    status: 'Sắp khai giảng',
+    statusType: 'upcoming',
+  },
+  {
+    code: 'LOP-KL-CB01',
+    level: 'Cơ bản (Mã ➔ Tượng)',
+    name: 'Chiến thuật Trung cuộc & Đòn phối hợp K18',
+    branch: 'Cơ sở Kim Liên (22/11 Lương Định Của, Đống Đa)',
+    time: 'Tối Thứ 3 & Thứ 5 (19h30 – 20h45)',
+    coach: 'Thầy Bùi Việt Anh (ĐH Bách Khoa)',
+    status: 'Còn 2 chỗ',
+    statusType: 'available',
+  },
+  {
+    code: 'LOP-KL-NC01',
+    level: 'Nâng cao (Tượng ➔ Xe ➔ Hậu)',
+    name: 'Lớp Luyện tập Thi đấu & Tàn cuộc K12',
+    branch: 'Cơ sở Kim Liên (22/11 Lương Định Của, Đống Đa)',
+    time: 'Tối Thứ 7 (19h30 – 21h00)',
+    coach: 'Thầy Bùi Việt Anh (ELO 1900)',
+    status: 'Còn 1 chỗ',
+    statusType: 'critical',
+  },
+  {
+    code: 'LOP-KL-MN02',
+    level: 'Mầm non (4–6 tuổi)',
+    name: 'Khởi động Trí tuệ Mầm non K15',
+    branch: 'Cơ sở Kim Liên (22/11 Lương Định Của, Đống Đa)',
+    time: 'Tối Thứ 5 & Thứ 7 (18h15 – 19h30)',
+    coach: 'Thầy Dương Văn Duy (ELO 2000)',
+    status: 'Còn 4 chỗ',
+    statusType: 'available',
+  },
+  {
+    code: 'LOP-ONL-VN05',
+    level: 'Mọi trình độ (6–14 tuổi)',
+    name: 'Lớp Cờ vua Online Tương tác Trực tiếp K50',
+    branch: 'Học Trực Tuyến Toàn Quốc (Zoom + Lichess)',
+    time: 'Tối Thứ 2 & Thứ 4 (19h30 – 20h45)',
+    coach: 'Đội ngũ Giáo viên DSC',
+    status: 'Mở ghi danh',
+    statusType: 'available',
+  },
+];
+---
+
+<Layout title="Lịch Khai Giảng & Xếp Lớp — dsc.edu.vn">
+  <PageHero
+    title="Lịch Khai Giảng & Xếp Lớp Mới"
+    lead="Cập nhật lịch mở lớp định kỳ tại Cơ sở Vĩnh Phúc (Ba Đình), Cơ sở Kim Liên (Đống Đa) và lớp Online toàn quốc. Hỗ trợ kiểm tra trình độ xếp lớp miễn phí."
+    crumbCurrent="Lịch khai giảng"
+    badge="TUYỂN SINH CÁC CƠ SỞ"
+    chips={['CS Vĩnh Phúc (T2 & T6)', 'CS Kim Liên (T3, T5 & T7)', 'Học bù linh hoạt']}
+  />
+
+  <section class="sec alt reveal">
+    <div class="wrap">
+      <div class="shead">
+        <div class="overline overline--teal">LỊCH HỌC CÁC CƠ SỞ</div>
+        <h2>Danh sách các lớp cờ vua sắp khai giảng</h2>
+        <p>Chọn cơ sở và khung giờ thuận tiện nhất cho lịch học tập của bé</p>
+      </div>
+
+      <div class="table-responsive">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>Mã & Tên lớp</th>
+              <th>Cấp độ & Lứa tuổi</th>
+              <th>Cơ sở đào tạo</th>
+              <th>Khung giờ học</th>
+              <th>Giáo viên phụ trách</th>
+              <th>Tình trạng</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            {upcomingClasses.map((cls) => (
+              <tr>
+                <td>
+                  <div class="class-code">{cls.code}</div>
+                  <strong class="class-name">{cls.name}</strong>
+                </td>
+                <td>
+                  <span class="level-chip">{cls.level}</span>
+                </td>
+                <td>
+                  <div class="branch-text">{cls.branch}</div>
+                </td>
+                <td>
+                  <div class="time-text">{cls.time}</div>
+                </td>
+                <td>
+                  <div class="coach-text">{cls.coach}</div>
+                </td>
+                <td>
+                  <span class={`status-badge status-${cls.statusType}`}>{cls.status}</span>
+                </td>
+                <td>
+                  <a href="#tu-van" class="btn btn--primary btn--sm">Giữ chỗ</a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Box -->
+  <section class="sec reveal" style="padding-top: 20px;">
+    <div class="wrap">
+      <div class="schedule-cta">
+        <div class="schedule-cta-in">
+          <h2>Chưa tìm thấy lịch học phù hợp với con?</h2>
+          <p>DSC có hỗ trợ sắp xếp lớp học theo nhóm riêng, điều chỉnh ca học hoặc lớp kèm 1-1 theo nguyện vọng của phụ huynh.</p>
+          <a href="#tu-van" class="btn btn--onnavy btn--lg">
+            Liên hệ ban học vụ tư vấn lịch riêng →
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Form thu lead -->
+  <section class="sec reveal">
+    <div class="wrap">
+      <ConsultForm id="tu-van" />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .table-responsive {
+    overflow-x: auto;
+    background: #fff;
+    border-radius: var(--r-xl);
+    border: 1px solid var(--line);
+    box-shadow: var(--sh-sm);
+  }
+
+  .schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    min-width: 840px;
+  }
+
+  .schedule-table th {
+    background: var(--navy-soft);
+    font-family: var(--font-cond);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .schedule-table td {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 14.5px;
+    color: var(--ink);
+  }
+
+  .schedule-table tbody tr:hover {
+    background: rgba(248, 249, 252, 0.85);
+  }
+
+  .class-code {
+    font-family: var(--font-cond);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .class-name {
+    display: block;
+    color: var(--navy);
+    font-size: 15px;
+    margin-top: 2px;
+  }
+
+  .level-chip {
+    display: inline-block;
+    background: var(--navy-soft);
+    color: var(--navy);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: var(--r-pill);
+  }
+
+  .branch-text, .time-text, .coach-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .status-badge {
+    display: inline-block;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: var(--r-pill);
+  }
+
+  .status-available {
+    background: var(--teal-soft);
+    color: var(--teal-deep);
+  }
+
+  .status-upcoming {
+    background: var(--navy-soft);
+    color: var(--navy);
+  }
+
+  .status-critical {
+    background: #fdeceb;
+    color: #e0564e;
+  }
+
+  .schedule-cta {
+    background: linear-gradient(135deg, var(--navy), var(--navy-ink));
+    border-radius: var(--r-2xl);
+    color: #fff;
+    padding: 56px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--sh-lg);
+  }
+
+  .schedule-cta-in {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .schedule-cta h2 {
+    font-size: 30px;
+    font-weight: 900;
+    margin-bottom: 14px;
+  }
+
+  .schedule-cta p {
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 28px;
+  }
+</style>

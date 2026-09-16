@@ -1,0 +1,220 @@
+---
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = '/' } = Astro.props;
+
+const navItems = [
+  { href: '/', label: 'Trang chủ' },
+  { href: '/dao-tao', label: 'Đào tạo' },
+  { href: '/lich-khai-giang', label: 'Lịch khai giảng' },
+  { href: '/huan-luyen-vien', label: 'Huấn luyện viên' },
+  { href: '/co-so', label: 'Cơ sở' },
+  { href: '/blog', label: 'Tin tức' },
+  { href: '/lien-he', label: 'Liên hệ' },
+];
+---
+
+<header class="hdr" id="site-header">
+  <div class="wrap">
+    <div class="hdr-in">
+      <a href="/" class="hdr-brand" aria-label="Dương Sinh Chess Academy">
+        <img src="/brand/logo-horizontal-navy.svg" alt="Dương Sinh Chess Academy - DSC" class="hdr-logo" />
+      </a>
+
+      <nav class="nav" id="main-nav">
+        {navItems.map((item) => {
+          const isActive = currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href));
+          return (
+            <a href={item.href} class={isActive ? 'active' : ''}>
+              {item.label}
+            </a>
+          );
+        })}
+        <a href="/#tu-van" class="btn btn--primary btn--sm navcta">Đăng ký tư vấn</a>
+      </nav>
+
+      <div class="hdr-cta">
+        <a href="/#tu-van" class="btn btn--primary btn--sm">Đăng ký học thử</a>
+        <button class="burger" id="burger-btn" aria-label="Mở danh mục điều hướng">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .hdr {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(248, 249, 252, 0.88);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+    transition: box-shadow var(--dur) var(--ease);
+  }
+
+  .hdr.scrolled {
+    box-shadow: var(--sh-sm);
+  }
+
+  .hdr-in {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 74px;
+  }
+
+  .hdr-brand {
+    display: flex;
+    align-items: center;
+  }
+
+  .hdr-logo {
+    height: 38px;
+    width: auto;
+  }
+
+  .nav {
+    display: flex;
+    gap: 26px;
+    align-items: center;
+  }
+
+  .nav a {
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    position: relative;
+    transition: color var(--dur) var(--ease);
+  }
+
+  .nav a:hover {
+    color: var(--navy);
+  }
+
+  .nav a.active {
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  .nav a.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -26px;
+    height: 2.5px;
+    background: var(--navy);
+    border-radius: 2px;
+  }
+
+  .hdr-cta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .burger {
+    display: none;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--navy);
+    cursor: pointer;
+  }
+
+  .burger svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .navcta {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .nav {
+      display: none;
+    }
+
+    .burger {
+      display: flex;
+    }
+
+    .nav.open {
+      display: flex;
+      position: absolute;
+      top: 74px;
+      left: 0;
+      right: 0;
+      background: #fff;
+      flex-direction: column;
+      align-items: stretch;
+      padding: 16px 28px 24px;
+      gap: 4px;
+      border-bottom: 1px solid var(--line);
+      box-shadow: var(--sh-md);
+    }
+
+    .nav.open a {
+      font-size: 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .nav.open a.active::after {
+      display: none;
+    }
+
+    .nav.open .navcta {
+      display: inline-flex;
+      justify-content: center;
+      border-bottom: none;
+      margin-top: 10px;
+      color: #fff;
+      padding: 13px 26px;
+    }
+
+    .hdr-cta .btn {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const header = document.getElementById('site-header');
+  const burgerBtn = document.getElementById('burger-btn');
+  const mainNav = document.getElementById('main-nav');
+
+  if (header) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 10) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    }, { passive: true });
+  }
+
+  if (burgerBtn && mainNav) {
+    burgerBtn.addEventListener('click', () => {
+      mainNav.classList.toggle('open');
+    });
+
+    mainNav.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        mainNav.classList.remove('open');
+      });
+    });
+  }
+</script>

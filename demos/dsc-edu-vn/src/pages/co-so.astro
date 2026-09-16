@@ -1,0 +1,311 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import ConsultForm from '../components/ConsultForm.astro';
+
+const campuses = [
+  {
+    code: 'VP',
+    tag: 'CƠ SỞ 1 — BA ĐÌNH',
+    name: 'Cơ sở Vĩnh Phúc',
+    address: 'Số 16 phố Vĩnh Phúc, Ba Đình, Hà Nội',
+    phone: '0983.119.819',
+    mapUrl: 'https://maps.app.goo.gl/wgAzh5aVYR4UehGf8',
+    schedule: 'Thứ 2 & Thứ 6 (Ca 1: 18h00–19h15 · Ca 2: 19h15–20h30)',
+    facilities: [
+      'Phòng học cờ tiêu chuẩn trang bị điều hòa 100%',
+      'Bàn cờ, đồng hồ bấm giờ điện tử FIDE thi đấu',
+      'Thư viện sách cờ vua Dương Sinh phục vụ học viên',
+      'Khu vực đón trả học viên an toàn, thuận tiện',
+    ],
+  },
+  {
+    code: 'KL',
+    tag: 'CƠ SỞ 2 — ĐỐNG ĐA',
+    name: 'Cơ sở Kim Liên',
+    address: 'Số 22, ngõ 11 Lương Định Của, Đống Đa, Hà Nội',
+    phone: '0983.119.819',
+    mapUrl: 'https://maps.app.goo.gl/FzkyiPQUz3CSwRH96',
+    schedule: 'Tối Thứ 3 · Thứ 5 · Thứ 7 (19h30–20h45)',
+    facilities: [
+      'Không gian học tập chuyên nghiệp, chuẩn công thái học',
+      'Phương pháp giảng dạy trực quan qua màn hình chiếu',
+      'Đội ngũ HLV tốt nghiệp ĐH Bách Khoa & Sư phạm',
+      'Gần các trường Tiểu học & THCS lớn khu vực Đống Đa',
+    ],
+  },
+];
+---
+
+<Layout title="Hệ thống Cơ sở Đào tạo — dsc.edu.vn">
+  <PageHero
+    title="Hệ thống Cơ sở Đào tạo DSC"
+    lead="Không gian học tập chuyên nghiệp, hiện đại tại các quận trung tâm Hà Nội (Ba Đình & Đống Đa), mang lại môi trường tốt nhất cho sự phát triển trí tuệ của trẻ."
+    crumbCurrent="Hệ thống cơ sở"
+    badge="HỆ THỐNG CƠ SỞ CHÍNH THỨC"
+    chips={['Cơ sở Vĩnh Phúc (Ba Đình)', 'Cơ sở Kim Liên (Đống Đa)', 'Lớp Online Toàn quốc']}
+  />
+
+  <section class="sec alt reveal">
+    <div class="wrap">
+      <div class="shead">
+        <div class="overline overline--teal">MẠNG LƯỚI ĐÀO TẠO</div>
+        <h2>Các cơ sở của Học viện Cờ Vua Dương Sinh</h2>
+        <p>Vị trí trung tâm thuận tiện, cơ sở vật chất chuẩn hóa và môi trường giáo dục thân thiện</p>
+      </div>
+
+      <div class="campuses-list">
+        {campuses.map((c, index) => (
+          <div class={`campus-item ${index % 2 === 1 ? 'reverse' : ''}`}>
+            <!-- Bên trái: Thông tin cơ sở -->
+            <div class="campus-info">
+              <span class="c-tag">{c.tag}</span>
+              <h3>{c.name}</h3>
+
+              <div class="c-detail-list">
+                <div class="c-detail-row">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  <span><strong>Địa chỉ:</strong> {c.address}</span>
+                </div>
+                <div class="c-detail-row">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                  <span><strong>Hotline liên hệ:</strong> {c.phone}</span>
+                </div>
+                <div class="c-detail-row">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  <span><strong>Lịch học cố định:</strong> {c.schedule}</span>
+                </div>
+              </div>
+
+              <div class="c-fac-box">
+                <div class="fac-title">Tiện ích & Trang thiết bị:</div>
+                <ul class="fac-list">
+                  {c.facilities.map((f) => (
+                    <li>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div class="c-actions">
+                <a href="#tu-van" class="btn btn--primary btn--sm">Đăng ký học tại cơ sở này</a>
+                <a href={c.mapUrl} target="_blank" rel="noopener noreferrer" class="btn btn--ghost btn--sm">
+                  Chỉ đường Google Maps ↗
+                </a>
+              </div>
+            </div>
+
+            <!-- Bên phải: Bản đồ Visual -->
+            <div class="campus-map-visual">
+              <div class="map-box">
+                <div class="map-pin">
+                  <img src="/brand/symbol-white.svg" alt="DSC Pin" />
+                </div>
+                <div class="map-label">{c.name}</div>
+                <div class="map-address-sub">{c.address}</div>
+                <a href={c.mapUrl} target="_blank" rel="noopener noreferrer" class="btn btn--onnavy btn--sm" style="margin-top: 14px;">
+                  Xem trên Google Maps
+                </a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Form thu lead -->
+  <section class="sec reveal">
+    <div class="wrap">
+      <ConsultForm id="tu-van" />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .campuses-list {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  .campus-item {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 36px;
+    background: #fff;
+    border-radius: var(--r-2xl);
+    padding: 40px;
+    border: 1px solid var(--line);
+    box-shadow: var(--sh-sm);
+    align-items: center;
+  }
+
+  .campus-item.reverse {
+    grid-template-columns: 0.85fr 1.15fr;
+  }
+
+  .campus-item.reverse .campus-info {
+    order: 2;
+  }
+
+  .campus-item.reverse .campus-map-visual {
+    order: 1;
+  }
+
+  .c-tag {
+    display: inline-block;
+    background: var(--navy-soft);
+    color: var(--navy);
+    font-family: var(--font-cond);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 3px 10px;
+    border-radius: var(--r-pill);
+    margin-bottom: 10px;
+  }
+
+  .campus-info h3 {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .c-detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .c-detail-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14.5px;
+    color: var(--text-secondary);
+  }
+
+  .c-detail-row svg {
+    width: 18px;
+    height: 18px;
+    color: var(--teal);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .c-fac-box {
+    background: var(--bg);
+    border-radius: var(--r-md);
+    padding: 18px 20px;
+    margin-bottom: 24px;
+  }
+
+  .fac-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+
+  .fac-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .fac-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+
+  .fac-list svg {
+    width: 14px;
+    height: 14px;
+    color: var(--teal);
+    flex-shrink: 0;
+  }
+
+  .c-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* Map Visual */
+  .campus-map-visual {
+    height: 100%;
+    min-height: 280px;
+    background: linear-gradient(135deg, var(--navy), var(--navy-ink));
+    border-radius: var(--r-xl);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 28px;
+  }
+
+  .map-box {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .map-pin {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    box-shadow: 0 0 0 8px rgba(61, 187, 149, 0.25);
+  }
+
+  .map-pin img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .map-label {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .map-address-sub {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 13.5px;
+    max-width: 260px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 900px) {
+    .campus-item, .campus-item.reverse {
+      grid-template-columns: 1fr;
+      padding: 28px 20px;
+    }
+    .campus-item.reverse .campus-info {
+      order: 1;
+    }
+    .campus-item.reverse .campus-map-visual {
+      order: 2;
+    }
+  }
+</style>

@@ -1,0 +1,259 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+
+const posts = [
+  {
+    slug: 'loi-ich-co-vua-voi-tre-mam-non',
+    title: 'Tại sao cờ vua là môn thể thao trí tuệ lý tưởng cho trẻ 4–6 tuổi?',
+    category: 'Phương pháp giáo dục',
+    date: '15/09/2026',
+    readTime: '4 phút đọc',
+    excerpt: 'Nhiều phụ huynh lo ngại con 4 tuổi còn quá nhỏ để học cờ vua. Tuy nhiên, các nghiên cứu tâm lý học cho thấy đây là độ tuổi vàng để khơi dậy tư duy logic...',
+    icon: '/brand/pieces/wn.svg',
+  },
+  {
+    slug: '5-sai-lam-khai-cuoc-pho-bien',
+    title: '5 sai lầm khai cuộc phổ biến nhất của các kỳ thủ nhí và cách khắc phục',
+    category: 'Kiến thức chuyên môn',
+    date: '10/09/2026',
+    readTime: '6 phút đọc',
+    excerpt: 'Đưa Hậu ra quá sớm, quên không nhập thành hay đi một quân quá nhiều lần trong khai cuộc là những lỗi căn bản khiến ván cờ nhanh chóng rơi vào bế tắc...',
+    icon: '/brand/pieces/wb.svg',
+  },
+  {
+    slug: 'ren-luyen-tinh-kien-nhan-cho-con',
+    title: 'Học cách chấp nhận thất bại và rèn luyện bản lĩnh qua từng ván cờ',
+    category: 'Góc phụ huynh',
+    date: '02/09/2026',
+    readTime: '5 phút đọc',
+    excerpt: 'Trên bàn cờ vua, mọi nước đi sai lầm đều có cái giá phải trả. Nhưng chính những lần thua ván cờ sẽ dạy cho trẻ bài học sâu sắc về sự kiên cường và tinh thần trách nhiệm...',
+    icon: '/brand/pieces/wk.svg',
+  },
+  {
+    slug: 'giai-dau-mua-thu-dsc-2026',
+    title: 'Tổng kết Giải Cờ Vua Mùa Thu DSC Open 2026: Tỏa sáng tài năng trẻ',
+    category: 'Hoạt động & Giải đấu',
+    date: '28/08/2026',
+    readTime: '3 phút đọc',
+    excerpt: 'Hơn 200 kỳ thủ nhí từ các cơ sở của DSC đã cùng nhau tranh tài kịch tính qua 7 ván đấu Thụy Sĩ, cống hiến những nước đi bất ngờ và đầy cảm xúc...',
+    icon: '/brand/pieces/wq.svg',
+  },
+  {
+    slug: 'bi-quyet-giai-the-co-nhanh',
+    title: 'Bí quyết giúp trẻ rèn luyện kỹ năng phát hiện đòn chiến thuật nhanh',
+    category: 'Kiến thức chuyên môn',
+    date: '18/08/2026',
+    readTime: '5 phút đọc',
+    excerpt: 'Kỹ năng giải bài tập thế cờ hàng ngày giúp não bộ hình thành các mẫu hình chiến thuật (pattern recognition), từ đó phản xạ nhanh nhạy trong thực chiến...',
+    icon: '/brand/pieces/wr.svg',
+  },
+  {
+    slug: 'dong-hanh-cung-con-hoc-co',
+    title: 'Cẩm nang dành cho phụ huynh: Đồng hành cùng con học cờ vua tại nhà',
+    category: 'Góc phụ huynh',
+    date: '10/08/2026',
+    readTime: '4 phút đọc',
+    excerpt: 'Ba mẹ không biết chơi cờ vẫn có thể đồng hành cùng con bằng cách lắng nghe con chia sẻ về ván cờ, tạo không gian giải đố và động viên con đúng cách...',
+    icon: '/brand/pieces/wp.svg',
+  },
+];
+---
+
+<Layout title="Tin tức & Học thuật Cờ Vua — dsc.edu.vn">
+  <PageHero
+    title="Góc Học Thuật & Tin Tức DSC"
+    lead="Kho tàng kiến thức cờ vua, kinh nghiệm đồng hành cùng con và cập nhật các hoạt động, giải đấu mới nhất của Học viện Cờ Vua Dương Sinh."
+    crumbCurrent="Tin tức"
+    badge="TRI THỨC CỜ VUA"
+  />
+
+  <section class="sec alt reveal">
+    <div class="wrap">
+      <!-- Categories Filter -->
+      <div class="blog-filters">
+        <button class="filter-btn active">Tất cả bài viết</button>
+        <button class="filter-btn">Phương pháp giáo dục</button>
+        <button class="filter-btn">Kiến thức chuyên môn</button>
+        <button class="filter-btn">Góc phụ huynh</button>
+        <button class="filter-btn">Hoạt động & Giải đấu</button>
+      </div>
+
+      <!-- Posts Grid -->
+      <div class="posts-grid">
+        {posts.map((p) => (
+          <article class="post-card">
+            <div class="post-thumb">
+              <img src={p.icon} alt={p.title} class="post-icon" />
+              <span class="post-cat-tag">{p.category}</span>
+            </div>
+            <div class="post-body">
+              <div class="post-meta">
+                <span>{p.date}</span>
+                <span class="meta-dot"></span>
+                <span>{p.readTime}</span>
+              </div>
+              <h3 class="post-title">
+                <a href={`/blog/${p.slug}`}>{p.title}</a>
+              </h3>
+              <p class="post-excerpt">{p.excerpt}</p>
+              <div class="post-foot">
+                <a href={`/blog/${p.slug}`} class="read-more">
+                  Đọc tiếp bài viết →
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .blog-filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 48px;
+  }
+
+  .filter-btn {
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: var(--r-pill);
+    border: 1.5px solid var(--line);
+    background: #fff;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--dur);
+  }
+
+  .filter-btn:hover {
+    border-color: var(--navy);
+    color: var(--navy);
+  }
+
+  .filter-btn.active {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: #fff;
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+
+  .post-card {
+    background: #fff;
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: var(--sh-sm);
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--dur);
+  }
+
+  .post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--sh-md);
+  }
+
+  .post-thumb {
+    height: 160px;
+    background: linear-gradient(135deg, var(--navy), var(--navy-ink));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .post-icon {
+    width: 72px;
+    height: 72px;
+  }
+
+  .post-cat-tag {
+    position: absolute;
+    bottom: 12px;
+    left: 14px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: var(--r-pill);
+  }
+
+  .post-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .meta-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--line);
+  }
+
+  .post-title {
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1.35;
+    color: var(--navy);
+    margin-bottom: 12px;
+  }
+
+  .post-title a:hover {
+    color: var(--teal-deep);
+  }
+
+  .post-excerpt {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: 20px;
+    flex-grow: 1;
+  }
+
+  .post-foot {
+    border-top: 1px solid var(--line-soft);
+    padding-top: 14px;
+  }
+
+  .read-more {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--navy);
+    transition: color var(--dur);
+  }
+
+  .read-more:hover {
+    color: var(--teal-deep);
+  }
+
+  @media (max-width: 900px) {
+    .posts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

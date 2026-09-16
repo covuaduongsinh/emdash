@@ -1,0 +1,37 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "dsc-edu-vn",
+	"main": "./dist/_worker.js/index.js",
+	"compatibility_date": "2026-01-14",
+	"compatibility_flags": ["nodejs_compat"],
+	"assets": {
+		"directory": "./dist/client",
+		"binding": "ASSETS"
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "dsc_db",
+			"database_id": "YOUR_D1_DATABASE_ID"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "MEDIA",
+			"bucket_name": "dsc-media"
+		}
+	],
+	"routes": [
+		{
+			"pattern": "dsc.edu.vn",
+			"custom_domain": true
+		},
+		{
+			"pattern": "www.dsc.edu.vn",
+			"custom_domain": true
+		}
+	],
+	"observability": {
+		"enabled": true
+	}
+}

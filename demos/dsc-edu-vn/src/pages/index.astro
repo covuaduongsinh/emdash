@@ -1,0 +1,553 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ChessBoard from '../components/ChessBoard.astro';
+import RoadmapStepper from '../components/RoadmapStepper.astro';
+import ConsultForm from '../components/ConsultForm.astro';
+---
+
+<Layout title="Dương Sinh Chess Academy — Vui Trí Tuệ (dsc.edu.vn)">
+  <!-- 1. Hero Section -->
+  <section class="hero-section">
+    <div class="hero-pat" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="hero-grid">
+        <!-- Cột chữ bên trái -->
+        <div class="hero-content">
+          <div class="overline">CHƯƠNG TRÌNH ĐÀO TẠO CỜ VUA CHUẨN QUỐC TẾ</div>
+          <h1 class="hero-title">
+            Vui trí tuệ — mỗi nước cờ <em class="title-em">nuôi dưỡng tư duy</em>
+          </h1>
+          <p class="hero-lead">
+            Học viện cờ vua DSC mang đến phương pháp giáo dục hiện đại tại Cơ sở Vĩnh Phúc (Ba Đình) và Cơ sở Kim Liên (Đống Đa), giúp trẻ từ 4–14 tuổi rèn luyện tư duy logic và tính kiên nhẫn.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#tu-van" class="btn btn--primary btn--lg">
+              <span>Đăng ký học thử miễn phí</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+            <a href="/dao-tao" class="btn btn--ghost btn--lg">
+              Xem lộ trình đào tạo →
+            </a>
+          </div>
+
+          <div class="hero-trust">
+            <div class="trust-item">
+              <span class="trust-num">6</span>
+              <span>Cấp độ chuẩn hoá</span>
+            </div>
+            <div class="trust-item">
+              <span class="trust-dot"></span>
+              <span>Lớp học tối đa 8–10 học viên</span>
+            </div>
+            <div class="trust-item">
+              <span class="trust-dot"></span>
+              <span>Giáo viên ĐH Sư Phạm & Bách Khoa</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cột bàn cờ phối cảnh bên phải -->
+        <div class="hero-visual">
+          <ChessBoard />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Lộ trình Đào tạo 6 Cấp -->
+  <section class="sec alt reveal">
+    <div class="wrap">
+      <div class="shead">
+        <div class="overline overline--teal">LỘ TRÌNH PHÁT TRIỂN NĂNG LỰC</div>
+        <h2>Lộ trình 6 cấp độ từ Tốt đến Vua</h2>
+        <p>Hệ thống bài giảng được thiết kế trực quan, khoa học từ cấp độ làm quen vỡ lòng đến trình độ thi đấu chuyên nghiệp.</p>
+      </div>
+
+      <RoadmapStepper />
+
+      <div style="text-align: center; margin-top: 42px;">
+        <a href="/dao-tao" class="btn btn--ghost">
+          Tìm hiểu chi tiết từng cấp độ đào tạo →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Các Lớp Học Nổi Bật -->
+  <section class="sec reveal">
+    <div class="wrap">
+      <div class="shead">
+        <div class="overline">CHƯƠNG TRÌNH NỔI BẬT</div>
+        <h2>Các khóa học cờ vua tại DSC</h2>
+        <p>Phân chia linh hoạt theo độ tuổi và trình độ thực tế của từng học viên</p>
+      </div>
+
+      <div class="course-grid">
+        <!-- Khóa 1: Mầm non -->
+        <div class="course-card">
+          <div class="card-thumb">
+            <img src="/brand/pieces/wn.svg" alt="Mầm non" class="card-piece" />
+            <span class="card-tag">4–6 tuổi</span>
+          </div>
+          <div class="card-body">
+            <div class="overline overline--teal">NHẬP MÔN THÔNG MINH</div>
+            <h3>Cờ vua Mầm non — Bé vui tư duy</h3>
+            <p>Phương pháp vừa học vừa chơi, nhân cách hoá quân cờ qua những câu chuyện sinh động, giúp bé rèn luyện tính tập trung.</p>
+            <div class="card-meta">
+              <div class="meta-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <span>60–75 phút / buổi · 2 buổi / tuần</span>
+              </div>
+              <div class="meta-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <span>CS Vĩnh Phúc & CS Kim Liên</span>
+              </div>
+            </div>
+            <div class="card-foot">
+              <div class="card-price">750.000đ <small>/ tháng</small></div>
+              <a href="#tu-van" class="btn btn--primary btn--sm">Đăng ký ngay</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Khóa 2: Cơ bản tiểu học -->
+        <div class="course-card featured">
+          <div class="featured-ribbon">Phổ biến nhất</div>
+          <div class="card-thumb" style="background: linear-gradient(135deg, var(--navy), var(--navy-deep));">
+            <img src="/brand/pieces/wb.svg" alt="Tiểu học" class="card-piece" />
+            <span class="card-tag">6–12 tuổi</span>
+          </div>
+          <div class="card-body">
+            <div class="overline overline--teal">TƯ DUY CHIẾN THUẬT</div>
+            <h3>Cờ vua Thiếu nhi — Tốt ➔ Xe</h3>
+            <p>Trang bị kiến thức chiến thuật căn bản (đòn đôi, giằng, xiên), bài tập giải thế cờ và chiến thuật khai cuộc – tàn cuộc chuẩn.</p>
+            <div class="card-meta">
+              <div class="meta-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <span>75–90 phút / buổi · 2 buổi / tuần</span>
+              </div>
+              <div class="meta-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <span>CS Vĩnh Phúc, CS Kim Liên & Online</span>
+              </div>
+            </div>
+            <div class="card-foot">
+              <div class="card-price">850.000đ <small>/ tháng</small></div>
+              <a href="#tu-van" class="btn btn--primary btn--sm">Đăng ký ngay</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Khóa 3: Nâng cao & Đội tuyển -->
+        <div class="course-card">
+          <div class="card-thumb" style="background: linear-gradient(135deg, var(--navy-deep), var(--navy-ink));">
+            <img src="/brand/pieces/wq.svg" alt="Nâng cao" class="card-piece" />
+            <span class="card-tag">Hậu & Vua</span>
+          </div>
+          <div class="card-body">
+            <div class="overline overline--teal">BẢN LĨNH ĐỈNH CAO</div>
+            <h3>Cờ vua Chuyên sâu & Luyện thi</h3>
+            <p>Huấn luyện trực tiếp cùng các thầy cô đạt ELO 1900–2000, phân tích sâu các ván đấu đỉnh cao, rèn tâm lý thi đấu các giải đấu.</p>
+            <div class="card-meta">
+              <div class="meta-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <span>90–120 phút / buổi · Kèm chuyên sâu</span>
+              </div>
+              <div class="meta-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <span>Cơ sở Kim Liên & Vĩnh Phúc</span>
+              </div>
+            </div>
+            <div class="card-foot">
+              <div class="card-price">1.050.000đ <small>/ tháng</small></div>
+              <a href="#tu-van" class="btn btn--primary btn--sm">Đăng ký ngay</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Đội ngũ Giáo viên tiêu biểu -->
+  <section class="sec alt reveal">
+    <div class="wrap">
+      <div class="shead">
+        <div class="overline overline--teal">ĐỘI NGŨ CHUYÊN MÔN</div>
+        <h2>Đội ngũ Giáo viên giàu kinh nghiệm & tâm huyết</h2>
+        <p>100% Thầy Cô tại DSC đều đạt chuẩn ELO cao (1800–2000) và tốt nghiệp từ các trường Đại học danh tiếng (ĐH Sư Phạm, ĐH Bách Khoa Hà Nội).</p>
+      </div>
+
+      <div class="coach-grid">
+        <div class="coach-card">
+          <div class="coach-avatar">
+            <img src="/brand/pieces/wk.svg" alt="Thầy Bùi Việt Anh" class="coach-piece" />
+          </div>
+          <div class="coach-info">
+            <div class="coach-role">GIÁO VIÊN PHỤ TRÁCH · CƠ SỞ KIM LIÊN</div>
+            <h3>Thầy Bùi Việt Anh</h3>
+            <span class="coach-badge">ELO 1900 · Cựu Phó CN CLB Cờ ĐHBK</span>
+            <p>Tốt nghiệp ĐH Bách Khoa Hà Nội, chuyên môn sâu về chiến thuật trung cuộc và phương pháp tư duy logic cho học sinh tiểu học.</p>
+          </div>
+        </div>
+
+        <div class="coach-card">
+          <div class="coach-avatar">
+            <img src="/brand/pieces/wn.svg" alt="Thầy Bùi Đức Huy" class="coach-piece" />
+          </div>
+          <div class="coach-info">
+            <div class="coach-role">GIÁO VIÊN · CƠ SỞ VĨNH PHÚC</div>
+            <h3>Thầy Bùi Đức Huy</h3>
+            <span class="coach-badge">ELO 2000 · HCĐ Hội khỏe Phù Đổng</span>
+            <p>Bề dày kinh nghiệm thi đấu đỉnh cao với ELO 2000, truyền cảm hứng và nhiệt huyết cho các bạn nhỏ qua từng nước cờ.</p>
+          </div>
+        </div>
+
+        <div class="coach-card">
+          <div class="coach-avatar">
+            <img src="/brand/pieces/wb.svg" alt="Cô Mai Thị Thu" class="coach-piece" />
+          </div>
+          <div class="coach-info">
+            <div class="coach-role">CHUYÊN GIA SƯ PHẠM MẦM NON</div>
+            <h3>Cô Mai Thị Thu</h3>
+            <span class="coach-badge">ĐH Sư Phạm · Chuyên trách Mầm non</span>
+            <p>Cử nhân Giáo dục Mầm non, phụ trách chương trình cờ vua kể chuyện cho trẻ từ 4–6 tuổi, rèn luyện tính kiên nhẫn và tập trung.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 36px;">
+        <a href="/huan-luyen-vien" class="btn btn--ghost">
+          Xem toàn bộ đội ngũ Giáo viên DSC →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Form Thu Lead & Tư Vấn -->
+  <section class="sec reveal" style="padding-top: 40px;">
+    <div class="wrap">
+      <ConsultForm id="tu-van" />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* Hero section */
+  .hero-section {
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(1100px 480px at 78% -8%, rgba(43, 57, 144, 0.07), transparent 60%), var(--bg);
+    padding: 60px 0 80px;
+  }
+
+  .hero-pat {
+    position: absolute;
+    inset: 0;
+    background-image: url('/brand/pattern-tile-navy.svg');
+    background-size: 64px;
+    opacity: 0.04;
+    pointer-events: none;
+  }
+
+  .hero-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    align-items: center;
+    gap: 48px;
+  }
+
+  .hero-title {
+    font-size: clamp(38px, 4.4vw, 58px);
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--navy);
+    margin-top: 14px;
+  }
+
+  .title-em {
+    font-style: normal;
+    color: var(--teal-deep);
+  }
+
+  .hero-lead {
+    font-size: 18.5px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin-top: 20px;
+    max-width: 540px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+  }
+
+  .hero-trust {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .trust-num {
+    font-family: var(--font-cond);
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1;
+  }
+
+  .trust-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+
+  /* Courses grid */
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+
+  .course-card {
+    background: #fff;
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    box-shadow: var(--sh-sm);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform var(--dur) var(--ease), box-shadow var(--dur);
+  }
+
+  .course-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--sh-md);
+  }
+
+  .course-card.featured {
+    border-color: var(--navy);
+    box-shadow: var(--sh-md);
+  }
+
+  .featured-ribbon {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: var(--teal);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: var(--r-pill);
+    z-index: 5;
+  }
+
+  .card-thumb {
+    height: 160px;
+    background: linear-gradient(135deg, var(--navy-deep), var(--navy));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .card-piece {
+    width: 80px;
+    height: 80px;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3));
+  }
+
+  .card-tag {
+    position: absolute;
+    bottom: 12px;
+    left: 14px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: var(--r-pill);
+  }
+
+  .card-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .card-body h3 {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--ink);
+    margin: 8px 0 10px;
+  }
+
+  .card-body p {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: 20px;
+    flex-grow: 1;
+  }
+
+  .card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    color: var(--text-secondary);
+  }
+
+  .meta-row svg {
+    width: 16px;
+    height: 16px;
+    color: var(--teal);
+  }
+
+  .card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-price {
+    font-family: var(--font-cond);
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--navy);
+  }
+
+  .card-price small {
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  /* Coach grid */
+  .coach-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+
+  .coach-card {
+    background: #fff;
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: var(--sh-sm);
+    transition: transform var(--dur);
+  }
+
+  .coach-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .coach-avatar {
+    height: 180px;
+    background: linear-gradient(135deg, var(--navy), var(--navy-ink));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .coach-piece {
+    width: 96px;
+    height: 96px;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+  }
+
+  .coach-info {
+    padding: 24px;
+  }
+
+  .coach-role {
+    font-family: var(--font-cond);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--teal-deep);
+  }
+
+  .coach-info h3 {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--navy);
+    margin: 4px 0 8px;
+  }
+
+  .coach-badge {
+    display: inline-block;
+    background: var(--navy-soft);
+    color: var(--navy);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: var(--r-pill);
+    margin-bottom: 12px;
+  }
+
+  .coach-info p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  @media (max-width: 900px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    .hero-lead {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-actions {
+      justify-content: center;
+    }
+    .hero-trust {
+      justify-content: center;
+    }
+    .course-grid, .coach-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
