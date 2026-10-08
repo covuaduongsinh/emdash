@@ -321,6 +321,9 @@ const { id = 'tu-van', hasNote = false } = Astro.props;
   const successBox = document.getElementById('consult-success');
   const resetBtn = document.getElementById('btn-reset-form');
 
+  const PHONE_REGEX = /^[0-9]{9,11}$/;
+  const SPACES_REGEX = /\s+/g;
+
   if (form && successBox && resetBtn) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -340,8 +343,7 @@ const { id = 'tu-van', hasNote = false } = Astro.props;
         fldName?.classList.remove('bad');
       }
 
-      const phoneRegex = /^[0-9]{9,11}$/;
-      if (!phoneRegex.test(phoneInput.value.replace(/\s+/g, ''))) {
+      if (!PHONE_REGEX.test(phoneInput.value.replace(SPACES_REGEX, ''))) {
         fldPhone?.classList.add('bad');
         valid = false;
       } else {

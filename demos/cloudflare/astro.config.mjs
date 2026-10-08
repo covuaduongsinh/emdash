@@ -5,14 +5,11 @@ import react from "@astrojs/react";
 import {
 	d1,
 	r2,
-	access,
-	sandbox,
 	cloudflareImages,
 	cloudflareStream,
 } from "@emdash-cms/cloudflare";
 import { aiSearch } from "@emdash-cms/cloudflare/plugins";
 import { formsPlugin } from "@emdash-cms/plugin-forms";
-import webhookNotifier from "@emdash-cms/plugin-webhook-notifier";
 import { defineConfig, fontProviders } from "astro/config";
 import emdash from "emdash/astro";
 
@@ -43,18 +40,7 @@ export default defineConfig({
 			database: d1({ binding: "DB", session: "auto" }),
 			// R2 storage for media
 			storage: r2({ binding: "MEDIA" }),
-			// Cloudflare Access authentication
-			// Reads CF_ACCESS_AUDIENCE from env (wrangler secret or .env)
-			auth: access({
-				teamDomain: "cloudflare-cto.cloudflareaccess.com",
-				autoProvision: true,
-				defaultRole: 30, // Author
-				// Map your IdP groups to roles (optional)
-				// roleMapping: {
-				// 	"Admins": 50,
-				// 	"Editors": 40,
-				// },
-			}),
+
 			// Media providers - Cloudflare Images and Stream
 			// Reads from env vars at runtime: CF_ACCOUNT_ID, CF_IMAGES_TOKEN, CF_STREAM_TOKEN
 			// Or customize with accountIdEnvVar/apiTokenEnvVar options
