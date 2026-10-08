@@ -442,7 +442,9 @@ export function SetupWizard() {
 	} = useQuery({
 		queryKey: ["setup", "status"],
 		queryFn: async () => {
-			const response = await apiFetch("/_emdash/api/setup/status");
+			const response = await apiFetch(`/_emdash/api/setup/status?t=${Date.now()}`, {
+				cache: "no-store",
+			});
 			return parseApiResponse<SetupStatusResponse>(response, t`Failed to fetch setup status`);
 		},
 		retry: false,

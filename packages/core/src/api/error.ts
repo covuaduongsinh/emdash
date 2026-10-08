@@ -20,6 +20,8 @@ export * from "./errors.js";
  */
 const API_CACHE_HEADERS: HeadersInit = {
 	"Cache-Control": "private, no-store",
+	"CDN-Cache-Control": "no-store",
+	"Cloudflare-CDN-Cache-Control": "no-store",
 };
 
 /**

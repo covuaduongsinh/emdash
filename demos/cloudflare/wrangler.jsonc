@@ -6,16 +6,7 @@
 	// disable_nodejs_process_v2 needed until unenv fix lands in Pages
 	// See: https://github.com/withastro/astro/issues/14511
 	"compatibility_flags": ["nodejs_compat", "disable_nodejs_process_v2"],
-	"routes": [
-		{
-			"pattern": "covuahocduong.com",
-			"custom_domain": true
-		},
-		{
-			"pattern": "www.covuahocduong.com",
-			"custom_domain": true
-		}
-	],
+
 	// Native Workers Caching (edge HTML in front of the Worker). No zone ID or
 	// Cache Purge API token. Pair with cacheCloudflare() in astro.config.mjs.
 	// Purge from the Worker with cache.purge() from cloudflare:workers.

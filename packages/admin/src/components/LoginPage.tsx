@@ -20,7 +20,7 @@ import { Link } from "@tanstack/react-router";
 import * as React from "react";
 
 import { useAdminBranding } from "../lib/admin-branding-context";
-import { apiFetch, fetchAuthMode } from "../lib/api";
+import { apiFetch, fetchAuthMode, parseApiResponse } from "../lib/api";
 import { useAuthProviderList } from "../lib/auth-provider-context";
 import { sanitizeRedirectUrl } from "../lib/url";
 import { SUPPORTED_LOCALES } from "../locales/index.js";
@@ -186,6 +186,21 @@ export function LoginPage({ redirectUrl = "/_emdash/admin" }: LoginPageProps) {
 			window.location.href = safeRedirectUrl;
 		}
 	}, [authInfo, safeRedirectUrl]);
+
+	// If the site needs initial setup, redirect to the setup wizard
+	const { data: setupStatus } = useQuery({
+		queryKey: ["setupStatus"],
+		queryFn: async () => {
+			const res = await apiFetch(`/_emdash/api/setup/status?t=${Date.now()}`, { cache: "no-store" });
+			return parseApiResponse<{ needsSetup: boolean }>(res, "Failed to fetch setup status");
+		},
+	});
+
+	React.useEffect(() => {
+		if (setupStatus?.needsSetup) {
+			window.location.href = "/_emdash/admin/setup";
+		}
+	}, [setupStatus]);
 
 	// Check for error in URL (from OAuth/provider redirect)
 	React.useEffect(() => {
