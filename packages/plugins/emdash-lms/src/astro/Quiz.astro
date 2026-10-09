@@ -21,6 +21,6 @@ interface Props {
 const { id, lessonId, courseId } = Astro.props;
 ---
 
-<div class="lms-quiz-container">
+<div class="lms-quiz-container" data-lms-requirement={id ? `quiz:${id}` : undefined}>
   <QuizRunner client:visible quizId={id} lessonId={lessonId} courseId={courseId} />
 </div>
