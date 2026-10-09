@@ -29,6 +29,7 @@ pnpm-debug.log*
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
+*.sql
 
 # uploads & EmDash data
 uploads/

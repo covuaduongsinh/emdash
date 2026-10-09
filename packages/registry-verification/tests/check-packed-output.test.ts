@@ -5,7 +5,11 @@ import { expect, it } from "vitest";
 
 it("fails closed when the active package manager entrypoint is unavailable", () => {
 	const environment = { ...process.env };
-	delete environment.npm_execpath;
+	for (const key of Object.keys(environment)) {
+		if (key.toLowerCase() === "npm_execpath") {
+			delete environment[key];
+		}
+	}
 
 	const result = spawnSync(
 		process.execPath,

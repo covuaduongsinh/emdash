@@ -1,6 +1,7 @@
 {
   "name": "emdash-lms",
   "version": "0.2.0",
+  "private": true,
   "description": "EmDash LMS — Subscriptions & Memberships plugin for EmDash CMS",
   "author": "Tô Triều <hello@totrieu.com>",
   "license": "MIT",
@@ -26,19 +27,11 @@
     "e-learning"
   ],
   "type": "module",
+  "main": "src/index.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs"
-    },
-    "./astro": {
-      "types": "./dist/integration.d.mts",
-      "import": "./dist/integration.mjs"
-    },
-    "./admin": {
-      "types": "./dist/admin.d.mts",
-      "import": "./dist/admin.mjs"
-    },
+    ".": "./src/index.ts",
+    "./astro": "./src/integration.ts",
+    "./admin": "./src/admin.tsx",
     "./pages/*": "./src/pages/*",
     "./styles/*": "./src/styles/*",
     "./seed.json": "./seed/seed.json",
@@ -46,15 +39,14 @@
     "./seed/courses.json": "./seed/courses.json"
   },
   "files": [
-    "dist",
-    "src/pages",
-    "src/styles",
-    "src/virtual.d.ts",
+    "src",
     "seed"
   ],
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
+    "test": "vitest run",
+    "typecheck": "tsgo --noEmit",
     "prepublishOnly": "pnpm build"
   },
   "dependencies": {},
@@ -67,7 +59,8 @@
     "@types/react": "catalog:",
     "react": "catalog:",
     "tsdown": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "astro": "catalog:",
