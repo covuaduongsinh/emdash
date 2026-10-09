@@ -1,0 +1,89 @@
+---
+import "@duongsinh/chess-kit/theme.css";
+import LectureIsland from "./LectureIsland.jsx";
+import type { ChessLectureScript, LectureStep } from "../types.js";
+
+interface Props {
+	lecture?: {
+		id?: string;
+		slug?: string;
+		title?: string;
+		level?: string;
+		summary?: string;
+		script?: ChessLectureScript | string;
+		[key: string]: unknown;
+	};
+	lectureId?: string;
+	title?: string;
+	summary?: string;
+	level?: string;
+	slug?: string;
+	steps?: LectureStep[];
+}
+
+const props = Astro.props;
+const data = props.lecture || props;
+
+const lectureId = data.id || props.lectureId;
+const slug = data.slug || props.slug;
+const title = data.title || props.title || "Bài giảng cờ vua tương tác";
+const summary = data.summary || props.summary;
+const level = data.level || props.level;
+
+let steps: LectureStep[] = [];
+if (props.steps && Array.isArray(props.steps)) {
+	steps = props.steps;
+} else if (data.script) {
+	if (typeof data.script === "string") {
+		try {
+			const parsed = JSON.parse(data.script);
+			steps = parsed.steps || [];
+		} catch {
+			steps = [];
+		}
+	} else if (typeof data.script === "object" && Array.isArray((data.script as ChessLectureScript).steps)) {
+		steps = (data.script as ChessLectureScript).steps;
+	}
+}
+
+if (steps.length === 0) {
+	steps = [
+		{
+			title: "Thế cờ mở đầu",
+			fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+			narration: "Bài giảng đang được cập nhật nội dung.",
+			orientation: "white",
+		}
+	];
+}
+---
+
+<div class="ds-chess-lecture-page max-w-4xl mx-auto py-8 px-4">
+	<div class="mb-6 flex flex-wrap items-center justify-between gap-4 border-b pb-4">
+		<div>
+			<a href="/bai-giang" class="text-sm text-blue-600 hover:underline">
+				← Danh sách bài giảng
+			</a>
+			<h1 class="text-2xl font-bold text-gray-900 mt-1">{title}</h1>
+			{summary && <p class="text-sm text-gray-600 mt-1">{summary}</p>}
+		</div>
+		{slug && (
+			<a
+				href={`/bai-giang/${slug}/trinh-chieu`}
+				class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700"
+			>
+				🖥️ Bật Trình Chiếu Toàn Màn Hình
+			</a>
+		)}
+	</div>
+
+	<div class="bg-white rounded-xl shadow-sm border p-6">
+		<LectureIsland
+			client:load
+			lectureId={lectureId}
+			title={title}
+			steps={steps}
+			showTeacherNotes={false}
+		/>
+	</div>
+</div>

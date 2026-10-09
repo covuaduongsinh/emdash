@@ -1,0 +1,57 @@
+---
+import "@duongsinh/chess-kit/theme.css";
+import LectureIsland from "./LectureIsland.jsx";
+import type { LectureStep } from "../types.js";
+
+interface Props {
+	node?: {
+		lecture?: string;
+		lectureId?: string;
+		title?: string;
+		summary?: string;
+		level?: string;
+		steps?: LectureStep[];
+		startStep?: number;
+		[key: string]: unknown;
+	};
+	lecture?: string;
+	lectureId?: string;
+	title?: string;
+	summary?: string;
+	level?: string;
+	steps?: LectureStep[];
+	startStep?: number;
+}
+
+const props = Astro.props;
+const data = props.node || props;
+
+const lectureId = data.lecture || data.lectureId || "custom";
+const title = data.title || "Bài giảng cờ vua tương tác";
+const summary = data.summary;
+const level = data.level;
+const steps = Array.isArray(data.steps) && data.steps.length > 0 ? data.steps : [
+	{
+		title: "Bước 1",
+		fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+		narration: "Đang tải nội dung bài giảng...",
+		orientation: "white" as const,
+	}
+];
+---
+
+<div class="chess-lecture-block my-6" data-lms-requirement={`lecture:${lectureId}`}>
+	{summary && (
+		<div class="mb-3 text-sm text-gray-600">
+			{summary}
+		</div>
+	)}
+
+	<LectureIsland
+		client:visible
+		lectureId={lectureId}
+		title={title}
+		steps={steps}
+		showTeacherNotes={false}
+	/>
+</div>

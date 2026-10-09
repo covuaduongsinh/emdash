@@ -1,0 +1,87 @@
+---
+import "@duongsinh/chess-kit/theme.css";
+import LecturePresenterIsland from "./LecturePresenterIsland.jsx";
+import type { ChessLectureScript, LectureStep } from "../types.js";
+
+interface Props {
+	lecture?: {
+		id?: string;
+		title?: string;
+		level?: string;
+		script?: ChessLectureScript | string;
+		[key: string]: unknown;
+	};
+	lectureId?: string;
+	title?: string;
+	level?: string;
+	steps?: LectureStep[];
+}
+
+const props = Astro.props;
+const data = props.lecture || props;
+
+const lectureId = data.id || props.lectureId;
+const title = data.title || props.title || "Trình chiếu bài giảng cờ vua";
+const level = data.level || props.level;
+
+let rawSteps: LectureStep[] = [];
+if (props.steps && Array.isArray(props.steps)) {
+	rawSteps = props.steps;
+} else if (data.script) {
+	if (typeof data.script === "string") {
+		try {
+			const parsed = JSON.parse(data.script);
+			rawSteps = parsed.steps || [];
+		} catch {
+			rawSteps = [];
+		}
+	} else if (typeof data.script === "object" && Array.isArray((data.script as ChessLectureScript).steps)) {
+		rawSteps = (data.script as ChessLectureScript).steps;
+	}
+}
+
+if (rawSteps.length === 0) {
+	rawSteps = [
+		{
+			title: "Thế cờ mở đầu",
+			fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+			narration: "Bài giảng đang được cập nhật nội dung.",
+			orientation: "white",
+		}
+	];
+}
+
+// Kiểm tra quyền Server-Side: Chỉ Contributor / Editor / Admin mới thấy ghi chú HLV
+const locals = Astro.locals as { user?: { role?: string } } | undefined;
+const user = locals?.user;
+const isTeacher = !!user && ["admin", "super_admin", "editor", "contributor"].includes(user.role || "");
+
+// Nếu không phải Giáo viên/HLV, LOẠI BỎ triệt để teacherNotes ngay tại Server-side trước khi render HTML
+const displaySteps: LectureStep[] = isTeacher
+	? rawSteps
+	: rawSteps.map((s) => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { teacherNotes, ...safeStep } = s;
+			return safeStep as LectureStep;
+	  });
+---
+
+<!doctype html>
+<html lang="vi">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{title} — Trình Chiếu Cờ Vua Học Đường</title>
+		<link rel="stylesheet" href="/_emdash/theme.css" />
+	</head>
+	<body style="margin: 0; padding: 0; background-color: #0f172a; overflow-x: hidden;">
+		<LecturePresenterIsland
+			client:load
+			lectureId={lectureId}
+			title={title}
+			level={level}
+			steps={displaySteps}
+			isTeacher={isTeacher}
+		/>
+	</body>
+</html>
