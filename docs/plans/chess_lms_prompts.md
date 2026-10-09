@@ -90,6 +90,7 @@ QUY TẮC:
 - Không commit messages.po.
 - Không mở issue/PR ở tohaitrieu/emdash-lms nếu Thầy chưa đồng ý.
 - Bị chặn thật sự thì hỏi Thầy đúng 1 câu, kèm phương án đề xuất.
+- Mọi file kế hoạch và báo cáo CHỈ lưu trong docs/plans/ (trên máy Thầy là D:\code\emdash\docs\plans). Không tạo docs/plan/ hay thư mục kế hoạch nào khác. Nếu công cụ lưu kế hoạch vào thư mục nội bộ thì chép bản cuối vào docs/plans/.
 
 KẾT THÚC PHIÊN:
 1. Viết docs/plans/report_chess_phaseX.md, gồm:
