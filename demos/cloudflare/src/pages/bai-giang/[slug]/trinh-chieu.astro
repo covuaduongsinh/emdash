@@ -1,6 +1,7 @@
 ---
 import { getEmDashEntry, decodeSlug } from "emdash";
 import { LecturePresenter } from "@duongsinh/plugin-chess-lessons/astro";
+import { SAMPLE_LECTURES } from "@duongsinh/plugin-chess-lessons";
 
 const rawSlug = Astro.params.slug;
 const slug = decodeSlug(rawSlug);
@@ -18,19 +19,33 @@ try {
   lectureEntry = null;
 }
 
-if (!lectureEntry) {
-  return Astro.redirect("/404");
+let lecture: any = null;
+
+if (lectureEntry) {
+  const l = lectureEntry.data || lectureEntry;
+  const scriptData = typeof l.script === "string" ? JSON.parse(l.script) : l.script;
+  lecture = {
+    id: l.id || lectureEntry.id,
+    title: l.title || "Trình chiếu bài giảng cờ vua",
+    level: l.level,
+    script: scriptData,
+  };
+} else {
+  // Tìm kiếm trong ngân hàng 4 bài giảng mẫu
+  const sample = SAMPLE_LECTURES.find((sl) => sl.slug === slug);
+  if (sample) {
+    lecture = {
+      id: `sample-${sample.slug}`,
+      title: sample.title,
+      level: sample.level,
+      script: { steps: sample.steps },
+    };
+  }
 }
 
-const l = lectureEntry.data || lectureEntry;
-const scriptData = typeof l.script === "string" ? JSON.parse(l.script) : l.script;
-
-const lecture = {
-  id: l.id || lectureEntry.id,
-  title: l.title || "Trình chiếu bài giảng cờ vua",
-  level: l.level,
-  script: scriptData,
-};
+if (!lecture) {
+  return Astro.redirect("/404");
+}
 ---
 
 <LecturePresenter lecture={lecture} />

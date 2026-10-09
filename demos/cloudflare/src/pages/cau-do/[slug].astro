@@ -2,6 +2,7 @@
 import { getEmDashEntry, decodeSlug } from "emdash";
 import Layout from "../../layouts/Layout.astro";
 import { PuzzlePage } from "@duongsinh/plugin-chess-puzzles/astro";
+import { SAMPLE_SIX_LEVEL_PUZZLES } from "@duongsinh/plugin-chess-puzzles";
 
 const rawSlug = Astro.params.slug;
 const slug = decodeSlug(rawSlug);
@@ -21,29 +22,48 @@ try {
   puzzleEntry = null;
 }
 
-if (!puzzleEntry) {
+let puzzle: any = null;
+
+if (puzzleEntry) {
+  if (cacheHint) {
+    Astro.cache?.set(cacheHint);
+  }
+  const p = puzzleEntry.data || puzzleEntry;
+  const puzzleData = typeof p.puzzle === "string" ? JSON.parse(p.puzzle) : p.puzzle;
+  puzzle = {
+    id: p.id || puzzleEntry.id,
+    title: p.title || "Câu đố cờ vua",
+    puzzle: puzzleData,
+    prompt: p.prompt,
+    level: p.level,
+    themes: p.themes,
+    rating: p.rating,
+    hint: p.hint,
+    explanation: p.explanation,
+    source: p.source,
+  };
+} else {
+  // Tìm kiếm trong ngân hàng 18 câu đố mẫu
+  const sample = SAMPLE_SIX_LEVEL_PUZZLES.find((sp) => sp.slug === slug);
+  if (sample) {
+    puzzle = {
+      id: `sample-${sample.slug}`,
+      title: sample.title,
+      puzzle: sample.puzzle,
+      prompt: sample.prompt,
+      level: sample.level,
+      themes: sample.themes,
+      rating: sample.rating,
+      hint: sample.hint,
+      explanation: sample.explanation,
+      source: sample.source,
+    };
+  }
+}
+
+if (!puzzle) {
   return Astro.redirect("/404");
 }
-
-if (cacheHint) {
-  Astro.cache?.set(cacheHint);
-}
-
-const p = puzzleEntry.data || puzzleEntry;
-const puzzleData = typeof p.puzzle === "string" ? JSON.parse(p.puzzle) : p.puzzle;
-
-const puzzle = {
-  id: p.id || puzzleEntry.id,
-  title: p.title || "Câu đố cờ vua",
-  puzzle: puzzleData,
-  prompt: p.prompt,
-  level: p.level,
-  themes: p.themes,
-  rating: p.rating,
-  hint: p.hint,
-  explanation: p.explanation,
-  source: p.source,
-};
 ---
 
 <Layout

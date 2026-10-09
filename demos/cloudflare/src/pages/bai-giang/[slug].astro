@@ -2,6 +2,7 @@
 import { getEmDashEntry, decodeSlug } from "emdash";
 import Layout from "../../layouts/Layout.astro";
 import { LecturePage } from "@duongsinh/plugin-chess-lessons/astro";
+import { SAMPLE_LECTURES } from "@duongsinh/plugin-chess-lessons";
 
 const rawSlug = Astro.params.slug;
 const slug = decodeSlug(rawSlug);
@@ -21,25 +22,40 @@ try {
   lectureEntry = null;
 }
 
-if (!lectureEntry) {
+let lecture: any = null;
+
+if (lectureEntry) {
+  if (cacheHint) {
+    Astro.cache?.set(cacheHint);
+  }
+  const l = lectureEntry.data || lectureEntry;
+  const scriptData = typeof l.script === "string" ? JSON.parse(l.script) : l.script;
+  lecture = {
+    id: l.id || lectureEntry.id,
+    slug: l.slug || slug,
+    title: l.title || "Bài giảng cờ vua tương tác",
+    summary: l.summary,
+    level: l.level,
+    script: scriptData,
+  };
+} else {
+  // Tìm kiếm trong ngân hàng 4 bài giảng mẫu
+  const sample = SAMPLE_LECTURES.find((sl) => sl.slug === slug);
+  if (sample) {
+    lecture = {
+      id: `sample-${sample.slug}`,
+      slug: sample.slug,
+      title: sample.title,
+      summary: sample.summary,
+      level: sample.level,
+      script: { steps: sample.steps },
+    };
+  }
+}
+
+if (!lecture) {
   return Astro.redirect("/404");
 }
-
-if (cacheHint) {
-  Astro.cache?.set(cacheHint);
-}
-
-const l = lectureEntry.data || lectureEntry;
-const scriptData = typeof l.script === "string" ? JSON.parse(l.script) : l.script;
-
-const lecture = {
-  id: l.id || lectureEntry.id,
-  slug: l.slug || slug,
-  title: l.title || "Bài giảng cờ vua tương tác",
-  summary: l.summary,
-  level: l.level,
-  script: scriptData,
-};
 ---
 
 <Layout

@@ -3,6 +3,7 @@ import { getEmDashCollection } from "emdash";
 import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
 import { LEVEL_LIST } from "@duongsinh/chess-kit/core";
+import { SAMPLE_LECTURES } from "@duongsinh/plugin-chess-lessons";
 
 let lectures: Array<Record<string, any>> = [];
 
@@ -11,16 +12,37 @@ try {
     orderBy: { created_at: "desc" },
     limit: 50,
   });
-  lectures = (result.entries || []).map((e: any) => ({
-    id: e.data.id || e.id,
-    slug: e.data.slug || e.slug,
-    title: e.data.title || "Bài giảng cờ vua",
-    level: e.data.level,
-    summary: e.data.summary,
-    script: typeof e.data.script === "string" ? JSON.parse(e.data.script) : e.data.script,
+  const rawLectures = (result?.entries || []).map((e: any) => ({
+    id: e.data?.id || e.id,
+    slug: e.data?.slug || e.slug,
+    title: e.data?.title || "Bài giảng cờ vua",
+    level: e.data?.level,
+    summary: e.data?.summary,
+    script: typeof e.data?.script === "string" ? JSON.parse(e.data.script) : e.data?.script,
   }));
+
+  if (rawLectures.length > 0) {
+    lectures = rawLectures;
+  } else {
+    // Fallback sang 4 bài giảng mẫu
+    lectures = SAMPLE_LECTURES.map((l, idx) => ({
+      id: `sample-lec-${idx + 1}`,
+      slug: l.slug,
+      title: l.title,
+      level: l.level,
+      summary: l.summary,
+      script: { steps: l.steps },
+    }));
+  }
 } catch {
-  lectures = [];
+  lectures = SAMPLE_LECTURES.map((l, idx) => ({
+    id: `sample-lec-${idx + 1}`,
+    slug: l.slug,
+    title: l.title,
+    level: l.level,
+    summary: l.summary,
+    script: { steps: l.steps },
+  }));
 }
 ---
 
@@ -42,7 +64,7 @@ try {
           <span class="text-4xl">📚</span>
           <h3 class="text-lg font-bold text-gray-900 mt-3">Chưa có bài giảng nào được xuất bản</h3>
           <p class="text-sm text-gray-500 mt-1 max-w-md mx-auto">
-            Huấn luyện viên có thể tạo bài giảng mới hoặc nạp bài học mẫu 5 bước sư phạm trong trang Quản trị.
+            Huấn luyện viên có thể tạo bài giảng mới hoặc nạp bài học mẫu trong trang Quản trị.
           </p>
           <a
             href="/_emdash/admin/plugins/chess-lessons/lessons"
