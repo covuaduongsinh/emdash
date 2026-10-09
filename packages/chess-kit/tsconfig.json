@@ -1,0 +1,10 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"rootDir": ".",
+		"jsx": "react-jsx",
+		"lib": ["es2023", "dom", "dom.iterable"]
+	},
+	"include": ["src/**/*", "tests/**/*"],
+	"exclude": ["node_modules", "dist"]
+}
