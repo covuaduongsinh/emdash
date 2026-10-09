@@ -101,8 +101,8 @@ describe("Chess Lessons Seed Handlers", () => {
 		const courses = await mockContent.list("courses");
 		expect(courses.items.length).toBe(1);
 
-		// Kiểm tra bài giảng không bị nhân đôi
+		// Kiểm tra 4 bài giảng mẫu không bị nhân đôi
 		const lectures = await mockContent.list("chess_lectures");
-		expect(lectures.items.length).toBe(1);
+		expect(lectures.items.length).toBe(4);
 	});
 });

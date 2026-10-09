@@ -1,8 +1,8 @@
 # SỔ TAY HƯỚNG DẪN SỬ DỤNG VÀ TRẢI NGHIỆM DƯƠNG SINH CHESS SUITE
 
-**Website:** [covuahocduong.com](https://covuahocduong.com)  
+**Website Production:** [covuahocduong.com](https://covuahocduong.com) _(Worker: `https://covuahocduong.duongsinhchess.workers.dev`)_  
 **Đơn vị phát triển:** Công ty CP Cờ vua Dương Sinh  
-**Nền tảng:** EmDash CMS + Cloudflare Workers + D1 Database
+**Nền tảng công nghệ:** EmDash CMS + Cloudflare Workers + D1 Database + @duongsinh/chess-kit
 
 ---
 
@@ -10,257 +10,224 @@
 
 1. [Tổng Quan Hệ Thống](#1-tổng-quan-hệ-thống)
 2. [Hệ Thống 6 Cấp Độ Cờ Vua Dương Sinh](#2-hệ-thống-6-cấp-độ-cờ-vua-dương-sinh)
-3. [Dành Cho Học Viên & Phụ Huynh](#3-dành-cho-học-viên--phụ-huynh)
-   - 3.1. [Khám phá Khóa học & Lộ trình 6 cấp](#31-khám-phá-khóa-học--lộ-trình-6-cấp)
-   - 3.2. [Học bài học tương tác & Bài giảng chuyên sâu](#32-học-bài-học-tương-tác--bài-giảng-chuyên-sâu)
-   - 3.3. [Giải câu đố chiến thuật & Câu đố mỗi ngày](#33-giải-câu-đố-chiến-thuật--câu-đố-mỗi-ngày)
-   - 3.4. [Đăng ký Thẻ Thư Viện qua chuyển khoản VietQR tự động](#34-đăng-ký-thẻ-thư-viện-qua-chuyển-khoản-vietqr-tự-động)
-   - 3.5. [Làm bài trắc nghiệm & Theo dõi tiến độ](#35-làm-bài-trắc-nghiệm--theo-dõi-tiến-độ)
-4. [Dành Cho Huấn Luyện Viên (HLV) & Quản Trị Viên](#4-dành-cho-huấn-luyện-viên-hlv--quản-trị-viên)
-   - 4.1. [Khởi tạo hệ thống & Nạp dữ liệu mẫu 1 chạm](#41-khởi-tạo-hệ-thống--nạp-dữ-liệu-mẫu-1-chạm)
-   - 4.2. [Soạn bàn cờ FEN/PGN trong bài viết (Portable Text Block)](#42-soạn-bàn-cờ-fenpgn-trong-bài-viết-portable-text-block)
-   - 4.3. [Quản trị Kho câu đố & Nhập hàng loạt từ Lichess/EPD/PGN](#43-quản-trị-kho-câu-đố--nhập-hàng-loạt-từ-lichessepdpgn)
-   - 4.4. [Xây dựng Bài giảng nhiều bước tương tác (Lecture Builder)](#44-xây-dựng-bài-giảng-nhiều-bước-tương-tác-lecture-builder)
-   - 4.5. [Chế độ Trình chiếu trên lớp & Máy chiếu (Lecture Presenter)](#45-chế-độ-trình-chiếu-trên-lớp--máy-chiếu-lecture-presenter)
-   - 4.6. [Nhập giáo án thần tốc từ Vault Obsidian (.md)](#46-nhập-giáo-án-thần-tốc-từ-vault-obsidian-md)
-   - 4.7. [Quản lý Đơn hàng, Hội viên & Kích hoạt Thẻ Thư Viện](#47-quản-lý-đơn-hàng-hội-viên--kích-hoạt-thẻ-thư-viện)
-5. [Bảng Tra Cứu Đường Dẫn (URL Reference)](#5-bảng-tra-cứu-đường-dẫn-url-reference)
+3. [Dữ Liệu Mẫu Đã Tạo & Đường Dẫn Trải Nghiệm Nhanh](#3-dữ-liệu-mẫu-đã-tạo--đường-dẫn-trải-nghiệm-nhanh)
+   - 3.1. [Danh mục 18 Câu đố mẫu (3 câu/cấp x 6 cấp)](#31-danh-mục-18-câu-đố-mẫu-3-câucấp-x-6-cấp)
+   - 3.2. [Danh mục 4 Bài giảng tương tác nhiều bước](#32-danh-mục-4-bài-giảng-tương-tác-nhiều-bước)
+   - 3.3. [Danh mục 6 Khóa học & Lộ trình 6 cấp độ](#33-danh-mục-6-khóa-học--lộ-trình-6-cấp-độ)
+   - 3.4. [Danh mục 4 Gói Thẻ Thư Viện & Bảng giá](#34-danh-mục-4-gói-thẻ-thư-viện--bảng-giá)
+   - 3.5. [Kho giáo án mẫu Obsidian (.md)](#35-kho-giáo-án-mẫu-obsidian-md)
+4. [Dành Cho Học Viên & Phụ Huynh](#4-dành-cho-học-viên--phụ-huynh)
+   - 4.1. [Khám phá Khóa học & Học bài tương tác](#41-khám-phá-khóa-học--học-bài-tương-tác)
+   - 4.2. [Giải câu đố chiến thuật & Câu đố mỗi ngày](#42-giải-câu-đố-chiến-thuật--câu-đố-mỗi-ngày)
+   - 4.3. [Đăng ký Thẻ Thư Viện qua VietQR tự động](#43-đăng-ký-thẻ-thư-viện-qua-vietqr-tự-động)
+   - 4.4. [Làm bài trắc nghiệm & Theo dõi tiến độ](#44-làm-bài-trắc-nghiệm--theo-dõi-tiến-độ)
+5. [Dành Cho Huấn Luyện Viên (HLV) & Quản Trị Viên](#5-dành-cho-huấn-luyện-viên-hlv--quản-trị-viên)
+   - 5.1. [Khởi tạo hệ thống & Nạp dữ liệu mẫu 1 chạm](#51-khởi-tạo-hệ-thống--nạp-dữ-liệu-mẫu-1-chạm)
+   - 5.2. [Soạn bàn cờ FEN/PGN trong bài viết (Portable Text)](#52-soạn-bàn-cờ-fenpgn-trong-bài-viết-portable-text)
+   - 5.3. [Quản trị Kho câu đố & Nhập hàng loạt](#53-quản-trị-kho-câu-đố--nhập-hàng-loạt)
+   - 5.4. [Xây dựng Bài giảng nhiều bước (Lecture Builder)](#54-xây-dựng-bài-giảng-nhiều-bước-lecture-builder)
+   - 5.5. [Chế độ Trình chiếu trên lớp & Máy chiếu (Lecture Presenter)](#55-chế-độ-trình-chiếu-trên-lớp--máy-chiếu-lecture-presenter)
+   - 5.6. [Nhập giáo án thần tốc từ Vault Obsidian (.md)](#56-nhập-giáo-án-thần-tốc-từ-vault-obsidian-md)
+   - 5.7. [Quản lý Đơn hàng, Hội viên & Kích hoạt Thẻ Thư Viện](#57-quản-lý-đơn-hàng-hội-viên--kích-hoạt-thẻ-thư-viện)
+6. [Bảng Tra Cứu Đường Dẫn (URL Reference)](#6-bảng-tra-cứu-đường-dẫn-url-reference)
 
 ---
 
 ## 1. TỔNG QUAN HỆ THỐNG
 
-**Dương Sinh Chess Suite** là giải pháp LMS và quản trị nội dung cờ vua toàn diện cho trường học và câu lạc bộ cờ vua, gồm 5 phân hệ tích hợp:
+**Dương Sinh Chess Suite** là giải pháp LMS và CMS cờ vua học đường hoàn chỉnh, được tích hợp liền mạch gồm:
 
-- **@duongsinh/chess-kit:** Thư viện lõi xử lý cờ (chuẩn FEN, SAN, UCI, 6 cấp độ cờ, bàn cờ tương tác React không phụ thuộc GPL).
-- **emdash-lms:** Hệ thống quản lý học tập (LMS), khóa học, chương bài, thanh toán học phí / Thẻ Thư Viện qua cổng SePay VietQR tự động.
-- **plugin-chessfenpgn:** Khối nhúng thế cờ FEN và ván cờ PGN tương tác trực tiếp trong mọi bài viết CMS.
-- **plugin-chess-puzzles:** Ngân hàng câu đố phân cấp 6 trình độ, câu đố mỗi ngày, bộ chấm nước đi tự động và nhập hàng loạt.
-- **plugin-chess-lessons:** Bài giảng tương tác nhiều bước, ghi chú chuyên môn cho HLV, chế độ trình chiếu máy chiếu và nhập giáo án từ Obsidian.
+- **@duongsinh/chess-kit:** Thư viện lõi xử lý FEN, SAN, UCI, 6 cấp độ cờ và bàn cờ tương tác chuẩn React.
+- **emdash-lms:** Quản lý khóa học, chương bài, phân quyền học viên và thanh toán tự động qua SePay VietQR Napas 24/7.
+- **plugin-chessfenpgn:** Khối nhúng thế cờ tĩnh FEN (có vẽ mũi tên/tô màu ô cờ) và ván cờ động PGN trong bài viết CMS.
+- **plugin-chess-puzzles:** Ngân hàng câu đố phân bổ 6 cấp độ, câu đố mỗi ngày (Puzzle of the Day), bộ chấm nước đi tự động và công cụ nạp hàng loạt (CSV/EPD/PGN).
+- **plugin-chess-lessons:** Bài giảng tương tác nhiều bước, ghi chú chuyên môn bảo mật cho HLV, chế độ trình chiếu máy chiếu và bộ nạp giáo án từ Markdown Obsidian.
 
 ---
 
 ## 2. HỆ THỐNG 6 CẤP ĐỘ CỜ VUA DƯƠNG SINH
 
-Hệ thống được thiết kế theo thang phát triển chuẩn của Dương Sinh Chess, mã hóa đồng nhất trên toàn bộ website:
+Hệ thống được thiết kế theo thang phát triển chuẩn của Dương Sinh Chess:
 
-| Mã cấp (`id`) | Tên Cấp Độ             | Màu Sắc Nhận Diện         | Đối Tượng Phù Hợp       | Mô Tả                                         |
-| :------------ | :--------------------- | :------------------------ | :---------------------- | :-------------------------------------------- |
-| `tot`         | **Cấp Tốt (Pawn)**     | 🟢 `#10B981` (Xanh lá)    | Học viên mới bắt đầu    | Đi quân, bắt quân, luật cờ cơ bản             |
-| `ma`          | **Cấp Mã (Knight)**    | 🔵 `#3B82F6` (Xanh dương) | Cơ bản (ELO ~800)       | Đòn chiến thuật cơ bản: Bắt đôi, chiếu mở     |
-| `tuong`       | **Cấp Tượng (Bishop)** | 🟣 `#8B5CF6` (Tím)        | Trung cấp 1 (ELO ~1000) | Giằng quân, đòn chĩa, bẫy khai cuộc           |
-| `xe`          | **Cấp Xe (Rook)**      | 🟠 `#F59E0B` (Cam)        | Trung cấp 2 (ELO ~1200) | Đòn phối hợp, tấn công cánh vua, tàn cuộc Xe  |
-| `hau`         | **Cấp Hậu (Queen)**    | 🔴 `#EF4444` (Đỏ)         | Nâng cao (ELO ~1500)    | Chiến thuật phức hợp, đòn thí quân công phá   |
-| `vua`         | **Cấp Vua (King)**     | 🟡 `#F59E0B` (Vàng kim)   | Chuyên sâu / Thi đấu    | Chiến lược đỉnh cao, nghệ thuật tính toán sâu |
-
----
-
-## 3. DÀNH CHO HỌC VIÊN & PHỤ HUYNH
-
-### 3.1. Khám phá Khóa học & Lộ trình 6 cấp
-
-1. Truy cập trang chủ hoặc menu **"Khóa học"** (`/courses`).
-2. Học viên thấy danh sách các khóa học được phân loại rõ ràng theo 6 cấp độ (Tốt, Mã, Tượng, Xe, Hậu, Vua).
-3. Nhấp vào từng khóa học (`/course/[slug]`) để xem:
-   - Mục tiêu bài học và độ tuổi phù hợp.
-   - Danh sách các chương và từng bài học chi tiết.
-   - Thử học các bài học miễn phí (bài học mở công khai).
-
-### 3.2. Học bài học tương tác & Bài giảng chuyên sâu
-
-1. Khi bấm vào một bài học (`/lesson/[slug]`):
-   - **Nội dung đa phương tiện:** Bài viết kèm hình ảnh, video hướng dẫn.
-   - **Bàn cờ tương tác:** Học viên có thể kéo thả quân trực tiếp trên bàn cờ để thử nghiệm các biến thể.
-   - **Trình diễn ván cờ:** Bấm nút tới/lùi nước đi hoặc xem cây nước đi để hiểu sâu thế trận.
-2. Bài giảng chuyên đề (`/bai-giang/[slug]`):
-   - Học theo từng bước tuần tự.
-   - Bàn cờ hiển thị mũi tên chỉ dẫn màu sắc và ô cờ nổi bật.
-   - Sau khi đọc lời giải thích, bấm **"Bước tiếp theo"** để xem biến chuyển thế cờ.
-
-### 3.3. Giải câu đố chiến thuật & Câu đố mỗi ngày
-
-1. Truy cập mục **"Câu đố"** (`/cau-do`):
-   - **Câu đố mỗi ngày (Daily Puzzle):** Thử thách mới mỗi ngày dành cho mọi học viên.
-   - **Bộ lọc cấp độ:** Chọn cấp độ phù hợp (ví dụ: Cấp Tốt để rèn đòn Chiếu hết 1 nước; Cấp Mã rèn đòn Bắt đôi).
-   - **Bộ lọc chủ đề:** Chiếu hết, Bắt đôi, Giằng quân, Tàn cuộc...
-2. Trải nghiệm giải câu đố (`/cau-do/[slug]`):
-   - Kéo quân đi nước cờ đúng.
-   - Nếu đi đúng: Bàn cờ phát tín hiệu màu xanh và máy tự động đáp trả nước tiếp theo (nếu câu đố nhiều nước).
-   - Nếu đi sai: Hệ thống báo đỏ và cho phép bấm nút **"Thử lại"** hoặc **"Xem gợi ý"**.
-
-### 3.4. Đăng ký Thẻ Thư Viện qua chuyển khoản VietQR tự động
-
-1. Truy cập mục **"Thẻ Thư Viện" / "Gói học"** (`/plans`).
-2. Chọn gói Thẻ Thư Viện (Ví dụ: 1 tháng, 3 tháng, 1 năm).
-3. Tại trang thanh toán (`/checkout/[id]`):
-   - Hệ thống hiển thị mã **VietQR** chuẩn Napas 24/7 kèm Số tiền chính xác và Nội dung chuyển khoản tự động (ví dụ: `EMDASH ORDxxxxxx`).
-4. Phụ huynh mở ứng dụng ngân hàng quét mã QR và chuyển khoản.
-5. Ngay khi chuyển khoản thành công, hệ thống SePay tự động ghi nhận trong vòng 3–5 giây:
-   - Tài khoản học viên tự động nâng cấp thành **Hội viên Thư Viện (Subscriber)**.
-   - Tự động mở khóa toàn bộ bài học và kho câu đố nâng cao mà không cần chờ duyệt thủ công.
-
-### 3.5. Làm bài trắc nghiệm & Theo dõi tiến độ
-
-1. Cuối mỗi bài học có thể có bài trắc nghiệm (LMS Quiz).
-2. Học viên chọn đáp án và bấm nộp bài để xem điểm số tức thì.
-3. Khi hoàn thành bài học, bấm **"Đánh dấu hoàn thành"** để ghi nhận tiến độ và mở bài tiếp theo.
+| Mã cấp (`id`) | Tên Cấp Độ             | Màu Sắc Nhận Diện         | Đối Tượng Phù Hợp       | Trọng Tâm Đào Tạo                                            |
+| :------------ | :--------------------- | :------------------------ | :---------------------- | :----------------------------------------------------------- |
+| `tot`         | **Cấp Tốt (Pawn)**     | 🟢 `#10B981` (Xanh lá)    | Bắt đầu học             | Bàn cờ, đi quân, bắt quân, phong cấp, luật En Passant        |
+| `ma`          | **Cấp Mã (Knight)**    | 🔵 `#3B82F6` (Xanh dương) | Sơ cấp (ELO ~800)       | Đòn tấn công đôi của Mã, chiếu thắt cổ, đòn chiếu bắt quân   |
+| `tuong`       | **Cấp Tượng (Bishop)** | 🟣 `#8B5CF6` (Tím)        | Trung cấp 1 (ELO ~1000) | Ghim quân tuyệt đối, đòn chiếu xuyên (skewer), bẫy khai cuộc |
+| `xe`          | **Cấp Xe (Rook)**      | 🟠 `#F59E0B` (Cam)        | Trung cấp 2 (ELO ~1200) | Chiếu hết hàng đáy (back-rank), chồng 2 Xe cột mở, cắt Vua   |
+| `hau`         | **Cấp Hậu (Queen)**    | 🔴 `#EF4444` (Đỏ)         | Nâng cao (ELO ~1500)    | Khẩu pháo Hậu + Tượng, đòn thí Hậu công phá, Scholar's Mate  |
+| `vua`         | **Cấp Vua (King)**     | 🟡 `#F59E0B` (Vàng kim)   | Chuyên sâu / Thi đấu    | Kỹ thuật đối Vua (opposition), đòn phối hợp Anastasia's Mate |
 
 ---
 
-## 4. DÀNH CHO HUẤN LUYỆN VIÊN (HLV) & QUẢN TRỊ VIÊN
+## 3. DỮ LIỆU MẪU ĐÃ TẠO & ĐƯỜNG DẪN TRẢI NGHIỆM NHANH
 
-### 4.1. Khởi tạo hệ thống & Nạp dữ liệu mẫu 1 chạm
+### 3.1. Danh mục 18 Câu đố mẫu (3 câu/cấp x 6 cấp)
 
-Khi thiết lập ban đầu hoặc cập nhật môi trường mới, HLV vào Quản trị CMS (`/_emdash/admin`):
+Thầy có thể truy cập `/cau-do` hoặc xem từng câu đố trực tiếp tại các liên kết sau:
 
-1. **Khởi tạo CSDL LMS & Cổng thanh toán:**
-   - Vào mục **LMS Settings** &rarr; Bấm **"Chạy LMS Setup"**.
-2. **Khởi tạo CSDL Câu đố & Nạp 6 câu đố mẫu:**
-   - Vào mục **Quản lý Câu đố** (`/plugins/chess-puzzles/puzzles`) &rarr; Bấm **"Cài đặt CSDL (Setup)"**.
-   - Bấm nút **"Nạp 6 câu đố mẫu (6 cấp)"** &rarr; Hệ thống tự động tạo 6 câu đố chuẩn từ cấp Tốt đến cấp Vua.
-3. **Khởi tạo Khung Lộ Trình 6 Cấp & Bài Học Mẫu:**
-   - Vào mục **Bài học cờ** (`/plugins/chess-lessons/lessons`) &rarr; Bấm **"Cài đặt CSDL (Setup)"**.
-   - Bấm **"Khung lộ trình 6 cấp"** &rarr; Tự động sinh 6 khóa học chuẩn Tốt &rarr; Vua.
-   - Bấm **"Nạp dữ liệu mẫu"** &rarr; Tự động sinh khóa học "Nhập Môn Khai Cuộc Cờ Vua", 3 bài học kèm bài giảng và trắc nghiệm.
-
----
-
-### 4.2. Soạn bàn cờ FEN/PGN trong bài viết (Portable Text Block)
-
-Khi viết bài giảng, bài tin tức hoặc giáo trình trong EmDash Editor:
-
-1. Trong trình soạn thảo văn bản, nhấn nút thêm khối (Block) và chọn **"Bàn cờ FEN/PGN"** (`chess-board`).
-2. Có 2 chế độ hiển thị:
-   - **Thế cờ tĩnh (FEN):** Dán chuỗi FEN hoặc dùng bàn cờ trực quan để xếp quân. Hỗ trợ vẽ mũi tên chỉ dẫn (ví dụ: `e2e4`, `g1f3`) và tô sáng ô cờ.
-   - **Ván cờ động (PGN):** Dán biên bản ván cờ PGN. Học viên có thể bấm từng nước đi để xem diễn biến ván cờ.
-
----
-
-### 4.3. Quản trị Kho câu đố & Nhập hàng loạt từ Lichess/EPD/PGN
-
-#### Soạn câu đố đơn lẻ trực quan:
-
-1. Vào **Nội dung** &rarr; **Kho câu đố** (`ec_chess_puzzles`) &rarr; **Tạo mới**.
-2. Tại trường **Dữ liệu thế cờ & Nước đi (Puzzle Editor)**:
-   - **Tab 1 - Xếp thế cờ:** Kéo thả quân lên bàn cờ để tạo thế bắt đầu, hoặc dán chuỗi FEN.
-   - **Tab 2 - Ghi nước đi:** Kéo đi nước cờ đúng trực tiếp trên bàn cờ. Bộ ghi nước đi sẽ tự động lưu chuỗi nước giải (Solution).
-   - **Tab 3 - Thử nghiệm:** Tự chơi thử để kiểm tra tính chính xác của câu đố.
-3. Chọn Cấp độ (Tốt &rarr; Vua) và Chủ đề chiến thuật &rarr; Bấm **Xuất bản (Publish)**.
-
-#### Nhập hàng loạt (Bulk Importer):
-
-1. Vào mục **"Nhập câu đố"** (`/plugins/chess-puzzles/import`).
-2. Chọn định dạng nguồn:
-   - **Lichess CSV:** Hỗ trợ định dạng xuất chuẩn từ Lichess (`PuzzleId,FEN,Moves,Rating,Themes...`).
-   - **EPD:** Chuỗi thế cờ EPD chuẩn quốc tế có chứa `bm` (Best move).
-   - **PGN:** File ván cờ PGN có ghi chú biến thế câu đố.
-3. Chọn file hoặc dán nội dung văn bản &rarr; Chọn cấp độ mặc định &rarr; Bấm **"Bắt đầu nhập dữ liệu"**.
-4. Hệ thống hỗ trợ nạp tối đa 500 câu/lần với báo cáo lỗi chi tiết từng dòng.
+| Cấp độ    | Tên Câu Đố Mẫu                              | Chủ Đề Chiến Thuật            | Link Trực Tiếp                                  |
+| :-------- | :------------------------------------------ | :---------------------------- | :---------------------------------------------- |
+| **Tốt**   | Cấp Tốt: Đòn Bắt Đôi Của Tốt                | Đòn chĩa đôi d4-d5            | `/cau-do/tot-don-bat-doi-cua-tot`               |
+| **Tốt**   | Cấp Tốt: Phong Cấp Tốt Quyết Định           | Phong Hậu e7-e8=Q             | `/cau-do/tot-phong-cap-tot-quyet-dinh`          |
+| **Tốt**   | Cấp Tốt: Bắt Tốt Qua Đường (En Passant)     | Quy tắc e5xf6                 | `/cau-do/tot-bat-tot-qua-duong-en-passant`      |
+| **Mã**    | Cấp Mã: Đòn Nhảy Mã Bắt Đôi Vua và Xe       | Royal Fork                    | `/cau-do/ma-don-nhay-ma-bat-doi-vua-va-xe`      |
+| **Mã**    | Cấp Mã: Mã Nhảy Chiếu Hết Thắt Cổ Ở Góc     | Smothered Mate 1. Nf7#        | `/cau-do/ma-nhay-chieu-het-that-co-o-goc`       |
+| **Mã**    | Cấp Mã: Đòn Nhảy Mã Chiếu Bắt Hậu           | Fork bắt Hậu                  | `/cau-do/ma-don-nhay-ma-chieu-bat-hau`          |
+| **Tượng** | Cấp Tượng: Đòn Ghim Quân Tuyệt Đối          | Absolute Pin                  | `/cau-do/tuong-don-ghim-quan-tuyet-doi`         |
+| **Tượng** | Cấp Tượng: Đòn Chiếu Xuyên (Skewer) Bắt Xe  | Skewer đường chéo lớn         | `/cau-do/tuong-don-chieu-xuyen-bat-xe`          |
+| **Tượng** | Cấp Tượng: Đòn Ghim Tượng Tấn Công Xe Đen   | Counter Pin                   | `/cau-do/tuong-don-ghim-tuong-tan-cong-xe-den`  |
+| **Xe**    | Cấp Xe: Chiếu Hết Hàng Đáy Kinh Điển        | Back Rank Mate                | `/cau-do/xe-chieu-het-hang-day-kinh-dien`       |
+| **Xe**    | Cấp Xe: Chồng Hai Xe Thâm Nhập Cột Mở       | Doubled Rooks on Open File    | `/cau-do/xe-chong-hai-xe-tham-nhap-cot-mo`      |
+| **Xe**    | Cấp Xe: Cắt Vua Bằng Xe Trong Tàn Cuộc      | Cutting Off                   | `/cau-do/xe-cat-vua-trong-tan-cuoc`             |
+| **Hậu**   | Cấp Hậu: Phối Hợp Hậu Tượng Chiếu Hết h7    | Queen & Bishop Battery        | `/cau-do/hau-phoi-hop-hau-tuong-chieu-het-h7`   |
+| **Hậu**   | Cấp Hậu: Chiếu Hết Scholar's Mate Nhanh Gọn | Checkmate in 1 (Qxf7#)        | `/cau-do/hau-chieu-het-scholars-mate-nhanh-gon` |
+| **Hậu**   | Cấp Hậu: Đòn Thí Tượng Kéo Vua Đột Phá Hậu  | King Hunt Sacrifice           | `/cau-do/hau-don-thi-tuong-keo-vua-dot-pha-hau` |
+| **Vua**   | Cấp Vua: Đòn Thí Hậu Chiếu Thắt Cổ          | Queen Sacrifice & Knight Mate | `/cau-do/vua-don-thi-hau-chieu-that-co`         |
+| **Vua**   | Cấp Vua: Nghệ Thuật Đối Vua (Opposition)    | King Opposition & Zugzwang    | `/cau-do/vua-nghe-thuat-doi-vua-opposition`     |
+| **Vua**   | Cấp Vua: Đòn Phối Hợp Anastasia's Mate      | Anastasia's Double Check      | `/cau-do/vua-don-phoi-hop-anastasia-mate`       |
 
 ---
 
-### 4.4. Xây dựng Bài giảng nhiều bước tương tác (Lecture Builder)
+### 3.2. Danh mục 4 Bài giảng tương tác nhiều bước
 
-Dành cho các chuyên đề chiến thuật hoặc bài giảng mở màn phức tạp:
+Mỗi bài giảng có 2 chế độ xem: **Chế độ Học viên** và **Chế độ Trình chiếu Máy chiếu (`/trinh-chieu`)**:
 
-1. Vào **Nội dung** &rarr; **Bài giảng cờ vua** (`ec_chess_lectures`) &rarr; **Tạo mới**.
-2. Điền Tiêu đề, Chọn cấp độ và Khóa học liên kết.
-3. Tại công cụ **Lecture Builder**:
-   - Nhấn **"+ Thêm bước mới"**: Bước sau sẽ tự động kế thừa thế cờ của bước trước.
-   - Điền **Lời giảng (Narration):** Lời HLV giải thích cho học sinh.
-   - Điền **Ghi chú HLV (Teacher Notes):** Các bẫy tâm lý, câu hỏi gợi mở dành riêng cho HLV (bảo mật tuyệt đối, học sinh không bao giờ thấy).
-   - Điền **Mũi tên & Ô sáng:** Tô đậm các đòn đánh mấu chốt.
-   - Tùy chọn **Câu hỏi tương tác:** Yêu cầu học sinh tìm nước đi đúng trước khi chuyển bước.
-4. Bấm **Lưu & Xuất bản**.
-
----
-
-### 4.5. Chế độ Trình chiếu trên lớp & Máy chiếu (Lecture Presenter)
-
-Khi HLV giảng dạy trực tiếp trên lớp có máy chiếu hoặc màn hình tương tác:
-
-1. Mở bài giảng bất kỳ và thêm `/trinh-chieu` vào sau đường dẫn (ví dụ: `https://covuahocduong.com/bai-giang/nhap-mon-don-bat-doi/trinh-chieu`).
-2. **Các phím tắt điều khiển bàn cờ:**
-   - `→` hoặc `PageDown` hoặc `Phím Cách (Space)`: Tiến tới bước tiếp theo.
-   - `←` hoặc `PageUp`: Quay lui lại bước trước.
-   - `B` (Blackout): Ẩn bàn cờ tạm thời để học sinh tập trung nghe giảng hoặc giải bài tập trên bảng giấy. Bấm `B` lần nữa để hiện lại.
-   - `F`: Bật/Tắt chế độ toàn màn hình (Fullscreen).
-3. **Đồng hồ bấm giờ (Timer):** Tích hợp sẵn trên góc màn hình để đếm giờ làm bài cho học sinh.
-4. **Bảo mật chuyên môn:**
-   - Khi tài khoản HLV đăng nhập: Màn hình hiển thị khung _Ghi chú Huấn luyện viên (Teacher Notes)_.
-   - Nếu là học sinh hoặc khách vãng lai: Toàn bộ ghi chú chuyên môn bị loại bỏ từ phía máy chủ, hoàn toàn không có trong mã nguồn HTML.
+1. **Bài giảng 1: Khai cuộc Ý — Các nguyên lý phát triển quân cơ bản (5 bước)**
+   - Link học viên: `/bai-giang/bai-giang-khai-cuoc-y-co-ban`
+   - Link máy chiếu: `/bai-giang/bai-giang-khai-cuoc-y-co-ban/trinh-chieu`
+2. **Bài giảng 2: Chiến thuật — Chiếu Mở & Chiếu Đôi Hủy Diệt (4 bước)**
+   - Link học viên: `/bai-giang/bai-giang-don-chieu-mo-va-chieu-doi`
+   - Link máy chiếu: `/bai-giang/bai-giang-don-chieu-mo-va-chieu-doi/trinh-chieu`
+3. **Bài giảng 3: Tàn cuộc — Kỹ Thuật Chiếu Hết Bậc Thang Bằng 2 Xe (3 bước)**
+   - Link học viên: `/bai-giang/bai-giang-ky-thuat-chieu-het-hai-xe`
+   - Link máy chiếu: `/bai-giang/bai-giang-ky-thuat-chieu-het-hai-xe/trinh-chieu`
+4. **Bài giảng 4: Khai cuộc — Bẫy Scholar's Mate (Chiếu Hết 4 Nước) & Cách Hóa Giải (3 bước)**
+   - Link học viên: `/bai-giang/bai-giang-bay-scholars-mate`
+   - Link máy chiếu: `/bai-giang/bai-giang-bay-scholars-mate/trinh-chieu`
 
 ---
 
-### 4.6. Nhập giáo án thần tốc từ Vault Obsidian (.md)
+### 3.3. Danh mục 6 Khóa học & Lộ trình 6 cấp độ
 
-HLV có thể soạn toàn bộ giáo án trên ứng dụng **Obsidian** rồi nhập trực tiếp vào hệ thống:
+Thầy có thể truy cập `/courses` để xem toàn bộ danh mục khóa học hoặc vào từng khóa:
 
-1. Cấu trúc file Markdown chuẩn:
-
-````markdown
----
-title: Đòn Tấn Công Cánh Vua
-course: trung-cap-chien-thuat
-module: Chương 2: Các Đòn Đột Phá
-order: 1
-level: tuong
-themes: ["tan-cong-canh-vua", "thi-quan"]
-objectives: ["Nắm vững cấu trúc tốt f7/h7", "Cách phối hợp Hậu và Mã"]
----
-
-# Mở đầu bài học
-
-Chào các bạn, hôm nay chúng ta sẽ tìm hiểu đòn tấn công vào vị trí nhập thành của Vua đối phương.
-
-```fen
-r1bq1rk1/pppp1ppp/2n5/4p3/2B1P3/3P1N2/PPP2PPP/R1BQK2R w KQ - 0 6
-arrows: c4f7
-highlights: f7
-```
-````
-
-Hãy chú ý vào ô f7, đây là điểm yếu chí tử...
-
-```
-
-2. Vào mục **"Nhập từ Obsidian"** trong trang quản trị &rarr; Tải file `.md` lên &rarr; Hệ thống tự động tạo bài học nháp, phân bổ đúng khóa học và chương bài.
+1. **Cờ Vua Cấp Tốt — Khóa Học Nhập Môn** (`/course/tot-nhap-mon`)
+   - Bài 1: Làm Quen Bàn Cờ & Các Quân Cờ (`/lesson/tot-bai-1-nhap-mon-ban-co-quan-co`)
+   - Bài 2: Quy Tắc Đi Quân & Ăn Quân Cơ Bản (`/lesson/tot-bai-2-quy-tac-di-quan-va-bat-quan`)
+2. **Cờ Vua Cấp Mã — Chiến Thuật Sơ Cấp** (`/course/ma-so-cap`)
+   - Bài 1: Đòn Tấn Công Đôi Của Quân Mã (`/lesson/ma-bai-1-don-bat-doi-cua-quan-ma`)
+   - Bài 2: Đòn Chiếu Bắt Quân Nhẹ Trong Khai Cuộc (`/lesson/ma-bai-2-don-chieu-bat-quan-nhe`)
+3. **Cờ Vua Cấp Tượng — Kỹ Năng Trung Cấp** (`/course/tuong-trung-cap`)
+   - Bài 1: Nghệ Thuật Ghim Quân Tuyệt Đối (`/lesson/tuong-bai-1-don-ghim-quan-tuyet-doi`)
+   - Bài 2: Đòn Chiếu Xuyên (Skewer) Bắt Quân Nặng (`/lesson/tuong-bai-2-don-chieu-xuyen-skewer`)
+4. **Cờ Vua Cấp Xe — Chiến Thuật Nâng Cao** (`/course/xe-nang-cao`)
+   - Bài 1: Kỹ Thuật Chiếu Hết Hàng Đáy (`/lesson/xe-bai-1-chieu-het-hang-day`)
+   - Bài 2: Kiểm Soát Cột Mở & Thâm Nhập Hàng 7 (`/lesson/xe-bai-2-kiem-soat-cot-mo-va-hang-7`)
+5. **Cờ Vua Cấp Hậu — Chiến Lược Chuyên Sâu** (`/course/hau-chuyen-sau`)
+   - Bài 1: Phối Hợp Hậu & Tượng Tấn Công Điểm Yếu (`/lesson/hau-bai-1-phoi-hop-hau-tuong-tan-cong`)
+   - Bài 2: Đòn Thí Hậu Đột Phá Chiến Lược (`/lesson/hau-bai-2-don-thi-hau-dot-pha-chien-luoc`)
+6. **Cờ Vua Cấp Vua — Đỉnh Cao Kiện Tướng** (`/course/vua-kien-tuong`)
+   - Bài 1: Nghệ Thuật Đối Vua (Opposition) Trong Tàn Cuộc (`/lesson/vua-bai-1-nghe-thuat-doi-vua-tan-cuoc`)
+   - Bài 2: Đòn Phối Hợp Tuyệt Đỉnh Anastasia's Mate (`/lesson/vua-bai-2-don-phoi-hop-anastasia-mate`)
 
 ---
 
-### 4.7. Quản lý Đơn hàng, Hội viên & Kích hoạt Thẻ Thư Viện
-1. **Xem danh sách đơn hàng:** Vào **LMS** &rarr; **Orders** để theo dõi các giao dịch mua thẻ.
-2. **Trường hợp học viên chuyển khoản qua quầy hoặc tiền mặt:**
-   - HLV/Admin tìm mã đơn hàng &rarr; Bấm **"Xác nhận thanh toán (Mark as Paid)"**.
-   - Hệ thống tự động cấp quyền Hội viên cho học viên ngay lập tức.
-3. **Quản lý học viên:** Vào **LMS** &rarr; **Enrollments** để xem thời hạn Thẻ Thư Viện và tiến độ học tập của từng học viên.
+### 3.4. Danh mục 4 Gói Thẻ Thư Viện & Bảng giá
+
+Truy cập trang đăng ký Thẻ Thư Viện tại `/plans`:
+
+| Mã Gói              | Tên Gói Thẻ Thư Viện       | Thời Hạn  | Học Phí Niêm Yết | Quyền Lợi                                      |
+| :------------------ | :------------------------- | :-------- | :--------------- | :--------------------------------------------- |
+| `the-thang-30-ngay` | **Thẻ Tháng Tiêu Chuẩn**   | 30 ngày   | **99.000 đ**     | Mở khóa toàn bộ bài học Cấp Tốt & Cấp Mã       |
+| `the-quy-90-ngay`   | **Thẻ Quý Học Đường**      | 90 ngày   | **249.000 đ**    | Mở khóa Cấp Tốt &rarr; Cấp Xe + Kho 500 câu đố |
+| `the-nam-365-ngay`  | **Thẻ Năm Toàn Diện**      | 365 ngày  | **799.000 đ**    | Mở khóa trọn bộ 6 cấp độ + Bài kiểm tra HLV    |
+| `the-kim-cuong-vip` | **Thẻ Kim Cương Trọn Đời** | Vĩnh viễn | **1.990.000 đ**  | Đặc quyền VIP + Tham gia giải đấu nội bộ       |
 
 ---
 
-## 5. BẢNG TRA CỨU ĐƯỜNG DẪN (URL REFERENCE)
+### 3.5. Kho giáo án mẫu Obsidian (.md)
 
-### Dành cho Khách & Học viên
-| Đường dẫn (URL) | Chức năng |
-| :--- | :--- |
-| `/courses` | Danh sách toàn bộ khóa học cờ vua 6 cấp độ |
-| `/course/[slug]` | Chi tiết khóa học và danh mục bài học |
-| `/lesson/[slug]` | Giao diện học bài học tương tác |
-| `/cau-do` | Ngân hàng câu đố cờ vua & Câu đố mỗi ngày |
-| `/cau-do/[slug]` | Chi tiết câu đố và bàn cờ giải thế |
-| `/bai-giang/[slug]` | Bài giảng chuyên đề nhiều bước |
-| `/plans` | Bảng giá Thẻ Thư Viện Cờ Vua Học Đường |
-| `/checkout/[orderId]` | Trang thanh toán quét mã VietQR tự động |
+Các file giáo án Markdown mẫu chuẩn bị sẵn để HLV thử nghiệm tính năng "Nhập từ Obsidian":
 
-### Dành cho Huấn luyện viên & Quản trị viên
-| Đường dẫn (URL) | Chức năng |
-| :--- | :--- |
-| `/_emdash/admin` | Bảng điều khiển quản trị CMS chính |
-| `/plugins/chess-puzzles/puzzles` | Quản lý ngân hàng câu đố & Nạp câu đố mẫu |
-| `/plugins/chess-puzzles/import` | Nhập câu đố hàng loạt (CSV/EPD/PGN) |
-| `/plugins/chess-lessons/lessons` | Quản trị bài học & Khung lộ trình 6 cấp |
-| `/plugins/chess-lessons/obsidian` | Nhập giáo án từ file Markdown Obsidian |
-| `/bai-giang/[slug]/trinh-chieu` | Chế độ trình chiếu bài giảng trên máy chiếu lớp học |
+- [`packages/plugins/chess-lessons/tests/fixtures/sample_obsidian_lesson.md`](file:///D:/code/emdash/packages/plugins/chess-lessons/tests/fixtures/sample_obsidian_lesson.md) (Cấp Mã - Đòn tấn công đôi)
+- [`packages/plugins/chess-lessons/tests/fixtures/sample_obsidian_tactics_bishop.md`](file:///D:/code/emdash/packages/plugins/chess-lessons/tests/fixtures/sample_obsidian_tactics_bishop.md) (Cấp Tượng - Ghim quân & Chiếu xuyên)
+- [`packages/plugins/chess-lessons/tests/fixtures/sample_obsidian_endgame_rook.md`](file:///D:/code/emdash/packages/plugins/chess-lessons/tests/fixtures/sample_obsidian_endgame_rook.md) (Cấp Xe - Tàn cuộc Xe & Chiếu hết hàng đáy)
 
 ---
-*Tài liệu được cập nhật tự động đồng bộ theo phiên bản phát hành mới nhất của Dương Sinh Chess Suite.*
-```
+
+## 4. DÀNH CHO HỌC VIÊN & PHỤ HUYNH
+
+### 4.1. Khám phá Khóa học & Học bài tương tác
+
+1. Truy cập `/courses` để xem toàn bộ danh mục khóa học.
+2. Chọn khóa học phù hợp với trình độ hiện tại của học viên.
+3. Trong mỗi bài học (`/lesson/[slug]`):
+   - Học lý thuyết qua hình ảnh và văn bản.
+   - Thử nghiệm các nước đi trên bàn cờ tương tác FEN/PGN.
+   - Làm câu đố tương tác ngay cuối bài học.
+
+### 4.2. Giải câu đố chiến thuật & Câu đố mỗi ngày
+
+1. Vào mục **"Câu đố"** (`/cau-do`).
+2. Chọn cấp độ (Tốt, Mã, Tượng, Xe, Hậu, Vua) hoặc thử sức với **"Câu đố mỗi ngày"**.
+3. Kéo thả quân cờ:
+   - Đi đúng: Bàn cờ hiển thị màu xanh và tự động đáp trả nước tiếp theo của máy.
+   - Đi sai: Bàn cờ báo đỏ, cho phép bấm **"Thử lại"** hoặc **"Xem gợi ý"**.
+
+### 4.3. Đăng ký Thẻ Thư Viện qua VietQR tự động
+
+1. Vào `/plans` &rarr; Chọn gói thẻ &rarr; Bấm **"Đăng ký ngay"**.
+2. Tại trang thanh toán (`/checkout/[id]`):
+   - Quét mã **VietQR** bằng ứng dụng ngân hàng bất kỳ.
+   - Hệ thống SePay tự động nhận diện giao dịch qua Webhook trong 3–5 giây và nâng cấp tài khoản học viên lên gói **Subscriber** tức thì.
+
+---
+
+## 5. DÀNH CHO HUẤN LUYỆN VIÊN (HLV) & QUẢN TRỊ VIÊN
+
+### 5.1. Khởi tạo hệ thống & Nạp dữ liệu mẫu 1 chạm
+
+Vào trang quản trị CMS tại `/_emdash/admin`:
+
+1. **LMS Settings:** Bấm **"Chạy LMS Setup"** để kích hoạt bảng CSDL khóa học và gói học.
+2. **Quản lý Câu đố (`/plugins/chess-puzzles/puzzles`):**
+   - Bấm **"Cài đặt CSDL (Setup)"**.
+   - Bấm **"Nạp 6 câu đố mẫu (6 cấp)"** &rarr; Tự động nạp trọn bộ 18 câu đố chuẩn.
+3. **Bài học cờ (`/plugins/chess-lessons/lessons`):**
+   - Bấm **"Cài đặt CSDL (Setup)"**.
+   - Bấm **"Khung lộ trình 6 cấp"** &rarr; Sinh 6 khóa học chuẩn Tốt &rarr; Vua kèm các bài học tương tác.
+   - Bấm **"Nạp dữ liệu mẫu"** &rarr; Sinh 4 bài giảng tương tác nhiều bước.
+
+### 5.2. Chế độ Trình chiếu trên lớp & Máy chiếu (Lecture Presenter)
+
+Khi giảng dạy trên máy chiếu lớp học:
+
+- Mở bất kỳ bài giảng nào và thêm `/trinh-chieu` vào đuôi URL (ví dụ: `/bai-giang/bai-giang-khai-cuoc-y-co-ban/trinh-chieu`).
+- **Phím tắt điều khiển:**
+  - `→` / `Space` / `PageDown`: Tiến tới bước tiếp theo.
+  - `←` / `PageUp`: Lùi lại bước trước.
+  - `B` (Blackout): Ẩn/Hiện bàn cờ để học sinh tập trung.
+  - `F`: Bật/Tắt chế độ toàn màn hình.
+- **Bảo mật:** Ghi chú HLV (Teacher Notes) chỉ hiển thị khi đăng nhập tài khoản HLV (Contributor trở lên). Khách hoặc học sinh xem sẽ hoàn toàn không thấy ghi chú trong mã nguồn HTML.
+
+---
+
+## 6. BẢNG TRA CỨU ĐƯỜNG DẪN (URL REFERENCE)
+
+| Nhóm chức năng    | Đường dẫn (URL)                 | Mục đích                                |
+| :---------------- | :------------------------------ | :-------------------------------------- |
+| **Khóa học**      | `/courses`                      | Danh mục 6 khóa học theo lộ trình 6 cấp |
+| **Chi tiết khóa** | `/course/[slug]`                | Chi tiết khóa học và danh mục bài học   |
+| **Bài học**       | `/lesson/[slug]`                | Giao diện học bài tương tác             |
+| **Câu đố**        | `/cau-do`                       | Ngân hàng câu đố & Câu đố mỗi ngày      |
+| **Giải đố**       | `/cau-do/[slug]`                | Bàn cờ giải thế câu đố đơn lẻ           |
+| **Bài giảng**     | `/bai-giang/[slug]`             | Bài giảng tương tác nhiều bước          |
+| **Trình chiếu**   | `/bai-giang/[slug]/trinh-chieu` | Chế độ máy chiếu dành cho HLV           |
+| **Gói học**       | `/plans`                        | Bảng giá Thẻ Thư Viện Cờ Vua Học Đường  |
+| **Thanh toán**    | `/checkout/[orderId]`           | Trang quét mã VietQR SePay tự động      |
+| **Quản trị CMS**  | `/_emdash/admin`                | Bảng điều khiển quản trị toàn diện      |
+
+---
+
+_Tài liệu được biên soạn và cập nhật tự động theo phiên bản phát hành mới nhất của Dương Sinh Chess Suite._
