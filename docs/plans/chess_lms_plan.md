@@ -1,328 +1,368 @@
-# Kế hoạch: Bộ plugin cờ vua cho EmDash LMS (Dương Sinh Chess Suite)
+# Kế hoạch v2: Bộ plugin cờ vua trên nền emdash-lms (Dương Sinh Chess Suite)
 
-> Ngày lập: 2026-10-08. Prompt triển khai từng giai đoạn: [chess_lms_prompts.md](chess_lms_prompts.md).
+> Cập nhật 2026-10-09. Nền LMS là bản fork của [tohaitrieu/emdash-lms](https://github.com/tohaitrieu/emdash-lms), thay cho `@emdashlms/plugin` của bản v1. Prompt triển khai: [chess_lms_prompts.md](chess_lms_prompts.md).
 
 ## 1. Bối cảnh
 
-Thầy Tường đã cài plugin LMS `@emdashlms/plugin` (id `lms-core`, v0.1, MIT, repo `github.com/emdash-learn/emdash-learn`) cho site `demos/cloudflare` (worker `covuahocduong`). Mục tiêu là biến LMS này thành nền tảng dạy cờ vua theo lộ trình 6 cấp Tốt → Mã → Tượng → Xe → Hậu → Vua: sơ đồ FEN, ván cờ PGN, câu đố, bài học và bài giảng.
+Thầy Tường dùng plugin **emdash-lms** của Tô Triều (`github.com/tohaitrieu/emdash-lms`, MIT) cho site `demos/cloudflare` (worker `covuahocduong`).
+- Repo này hiện **chưa có** emdash-lms: không có trong `package.json` hay `astro.config.mjs` của demo nào, và cũng chưa được commit.
+- Bản trên npm là `0.1.0` (05/04/2026), chưa có các trang Astro.
+- Bản GitHub `0.2.0` (commit `5ce68d1`, 06/04/2026) chỉ có `src`, không có `dist`. Cài thẳng từ git sẽ không import được vì `exports` trỏ vào `dist`.
 
-**Những gì LMS v0.1 đã có:**
-- Collection `courses` (title, subtitle, description, body, cover_image, difficulty, estimated_hours).
-- Collection `lessons` (title, course là reference, order, summary, body, video_url, duration_seconds).
-- Knowledge Check có 4 loại câu hỏi cố định: `single_choice`, `multiple_choice`, `true_false`, `short_text`. Không mở rộng được loại câu hỏi.
-- PT block `learnKnowledgeCheck`.
-- Browser client `createLearnBrowserClient()` với `completeLesson` và `deviceProgress`.
-- Tiến độ lưu localStorage. Chưa có tài khoản, ghi danh hay chứng chỉ.
+**Mục tiêu:** biến emdash-lms thành nền tảng dạy cờ vua theo lộ trình 6 cấp Tốt → Mã → Tượng → Xe → Hậu → Vua, có sơ đồ FEN, ván cờ PGN, câu đố, bài học, bài giảng và quiz có câu hỏi cờ.
 
-**Những gì repo đã có:** plugin `packages/plugins/chessfenpgn` (native, id `chessfenpgn`):
-- PT block `chess-fen` (field `fen`) và `chess-pgn` (field `pgn`).
-- Field widget `chess-board` (chỉ lưu FEN).
-- Trang `/editor` (không hiện trên sidebar).
-- Island `ChessBoardIsland.tsx`, dùng chess.js 1.4 và react-chessboard 4.7.3.
+### 1.1 emdash-lms có gì (đã đọc toàn bộ mã nguồn)
+
+**Plugin**
+- Native, id `lms`. Hàm `lmsPlugin({ mode: "membership" | "lms" | "full", checkout, currency })`.
+- `lmsIntegration({ layout, basePath, styles })` gắn sẵn 5 trang: `/courses`, `/course/[slug]`, `/lesson/[slug]`, `/plans`, `/checkout/[id]`.
+
+**Mô hình dữ liệu** (collection nội dung khai báo trong `seed/seed.json`)
+- **Nội dung học:**
+  - `courses`: title, excerpt, description, featured_image, content (PT), category_id, prerequisite_id, access_level free/membership/purchase, price, difficulty…
+  - `modules`: title, course_id, sort_order.
+  - `lessons`: title, module_id, course_id, content (PT), summary (PT), video_url, duration_minutes, sort_order, is_preview, prerequisite_id, resources.
+  - `quizzes`: lesson_id, passmark, timer_minutes, grade_type…
+  - `questions`: quiz_id, question, type single/multiple/text/fill_blank, answers (json), grade, explanation.
+- **Học viên:** `enrollments`, `lesson_progress`, `quiz_submissions`, `certificates` + `certificate_templates`, `course_reviews`.
+- **Bán hàng:** `membership_plans`, `memberships`, `orders`, `coupons`.
+
+**Thanh toán:** Sepay (QR chuyển khoản Việt Nam) và Stripe theo adapter `registerProvider()`.
+
+### 1.2 Lỗi đã kiểm chứng khi chạy trên EmDash 0.36 của repo
+
+| # | Lỗi | Bằng chứng |
+|---|---|---|
+| L1 | **Mọi API route đều lỗi.** Handler viết `(ctx, input)`, nhưng EmDash gọi `route.handler(routeContext)` với 1 tham số. `input` luôn `undefined`, nên destructure ném TypeError | `src/routes/*.ts` ↔ `packages/core/src/plugins/routes.ts:243` |
+| L2 | **Admin không hiện trang nào.** Plugin dùng `export default { pages }`, còn EmDash dùng `import * as` và đọc export tên `pages`. Các trang vốn cũng chỉ là khung trống | `src/admin.tsx` ↔ `virtual-modules.ts:345` |
+| L3 | Route học viên (`access`, `checkout`) không khai `permission` nên mặc định cần `plugins:manage`. Học viên không gọi được | `src/index.ts` |
+| L4 | `access` nhận `userId` từ body request: xem được quyền của người khác (IDOR) | `src/routes/access.ts` |
+| L5 | **Webhook Sepay giả được.** Bỏ qua xác thực khi không có secret, và đoạn HMAC bị comment | `src/providers/sepay.ts:132-142` |
+| L6 | Route `"webhook/:providerId"`: router EmDash không hỗ trợ tham số đường dẫn | `src/index.ts` |
+| L7 | Trang `/lesson/[slug]` **không kiểm tra quyền truy cập**: bài trả phí ai cũng xem được. Trang cũng không có tiến độ hay quiz | `src/pages/lesson/[slug].astro` |
+| L8 | Trang course/lesson tải **toàn bộ** courses, modules, lessons mỗi request (3 query) rồi lọc bằng JS. Route cũng `ctx.content.list` toàn bộ rồi lọc theo `user_id` | pages, `access.ts` |
+| L9 | Field `string` + `options.choices` không phải cú pháp của EmDash. Cách đúng là `type: "select"` + `validation.options`, nên admin đang hiện ô nhập tự do | `seed/seed.json` ↔ `schema/types.ts:157` |
+| L10 | Capability dùng tên cũ (`read:content`…); `definePlugin(... as any)`; không có test | `src/index.ts` |
+
+**Phần dùng tốt:**
+- mô hình dữ liệu LMS đầy đủ, hợp với Dương Sinh (khóa → chương → bài → quiz, ghi danh, chứng chỉ, hội viên);
+- adapter Sepay;
+- cơ chế layout/override trang;
+- CSS variables.
+
+### 1.3 Plugin `chessfenpgn` đã có trong repo
+- PT block `chess-fen`/`chess-pgn`, widget `chess-board` (chỉ lưu FEN), trang `/editor` không có trên sidebar.
 - Không có test.
-- Có lỗi: PGN có header `[FEN]` (bắt đầu từ thế cờ tùy chỉnh) bị hiển thị sai.
+- Lỗi: PGN có `[FEN]` hiển thị sai thế xuất phát.
 
-**Ràng buộc kỹ thuật của EmDash** (đã kiểm chứng trong mã nguồn):
-1. Form của PT block chỉ là Block Kit (text, number, select, toggle, repeater, media_picker). **Không thể nhúng bàn cờ kéo thả vào form block.** Dữ liệu phức tạp phải soạn ở field widget React hoặc trang admin, rồi block chỉ chọn theo id. Đây là pattern `select` + `optionsRoute` của plugin forms.
-2. Plugin không gọi được storage hay route của plugin khác. Cách nối an toàn:
-   - collection nội dung dùng chung (`ctx.content`),
-   - DOM CustomEvent ở front-end,
-   - thư viện npm dùng chung.
-3. Hook `content:beforeSave` (cần `content:read` + `content:write`) được phép sửa dữ liệu trước khi lưu. Ta dùng nó để chép sẵn (snapshot) dữ liệu câu đố/bài giảng vào block, nên **trang công khai không phát sinh thêm query** (đúng quy tắc logged-out hot path).
-4. Route plugin mặc định yêu cầu `plugins:manage`. Route cho biên tập viên đặt `permission: "content:create"`. Route cho học viên đăng nhập sau này đặt `permission: "content:read"` và dùng `ctx.user`.
-5. Plugin native được dùng `adminEntry` (React + Kumo) và `componentsEntry` (Astro `blockComponents`). Trang admin chỉ hiện trên sidebar khi khai báo trong `definePlugin({ admin: { pages } })`.
-6. Plugin trong `packages/plugins/*` không dùng Lingui. Chuỗi giao diện tiếng Việt được gom vào từ điển trong `chess-kit`.
-7. `markdownToPortableText` có sẵn (`packages/core/src/client/portable-text.ts`, export qua `emdash/client`) và dùng được cho trình nhập từ Obsidian.
-8. `SchemaRegistry` được export từ `emdash` để tạo collection và field một cách idempotent. Cách làm mẫu là `src/setup/*` của LMS.
+### 1.4 Ràng buộc của EmDash (đã kiểm chứng)
+1. Form PT block chỉ là Block Kit (text, number, select, toggle, repeater, media_picker). **Không nhúng được bàn cờ kéo thả vào form block.** Dữ liệu phức tạp soạn ở widget React hoặc trang admin; block chỉ chọn theo id (`select` + `optionsRoute`).
+2. Plugin không gọi được storage hay route của plugin khác. Các cách nối: collection nội dung dùng chung (`ctx.content`), sự kiện DOM, thư viện chung.
+3. `content:beforeSave` (cần `content:read` + `content:write`) sửa được dữ liệu trước khi lưu. Dùng nó để snapshot câu đố/bài giảng vào block, nhờ vậy trang công khai **không thêm query**.
+4. Quyền route:
+   - mặc định `plugins:manage`;
+   - route cho biên tập: `permission: "content:create"`;
+   - route cho học viên đăng nhập: `permission: "content:read"` + `ctx.user` (do host xác thực; tuyệt đối không lấy userId từ body);
+   - route công khai: `public: true`, khi đó không có `ctx.user`.
+5. Trang công khai đọc người dùng qua `Astro.locals.user`. Học viên là role Subscriber, tạo bằng lời mời của HLV hoặc tự đăng ký theo tên miền cho phép.
+6. Trang admin chỉ hiện trên sidebar khi khai trong `definePlugin({ admin: { pages } })`. Module admin phải export **tên** `pages`/`fields`.
+7. Có sẵn `markdownToPortableText` (`emdash/client`) và `SchemaRegistry` (`emdash`).
+8. Plugin trong `packages/plugins/*` không dùng Lingui. Chuỗi tiếng Việt gom vào từ điển của `chess-kit`.
 
 ## 2. Quyết định đã chốt với Thầy
 
 | Hạng mục | Quyết định |
 |---|---|
+| Nền LMS | **Fork emdash-lms vào repo** (`packages/plugins/lms`), giữ id `lms`, tên package `emdash-lms` và schema, rồi sửa lỗi và mở rộng. Giữ LICENSE và ghi công tác giả |
 | Site đích | `demos/cloudflare` (covuahocduong) |
-| Kiến trúc | 1 thư viện dùng chung + 3 plugin |
-| Tiến độ học viên | Giai đoạn đầu lưu localStorage. Thiết kế sẵn để sau gắn với tài khoản |
-| Ký hiệu | Lưu chuẩn quốc tế (FEN/SAN/UCI). Hiển thị tiếng Việt V/H/X/T/M mặc định, có nút chuyển sang quốc tế |
+| Plugin cờ | 1 thư viện + 3 plugin cờ (cộng thêm bản fork LMS) |
+| Tiến độ | **Hai lớp.** Khách: lưu trình duyệt. Học viên đăng nhập: lưu tài khoản (`lesson_progress`, `enrollments`), HLV xem được. Khi đăng nhập thì gộp dữ liệu trình duyệt lên tài khoản |
+| Bán hàng | Sepay, hội viên, chứng chỉ: **giai đoạn sau**. Trong lộ trình chính chạy `mode: "lms"` và **tắt checkout** (không đăng ký route checkout/webhook) |
+| Ký hiệu | Lưu chuẩn quốc tế; hiển thị tiếng Việt V/H/X/T/M mặc định, có nút chuyển sang quốc tế |
 
-## 3. Kiến trúc tổng thể
+## 3. Kiến trúc
 
 ```
-packages/chess-kit                (@duongsinh/chess-kit — thư viện, KHÔNG phải plugin)
-  ├─ ./core      logic thuần, chạy được trên Workers: FEN/PGN, ký hiệu VN, kiểm tra lời giải, 6 cấp, chủ đề
-  ├─ ./react     Board, PgnViewer, PositionEditor, MoveRecorder, PuzzlePlayer, LecturePlayer
-  ├─ ./progress  kho tiến độ localStorage (zod, có giới hạn, export/import)
-  ├─ ./i18n      từ điển vi (mặc định) + en
-  └─ ./theme.css biến CSS thương hiệu (navy #2B3990 + gold, Roboto)
+packages/chess-kit              @duongsinh/chess-kit, thư viện (không phải plugin)
+  core / react / progress / i18n / theme.css
 
-packages/plugins/chessfenpgn      (@emdash-cms/plugin-chessfenpgn — GIỮ id & tên, nâng cấp)
-  Sơ đồ FEN + ván cờ PGN + trang "Bàn cờ" (studio)
+packages/plugins/lms            emdash-lms (fork, id "lms"), LMS lõi của Dương Sinh
+  khóa–chương–bài, quyền truy cập, ghi danh, tiến độ 2 lớp, quiz builder + chấm điểm,
+  loại câu hỏi "chess" (chấm bằng chess-kit/core), các trang /khoa-hoc /bai-hoc
 
-packages/plugins/chess-puzzles    (@duongsinh/plugin-chess-puzzles, id chess-puzzles)
-  Collection chess_puzzles + widget soạn câu đố + block chess-puzzle + trình nhập PGN/EPD/Lichess CSV
+packages/plugins/chessfenpgn    giữ id và tên, nâng cấp: sơ đồ FEN + ván PGN + trang "Bàn cờ"
 
-packages/plugins/chess-lessons    (@duongsinh/plugin-chess-lessons, id chess-lessons)
-  Cầu nối LMS: thêm field cờ cho courses/lessons, bài giảng (chess_lectures + chế độ trình chiếu),
-  tự hoàn thành bài học khi giải hết câu đố, nhập bài từ Obsidian
+packages/plugins/chess-puzzles  @duongsinh/plugin-chess-puzzles: kho câu đố, widget soạn,
+                                block chess-puzzle, trình nhập PGN/EPD/Lichess CSV
+
+packages/plugins/chess-lessons  @duongsinh/plugin-chess-lessons: field cờ cho khóa/bài, bài giảng
+                                + trình chiếu, khung 6 cấp, nhập từ Obsidian, dữ liệu mẫu
 ```
 
-**Luồng phụ thuộc:** cả 3 plugin chỉ phụ thuộc `chess-kit`, không phụ thuộc lẫn nhau.
-- `chess-puzzles` phát sự kiện `duongsinh-chess:puzzle-solved` trên `window`.
-- `chess-lessons` nghe sự kiện đó và gọi `completeLesson()` của LMS.
-- Tắt một plugin không làm hỏng các plugin còn lại.
+**Phụ thuộc**
+- Mọi package dùng `chess-kit`.
+- Các plugin cờ **không import lẫn nhau**, cũng không import LMS.
+- Các plugin giao tiếp qua:
+  - collection nội dung (`lessons.content` chứa block cờ),
+  - **giao thức "yêu cầu hoàn thành" trên DOM** (mục dưới).
 
-**Nguyên tắc dữ liệu:**
-- Hằng số 6 cấp (`tot, ma, tuong, xe, hau, vua`) và danh mục chủ đề chiến thuật nằm trong `chess-kit/core`. Mọi field `level` / `themes` ở các plugin dùng chung giá trị này.
-- Chỉ thêm field (additive). Không đổi id plugin, tên block hay tên field đã có, để nội dung cũ không hỏng.
-- Package mới đặt `"private": true` cho tới khi Thầy quyết định phát hành, nên chưa cần changeset.
+**Giao thức "yêu cầu hoàn thành"** (LMS cung cấp, plugin cờ dùng)
+- Block nào cần hoàn thành mới qua bài thì render `data-lms-requirement="<id>"` và phát `window` event `lms:requirement-done` (detail `{ id }`).
+- Trang bài học của LMS đếm số yêu cầu. Khi đủ, LMS đánh dấu hoàn thành:
+  - học viên đăng nhập: gọi route;
+  - khách: lưu localStorage.
+- Block `chess-puzzle` cũng phát thêm `duongsinh-chess:puzzle-solved` cho các mục đích khác.
 
-## 4. Các giai đoạn triển khai
+**Nguyên tắc chung**
+- Hằng số 6 cấp (`tot, ma, tuong, xe, hau, vua`) và danh mục chủ đề nằm trong `chess-kit/core`.
+- Chỉ thêm field (additive). Không đổi id, tên block hay tên field đã có.
+- Package mới `"private": true`, nên chưa cần changeset.
+- Fork giữ `LICENSE` gốc và thêm `NOTICE.md` ghi nguồn (repo, commit `5ce68d1`) cùng danh sách thay đổi.
 
-Mỗi giai đoạn chạy trong 1 phiên riêng, kết thúc bằng commit + push và file báo cáo `docs/plans/report_chess_phaseN.md`.
+## 4. Các giai đoạn
 
-### Giai đoạn 0: Nền móng và kiểm tra tương thích
-- Chạy `pnpm install`, `pnpm build`, `pnpm lint:json` trên Linux.
-  - Commit 835e98d để lại đường dẫn Windows trong `packages/registry-verification/tsdown.config.ts` (`file:///C:/...`). Nếu đường dẫn này làm hỏng build thì sửa cho đa nền tảng.
-- Thêm `@emdashlms/plugin` vào `demos/cloudflare/package.json` và thêm `lmsCorePlugin()` vào `plugins` trong `demos/cloudflare/astro.config.mjs`.
-  - **Rủi ro chính:** LMS khai báo peer `emdash ^0.31.1`, còn repo đang ở `0.36.0`.
-  - Chạy dev, vào admin bằng dev-bypass, chạy **Learn → Setup**, tạo 1 khóa và 1 bài học rồi xem.
-  - Nếu không tương thích: ghi rõ lỗi trong báo cáo và đề xuất phương án (`patches/` của pnpm hoặc fork). Dừng lại hỏi Thầy.
-- Thêm `@emdash-cms/plugin-chessfenpgn` vào `demos/cloudflare`.
-- Xác nhận LMS Setup giữ nguyên field tùy chỉnh khi thêm vào `courses`/`lessons`. Giai đoạn 4 phụ thuộc vào điều này.
+Mỗi giai đoạn chạy 1 phiên, kết thúc bằng commit + push và báo cáo `docs/plans/report_chess_phaseN.md`.
 
-### Giai đoạn 1: Thư viện `@duongsinh/chess-kit` (`packages/chess-kit`)
+### GĐ0: Nền móng, đưa emdash-lms vào repo
+- `pnpm install`, `pnpm build`, `pnpm lint:json` trên Linux. Đường dẫn Windows `file:///C:/...` trong `packages/registry-verification/tsdown.config.ts` (commit 835e98d): nếu làm hỏng build thì sửa cho đa nền tảng.
+- Chép mã emdash-lms từ GitHub `main` (`5ce68d1`) vào `packages/plugins/lms`.
+  - `exports` trỏ thẳng `src` theo quy ước của `packages/plugins/forms/package.json`.
+  - Thêm `tsconfig.json` + `vitest.config.ts`, `"private": true`, `NOTICE.md`.
+- **Viết test thất bại để ghi nhận lỗi** (chưa sửa ở GĐ0): L1 (route ném lỗi) và L2 (admin không có export `pages`).
+- Gắn vào `demos/cloudflare`:
+  - `"emdash-lms": "workspace:*"`;
+  - `lmsPlugin({ mode: "lms", checkout: { enabled: false } })`;
+  - `lmsIntegration({ layout: <layout DSC hiện có> })`;
+  - `chessfenpgnPlugin()`.
+  - Nếu máy Thầy đã có emdash-lms cài ngoài, thay bằng bản workspace.
+- Chạy dev bằng dev-bypass. Nạp schema của LMS (seed của gói, hoặc tạo tay nếu chưa có setup) rồi tạo 1 khóa / 1 chương / 1 bài. Ghi lại từng lỗi L1–L10 thấy được, kèm ảnh chụp.
 
-**`core`**
-- `parseFen`, `validateFen`.
-- `parsePgn`: header, mainline, comment, NAG, cây biến; hỗ trợ `[SetUp]`/`[FEN]`.
+### GĐ1: Thư viện `@duongsinh/chess-kit` (`packages/chess-kit`)
+
+**`core`** (không DOM, chạy được trên Workers)
+- `parseFen`/`validateFen`.
+- `parsePgn`: header, mainline, comment, NAG, biến; hỗ trợ `[SetUp]`/`[FEN]`.
 - `replayPositions`.
-- `sanToVi`/`viToSan`: N→M, B→T, R→X, Q→H, K→V; phong cấp `=Q`→`=H`.
-- `parseArrows("e2e4 g1f3:red")`, `parseSquares("e4 d5")`.
-- `checkPuzzleMove`: chấp nhận đúng nước trong lời giải. Nếu nước cuối của lời giải là chiếu hết thì chấp nhận **mọi nước chiếu hết**.
-- `LEVELS`: slug, nhãn, màu, mô tả cho 6 cấp.
-- `THEMES`: ghim, chĩa đôi, xiên, tấn công đôi, chiếu hết 1/2/3 nước, phá phòng thủ, thu hút, tàn cuộc Tốt…
+- `sanToVi`/`viToSan`; `uciToSan`/`sanToUci`.
+- `parseArrows`, `parseSquares`.
+- `checkPuzzleMove`: nếu nước cuối của lời giải là chiếu hết thì chấp nhận mọi nước chiếu hết.
+- `gradeChessAnswer(question, moves)` dùng cho quiz.
+- `LEVELS`, `THEMES`.
 
-**`react`** (dùng chung cho admin và island front-end; react-chessboard 4.x + chess.js)
-- `Board`: hướng bàn, mũi tên, ô tô sáng, kích thước, theme thương hiệu.
-- `PgnViewer`: biên bản kèm comment, biến phụ thu gọn, header kỳ thủ/kết quả, phím ←→↑↓, lật bàn, nút VN/quốc tế, responsive mobile.
-- `PositionEditor`: xếp thế, quân dự bị, bên đi, quyền nhập thành → FEN.
-- `MoveRecorder`: đi nước từ một FEN để ghi lời giải.
-- `PuzzlePlayer`, `LecturePlayer`.
+**`react`**
+- `Board` (orientation, mũi tên, ô sáng, size, theme).
+- `PgnViewer` (comment, biến thu gọn, header, phím ←→↑↓, lật bàn, nút VN/quốc tế, mobile).
+- `PositionEditor`, `MoveRecorder`, `PuzzlePlayer`, `LecturePlayer`.
 
 **`progress`**
-- Key `duongsinh-chess:progress:v1`, dạng `{ puzzles: {[id]: {solvedAt, attempts, hintsUsed}}, lectures: {[id]: {lastStep}} }`.
-- Validate bằng zod, giới hạn số bản ghi, mọi truy cập bọc try/catch, có export/import JSON.
+- Key `duongsinh-chess:progress:v1`, dạng `{ puzzles, lectures, lessons }`.
+- Zod, có giới hạn, try/catch, export/import JSON.
+- Có hàm `drainForSync()` để LMS gộp lên tài khoản.
 
-**`i18n`, `theme.css`**
-- Màu bàn cờ phải đủ tương phản cho quân đen.
-- Gold dùng cho nước vừa đi và ô gợi ý.
+**`i18n`, `theme.css`:** navy `#2B3990` + gold, Roboto, màu bàn đủ tương phản.
 
-**Test (vitest)**
-- Viết **test thất bại trước** cho lỗi PGN có `[FEN]`.
-- Chuyển ký hiệu, kiểm tra lời giải (kể cả mate thay thế), giới hạn của kho tiến độ.
+**Test vitest (viết trước):** PGN có `[FEN]`, comment/NAG/biến, ký hiệu hai chiều, mate thay thế, chấm câu hỏi cờ, giới hạn của progress.
 
-### Giai đoạn 2: Nâng cấp `chessfenpgn` (FEN + PGN)
+### GĐ2: Ổn định LMS (fork `packages/plugins/lms`)
 
-**Tương thích ngược:** giữ id `chessfenpgn`, block `chess-fen`/`chess-pgn`, field `fen`/`pgn`, widget `chess-board`.
+**Sửa lỗi theo TDD**
+- L1: handler dùng 1 `RouteContext`, input khai bằng Zod, lỗi trả bằng `PluginRouteError`.
+- L2: export tên `pages`. Trang admin viết bằng Kumo.
+- L10: capability dùng tên mới, bỏ `as any`.
+- L9: đổi các field `string`+`choices` sang `select` + `validation.options`. Cùng kiểu cột TEXT nên an toàn với dữ liệu cũ.
 
-**Thay logic trùng lặp bằng `chess-kit`**
-- Xóa logic trong `ChessBoardIsland.tsx`.
-- Bỏ div debug trong `ChessFen.astro`.
-- Thêm `Props` có kiểu.
+**Route `setup/run`** (`schema:manage`)
+- Converge schema từ định nghĩa trong code bằng `SchemaRegistry`, idempotent.
+- Chạy lại không mất field tùy chỉnh.
+- Thay cho việc phải nạp seed bằng tay.
 
-**Field Block Kit mới (tùy chọn)**
-- `chess-fen`: `orientation` (white/black/auto), `caption`, `arrows`, `highlights`, `size` (S/M/L).
-- `chess-pgn`: `orientation`, `startPly`, `showHeaders`, `caption`.
-- Đặt `category: "Cờ vua"` cho các block.
+**Phân quyền route**
+- Route quản trị (plans/members/orders, quản lý ghi danh) giữ mặc định hoặc dùng `content:edit_any`.
+- Route học viên dùng `permission: "content:read"` và **chỉ** dùng `ctx.user.id`, sửa L3 và L4:
+  - `me/access`
+  - `me/enroll` (khóa free)
+  - `progress/complete`
+  - `progress/sync` (gộp localStorage lên tài khoản)
+  - `me/progress`
+- Truy vấn dùng `where.fieldFilters` + phân trang, không list toàn bộ (sửa L8).
 
-**Widget `chess-board`**
-- Thêm `options.mode: "fen" | "pgn"`.
-- Đọc được cả chuỗi FEN cũ.
+**Tắt bán hàng khi `checkout.enabled === false`**
+- Không đăng ký route `checkout` và `webhook/*`.
+- Ẩn trang Plans/Orders.
+- Đổi tên route webhook thành tên cố định (`webhook/sepay`, `webhook/stripe`) để sửa L6. Phần xác thực Sepay (L5) làm ở GĐ8.
 
-**Trang "Bàn cờ"**
-- Khai báo trong `admin.pages` để hiện trên sidebar.
-- Gồm `PositionEditor`, dán và kiểm tra PGN, các nút copy FEN / PGN / "chuỗi mũi tên".
-- Dùng component Kumo và class Tailwind logic (`ms-*`, `ps-*`…).
+**Trang front-end** (sửa L7, L8)
+- `lmsIntegration` thêm tùy chọn `routes` (additive). Dùng tùy chọn này để đặt `/khoa-hoc`, `/khoa-hoc/[slug]`, `/bai-hoc/[slug]`.
+- Trang khóa học: lấy đúng 1 khóa theo slug, rồi chương và bài của khóa đó bằng filter. Bọc helper bằng `requestCached`. **Tối đa 3 query.**
+- Trang bài học:
+  - Kiểm tra quyền phía server: `access_level` free hoặc `is_preview` thì cho xem. Ngược lại cần `Astro.locals.user` + ghi danh, nếu không chỉ hiện phần giới thiệu và nút kêu gọi.
+  - Khách ẩn danh không phát sinh query kiểm tra quyền.
+  - Thanh tiến độ, nút "Hoàn thành bài", và giao thức "yêu cầu hoàn thành".
+- Toàn bộ chuỗi giao diện tiếng Việt.
 
-**Đóng gói**
-- Bổ sung `tsconfig.json`, `vitest.config.ts`, README tiếng Việt.
-- Thêm `astro` vào peer.
-- Bỏ peer `@phosphor-icons/react` vì không dùng.
+**Admin**
+- "Cài đặt LMS": Setup, trạng thái schema.
+- "Học viên": danh sách ghi danh và tiến độ; ghi danh tay bằng email (cần `users:read`).
+- "Cài đặt".
 
-### Giai đoạn 3: Plugin `chess-puzzles` (Câu đố)
+**Test:** route (quyền, IDOR), setup chạy idempotent, kiểm tra quyền truy cập bài học, gộp tiến độ. Integration test dùng `setupTestDatabase`.
+
+### GĐ3: Quiz của LMS (có câu hỏi cờ)
+
+**Schema `questions`** (additive)
+- Thêm lựa chọn `chess` cho `type`.
+- Với câu `chess`, `answers` có dạng `{ fen, solution: UCI[], orientation, prompt }`.
+
+**Trang admin "Soạn quiz"** (React + Kumo)
+- Soạn quiz cùng các câu hỏi trên một màn hình qua route quản trị.
+- Giao diện đổi theo loại câu hỏi.
+- Câu `chess` dùng `PositionEditor` + `MoveRecorder`, có thể chép từ kho câu đố (gọi route `puzzles/options` của chess-puzzles nếu plugin đó đang bật).
+
+**Hai route chấm bài**
+- `quiz/present`: public, **loại bỏ đáp án**.
+- `quiz/submit`:
+  - Chấm phía server; câu cờ chấm bằng `chess-kit/core` (`gradeChessAnswer`).
+  - Học viên đăng nhập thì lưu vào `quiz_submissions`. Khách chỉ nhận điểm, không lưu.
+  - Chạy dưới 2 dạng route: public cho khách và `content:read` cho học viên.
+- Có `passmark`, `timer_minutes`, `allow_reset`, `random_order`.
+
+**PT block `lms-quiz`** (chọn quiz qua `optionsRoute`)
+- Render island `QuizRunner`; câu cờ dùng `PuzzlePlayer`.
+- Khi đạt passmark thì phát `lms:requirement-done`.
+
+**Test:** chấm từng loại câu hỏi, `present` không lộ đáp án, giới hạn quyền.
+
+### GĐ4: Nâng cấp `chessfenpgn` (FEN + PGN)
+- Giữ id `chessfenpgn`, block `chess-fen`/`chess-pgn`, field `fen`/`pgn`, widget `chess-board`. Chỉ thêm field tùy chọn.
+- Dùng `chess-kit`, viết test hồi quy cho lỗi `[FEN]`.
+- Field Block Kit mới:
+  - `chess-fen`: orientation, caption, arrows, highlights, size;
+  - `chess-pgn`: orientation, startPly, showHeaders, caption;
+  - `category: "Cờ vua"`.
+- Widget `chess-board` hỗ trợ `options.mode: "fen" | "pgn"`, vẫn đọc được chuỗi FEN cũ.
+- Trang "Bàn cờ": khai trong `admin.pages`; có `PositionEditor`, kiểm tra PGN, các nút copy.
+- Đóng gói: tsconfig, vitest, README tiếng Việt; thêm peer astro, bỏ peer `@phosphor-icons/react`; bỏ div debug.
+
+### GĐ5: Plugin `chess-puzzles` (Câu đố)
 
 **Collection `chess_puzzles`**
-- Tạo bởi route `setup/run` (permission `schema:manage`, idempotent, làm theo cách của LMS và dùng `SchemaRegistry`).
-- `supports`: drafts, revisions, search. `urlPattern`: `/cau-do/{slug}`.
-- Field:
-  - `title` (string, bắt buộc).
-  - `puzzle`: json, widget `chess-puzzles:puzzle-editor`, dạng `{fen, solution: UCI[], orientation}`.
-  - `prompt` (vd. "Trắng đi, chiếu hết sau 2 nước").
-  - `level`: select 6 cấp.
-  - `themes`: multiSelect.
-  - `rating`: integer.
-  - `hint`: text.
-  - `explanation`: portableText, có thể chứa `chess-fen`.
-  - `source` (vd. "Giáo trình Nga – Tập 2, bài 14").
+- Tạo qua `setup/run`. `urlPattern`: `/cau-do/{slug}`. `supports`: drafts, revisions, search.
+- Field: `title`, `puzzle` (json + widget `chess-puzzles:puzzle-editor`, dạng `{fen, solution, orientation}`), `prompt`, `level`, `themes`, `rating`, `hint`, `explanation` (PT), `source`.
 
-**Widget `puzzle-editor`** (React)
-- Xếp thế, sau đó ghi lời giải gồm nước của người giải và nước đáp của đối phương.
-- Có nút chạy thử.
+**Widget `puzzle-editor`:** xếp thế, ghi lời giải (gồm nước đáp), chạy thử.
 
 **PT block `chess-puzzle`**
-- `puzzle`: select, `optionsRoute: "puzzles/options"` với `permission: "content:create"`, tìm theo tên và lọc theo cấp.
-- Các field nhập nhanh không cần kho: `fen`, `solution` (SAN hoặc UCI), `prompt`, `hint`.
+- `puzzle` (select, `optionsRoute: "puzzles/options"`, `permission: "content:create"`).
+- Các field nhập nhanh: `fen`, `solution`, `prompt`, `hint`.
 
-**Hook `content:beforeSave`**
-- Với mỗi node `chess-puzzle` có `puzzle`, chép `fen/solution/prompt/hint/level/title` từ bản **đã xuất bản** vào node.
-- Kết quả là trang công khai render không cần query thêm.
-- Route `snapshots/refresh` (admin) duyệt lại các bài có câu đố khi kho thay đổi, có phân trang.
+**Hook `content:beforeSave`:** snapshot câu đố đã xuất bản vào node. Route `snapshots/refresh` làm mới theo trang.
 
 **Front-end**
-- `PuzzleBlock.astro` render island `PuzzlePlayer`.
-- Đi sai thì báo và cho thử lại. Có gợi ý. Chỉ cho "Xem lời giải" sau N lần sai (lấy từ settings).
-- Giải xong thì ghi vào `progress` và phát `duongsinh-chess:puzzle-solved`.
-- Export thêm component cho trang site: `PuzzlePage`, `PuzzleOfTheDay`.
+- `PuzzleBlock.astro` render island `PuzzlePlayer`, chỉ đọc dữ liệu đã snapshot (0 query).
+- Render `data-lms-requirement`; khi giải xong thì phát `lms:requirement-done` và `duongsinh-chess:puzzle-solved`, đồng thời ghi progress.
+- Export `PuzzlePage.astro` và `PuzzleOfTheDay.astro`.
 
-**Trang admin**
-- "Câu đố": tổng quan, nút Setup, số câu theo cấp.
-- "Nhập câu đố":
-  - Nguồn: PGN nhiều ván (`[FEN]` + mainline làm lời giải), EPD (`bm`), CSV Lichess puzzle (CC0; lọc theo rating, chủ đề, ≤ 500 câu/lô).
-  - Tạo bản nháp qua `ctx.content.create` theo lô khoảng 50.
-  - Báo các dòng lỗi.
+**Admin**
+- "Câu đố": tổng quan theo cấp, Setup.
+- "Nhập câu đố": PGN, EPD, CSV Lichess (CC0, tối đa 500 câu/lô). Tạo bản nháp theo lô khoảng 50, báo dòng lỗi.
 
-**Settings:** hướng bàn mặc định, số lần sai trước khi được xem lời giải, có hiện rating cho học viên hay không.
+**Settings:** hướng bàn mặc định, số lần sai trước khi được xem lời giải, có hiện rating hay không.
 
-**Test**
-- Parser PGN/EPD/CSV.
-- Hook snapshot (integration, dùng `setupTestDatabase`).
-- Quyền của `puzzles/options`.
+**Test:** các parser, snapshot (integration), quyền của `puzzles/options`.
 
-### Giai đoạn 4: Plugin `chess-lessons` (Bài học, Bài giảng, cầu nối LMS)
+### GĐ6: Plugin `chess-lessons` (Bài học cờ, Bài giảng)
 
-**Setup** (`setup/run`, `schema:manage`)
-- Kiểm tra `courses`/`lessons` của LMS đã có. Nếu chưa, hướng dẫn chạy Learn → Setup.
-- Thêm field (additive):
-  - `courses`: `level`, `sessions` (số buổi), `age_range`.
-  - `lessons`: `level`, `themes`, `objectives` (mục tiêu bài học).
-- Nút "Tạo khung lộ trình 6 cấp": tạo 6 khóa nháp Tốt → Vua nếu chưa có.
-- Nút "Tạo bài học mẫu": bản nháp có khung chuẩn Dương Sinh.
-  - Khởi động (câu chuyện).
-  - Kiến thức mới (FEN/PGN).
-  - Thực hành (câu đố).
-  - Kiểm tra (`learnKnowledgeCheck`).
-  - Bài tập về nhà.
+**Setup** (additive, trên collection của LMS)
+- `courses`: `level`, `sessions`, `age_range`.
+- `lessons`: `level`, `themes`, `objectives`.
+- Nếu chưa có collection của LMS thì báo cần chạy LMS Setup trước.
 
-**Bài giảng: collection `chess_lectures`** (`urlPattern: /bai-giang/{slug}`)
-- Field: `title`, `level`, `course` (reference tùy chọn), `summary`.
-- Field `script`: json, widget `chess-lessons:lecture-builder`.
-  - Dạng `{steps: [{id, title, fen | {pgn, ply}, arrows, highlights, narration, teacherNotes, question?: {prompt, answers}}]}`.
-- Widget `lecture-builder`: danh sách bước, kéo đổi thứ tự. Mỗi bước kế thừa thế của bước trước, cho phép đi tiếp nước, vẽ mũi tên.
-- PT block `chess-lecture`:
-  - Chọn bài giảng qua `optionsRoute`.
-  - Snapshot các bước qua `beforeSave`, **bỏ `teacherNotes`**.
-  - Front-end render `LecturePlayer` để học viên xem từng bước trong bài học.
-- Chế độ trình chiếu: export `LecturePresenter.astro` cho trang site `/bai-giang/[slug]/trinh-chieu`.
-  - Toàn màn hình, bàn cờ lớn.
-  - PageUp/PageDown (dùng được bút trình chiếu), phím B để tắt màn hình, đồng hồ.
-  - `teacherNotes` chỉ render phía server khi `Astro.locals.user` có vai trò ≥ Contributor (HLV). Khách ẩn danh không bao giờ nhận được ghi chú.
+**Các nút trên trang admin**
+- "Khung lộ trình 6 cấp": 6 khóa nháp Tốt → Vua, mỗi khóa có chương mẫu.
+- "Bài học mẫu": Khởi động (câu chuyện) → Kiến thức mới → Thực hành (câu đố) → Kiểm tra (`lms-quiz`) → Bài tập về nhà.
+- "Nạp dữ liệu mẫu": 1 khóa Cấp Tốt, 3 bài, 1 bài giảng, 1 quiz; thêm 10 câu đố nếu collection `chess_puzzles` có sẵn.
 
-**Cầu nối tiến độ LMS**
-- Script front-end nghe `duongsinh-chess:puzzle-solved`.
-- Khi mọi câu đố trên trang bài học đã giải xong, gọi `createLearnBrowserClient().completeLesson(lessonId)`.
-- Bật/tắt bằng setting `autoCompleteLesson`.
+**Bài giảng: collection `chess_lectures`** (`/bai-giang/{slug}`)
+- Field `title`, `level`, `course` (tùy chọn), `summary`.
+- Field `script`: json + widget `lecture-builder`, gồm các bước `{fen | {pgn, ply}, arrows, highlights, narration, teacherNotes, question?}`.
+- PT block `chess-lecture`: snapshot qua `beforeSave`, **bỏ `teacherNotes`**; front-end render `LecturePlayer`.
+- `LecturePresenter.astro` cho trang `/bai-giang/[slug]/trinh-chieu`:
+  - toàn màn hình, PageUp/PageDown/←/→, phím B tắt màn hình, đồng hồ;
+  - `teacherNotes` chỉ render phía server khi người dùng có vai trò ≥ Contributor.
 
-**Trợ giúp Knowledge Check**
-- Loại câu hỏi của LMS là cố định. Cách soạn câu hỏi cờ: đặt block `chess-fen` ngay trên block `learnKnowledgeCheck` và dùng câu hỏi `short_text`.
-- Trang admin có công cụ "Sinh đáp án": nhập FEN + nước đi, xuất danh sách `acceptedAnswers` đủ biến thể (Qh7#, Qxh7#, Hh7#, Hxh7#, có/không có +/#) để dán vào.
+**Nhập từ Obsidian**
+- Đầu vào: một hoặc nhiều file `.md`, frontmatter gồm `title`, `course`, `module`, `order`, `level`, `themes`, `objectives`.
+- Body chuyển bằng `markdownToPortableText`. Code fence `fen`/`pgn`/`puzzle`/`lecture` được đổi thành block cờ.
+- Tạo bài học **nháp**, điền `course_id`, `module_id`, `sort_order`.
+- Cảnh báo các `![[wikilink]]`. Viết quy ước Markdown cho vault OBSIDIAN2026 vào README.
 
-**Nhập từ Obsidian** (trang admin)
-- Dán hoặc tải lên 1 hay nhiều `.md`.
-- Frontmatter: `title`, `course` (slug), `order`, `level`, `themes`, `objectives`.
-- Body đi qua `markdownToPortableText`. Các code fence `fen`, `pgn`, `puzzle` (khóa `fen:`/`solution:`/`prompt:`/`hint:`), `lecture` (slug) được đổi thành block cờ tương ứng.
-- Tạo bài học **nháp** gắn vào khóa.
-- Cảnh báo các `![[wikilink]]` ảnh chưa xử lý.
-- Ghi quy ước Markdown vào README để Thầy soạn trong vault OBSIDIAN2026.
+**Test:** chuyển Markdown → PT, snapshot không lộ `teacherNotes`, setup chạy idempotent và không xóa field của LMS.
 
-**Test:** chuyển đổi Markdown → PT, snapshot bài giảng (không lộ `teacherNotes`), route setup idempotent.
+### GĐ7: Tích hợp site `demos/cloudflare` và kiểm chứng toàn bộ
 
-### Giai đoạn 5: Tích hợp site `demos/cloudflare` và nội dung mẫu
-
-**Đăng ký plugin** trong `astro.config.mjs`:
+**Đăng ký plugin:**
 
 ```js
 plugins: [
   formsPlugin(),
   aiSearch(...),
-  lmsCorePlugin(),
+  lmsPlugin({ mode: "lms", checkout: { enabled: false } }),
   chessfenpgnPlugin(),
   chessPuzzlesPlugin(),
   chessLessonsPlugin(),
 ]
 ```
 
-**Trang site**
-- `/khoa-hoc`: theo 6 cấp.
-- `/khoa-hoc/[slug]`: khóa học kèm danh sách bài theo `order`.
-- `/bai-hoc/[slug]`: body, bài trước/sau, nút hoàn thành.
-- `/cau-do`: lọc cấp/chủ đề, câu đố hôm nay.
-- `/cau-do/[slug]`.
-- `/bai-giang/[slug]` và `/bai-giang/[slug]/trinh-chieu`.
+Kèm `lmsIntegration({ layout, routes: Vietnamese })`.
 
-**Yêu cầu kỹ thuật cho trang**
-- Đổi `urlPattern` của `courses`/`lessons` sang đường dẫn tiếng Việt.
-- Dùng `getEmDashCollection`/`getEmDashEntry`, lọc `locale`, bọc helper bằng `requestCached`.
-- Trang khóa học tối đa 2 query. Chạy `pnpm query-counts` để kiểm tra.
+**Trang:** `/khoa-hoc`, `/khoa-hoc/[slug]`, `/bai-hoc/[slug]` (từ LMS), `/cau-do`, `/cau-do/[slug]`, `/bai-giang/[slug]`, `/bai-giang/[slug]/trinh-chieu`.
 
-**Giao diện:** áp `theme.css`, font Roboto, họa tiết ô cờ, đúng nhận diện Dương Sinh.
+**Giao diện:** CSS variables của LMS ở chế độ `styles: "theme"` + `theme.css` của chess-kit, đúng nhận diện Dương Sinh, chạy tốt trên mobile.
 
-**Nội dung mẫu**
-- Nút "Nạp dữ liệu mẫu" trong `chess-lessons`: 1 khóa Cấp Tốt, 3 bài học, 10 câu đố, 1 bài giảng.
-- Không sửa `seed/seed.json` gốc.
+**Kiểm chứng:** `pnpm query-counts`; agent-browser trên desktop và mobile, cả khách và học viên/HLV đăng nhập; chụp ảnh. Không deploy production.
 
-**Kiểm thử**
-- Kiểm thử thủ công bằng agent-browser trên desktop và mobile.
-- Chụp ảnh màn hình vào báo cáo.
-- Deploy production chỉ khi Thầy đồng ý.
+### GĐ8 (để sau): Bán hàng
+- Sửa xác thực webhook Sepay (L5): HMAC/Bearer bắt buộc, không bỏ qua khi thiếu secret.
+- Bật checkout, gói hội viên, coupon, đơn hàng; khóa học trả phí; chứng chỉ PDF.
+- Kiểm thử bằng sandbox Sepay.
 
-### Giai đoạn 6 (để sau, chưa làm): Tài khoản học viên và báo cáo HLV
-- Route private `permission: "content:read"` (Subscriber) dùng `ctx.user.id`.
-- Storage `progress` với index `[userId, puzzleId]`. Đồng bộ localStorage lên tài khoản khi đăng nhập.
-- Bảng điều khiển HLV theo lớp/học viên, thống kê độ khó câu đố, bảng xếp hạng.
-- Mở route nhập câu đố thành MCP tool (`mcp` trong `definePlugin`) để Claude Desktop tạo câu đố thẳng từ vault Obsidian.
+### GĐ9 (để sau): Công cụ HLV
+- Bảng điều khiển theo lớp/học viên, thống kê độ khó câu đố, bảng xếp hạng.
+- MCP tool nhập câu đố/bài học từ Claude Desktop.
+- Cân nhắc chuyển dữ liệu giao dịch (orders, progress) sang plugin storage.
 
-## 5. Quy tắc bắt buộc (theo `CLAUDE.md` của repo)
-- Trước khi sửa: `pnpm lint:json | jq '.diagnostics | length'` phải sạch.
-- Trong khi làm: `pnpm lint:quick` sau mỗi lần sửa, `pnpm typecheck` sau mỗi đợt sửa, `pnpm format` (oxfmt, tab).
-- Sửa lỗi theo TDD: test thất bại → sửa → xác minh.
-- Không sửa `packages/core` hay `packages/admin` (scope discipline, tránh xung đột khi đồng bộ upstream). Nếu thật sự cần, ghi vào báo cáo và hỏi Thầy.
-- Không thêm query vào trang công khai. Dùng snapshot `beforeSave` và `requestCached`.
-- Admin UI dùng Kumo, token màu `kumo-*` trừ phần bàn cờ, class Tailwind logic.
-- Comment chỉ giải thích "vì sao" không hiển nhiên.
-- Import nội bộ dùng đuôi `.js`. Import kiểu dùng `import type`.
-- Không đưa thay đổi `messages.po` vào commit.
-- Thư viện: chess.js (BSD-2), react-chessboard (MIT), dữ liệu Lichess (CC0). **Không dùng chessground (GPL).**
+## 5. Quy tắc bắt buộc (theo `CLAUDE.md`)
+- Kiểm tra lint:
+  - trước khi sửa: `pnpm lint:json | jq '.diagnostics | length'` phải sạch;
+  - sau mỗi lần sửa: `pnpm lint:quick`;
+  - sau mỗi đợt sửa: typecheck.
+- Định dạng bằng `pnpm format`.
+- Sửa lỗi theo TDD.
+- Không sửa `packages/core`/`packages/admin`. Nếu cần, dừng lại hỏi Thầy.
+- Không thêm query cho trang công khai của khách. Dùng snapshot và `requestCached`.
+- Admin dùng Kumo và class Tailwind logic. Comment chỉ nói "vì sao".
+- Không commit `messages.po`.
+- Không dùng chessground (GPL). Dùng chess.js (BSD-2), react-chessboard (MIT), dữ liệu Lichess (CC0).
+- Gửi bản sửa ngược về repo `tohaitrieu/emdash-lms` (issue/PR) **chỉ khi Thầy đồng ý**.
 
-## 6. Rủi ro và cách xử lý
+## 6. Rủi ro
 
 | Rủi ro | Xử lý |
 |---|---|
-| LMS yêu cầu emdash ^0.31, repo là 0.36 | Giai đoạn 0 kiểm chứng trước. Nếu hỏng thì dừng và hỏi Thầy |
-| Block PT không có giao diện kéo thả | Soạn ở widget/collection, block chọn theo id, snapshot khi lưu |
-| Snapshot cũ khi câu đố được sửa | Lưu lại bài học hoặc chạy route `snapshots/refresh` |
-| React island nặng trên mobile | `client:visible` và đo bundle. Tối ưu sau nếu cần |
-| Xung đột khi đồng bộ upstream | Code mới nằm trong package riêng, không đụng core |
-| Đường dẫn Windows trong tsdown config | Sửa ở Giai đoạn 0 nếu làm hỏng build Linux |
+| Fork lệch upstream | Ghi rõ commit gốc và danh sách thay đổi trong `NOTICE.md`; gửi bản sửa về upstream nếu Thầy muốn |
+| Dữ liệu LMS Thầy đã tạo (nếu có) | Giữ id, tên collection và field; chỉ thêm; L9 đổi `string`→`select` cùng kiểu cột |
+| Route học viên mở ra là bề mặt tấn công | Chỉ dùng `ctx.user.id`; có test IDOR; checkout/webhook tắt cho tới GĐ8 |
+| Block PT không kéo thả được | Soạn ở widget/trang admin, block chọn theo id, snapshot khi lưu |
+| Snapshot cũ | Lưu lại bài, hoặc chạy route `snapshots/refresh` |
+| React island nặng | `client:visible`, đo bundle |
+| Đường dẫn Windows trong tsdown | Sửa ở GĐ0 nếu làm hỏng build |
 
-## 7. Kiểm chứng tổng thể (cuối Giai đoạn 5)
-1. `pnpm build && pnpm typecheck && pnpm lint:json` sạch. `pnpm --filter "@duongsinh/*" test` và test của `chessfenpgn` đều pass.
-2. `pnpm --filter @emdash-cms/demo-cloudflare dev` rồi vào `/_emdash/api/setup/dev-bypass?redirect=/_emdash/admin`.
-3. Trong admin:
-   - Learn → Setup, Câu đố → Setup, Bài học cờ → Setup, Nạp dữ liệu mẫu.
-   - Tạo câu đố bằng widget. Nhập 20 câu từ CSV Lichess.
-   - Soạn bài học có `chess-fen`, `chess-pgn` (có `[FEN]`), `chess-puzzle`, `chess-lecture`, `learnKnowledgeCheck`.
-4. Ngoài site, ở chế độ ẩn danh:
-   - Xem bài học, giải hết câu đố → LMS đánh dấu hoàn thành.
-   - Đổi ký hiệu VN/quốc tế.
-   - Mở trang trình chiếu: không thấy ghi chú HLV. Đăng nhập HLV thì thấy.
-5. `pnpm query-counts`: trang công khai không tăng query so với snapshot cũ, hoặc nếu tăng thì có giải trình.
+## 7. Kiểm chứng tổng thể (cuối GĐ7)
+1. `pnpm build`, typecheck, `pnpm lint:json` đều sạch. Test của `chess-kit`, `lms`, `chessfenpgn`, `chess-puzzles`, `chess-lessons` đều pass.
+2. Chạy `pnpm --filter @emdash-cms/demo-cloudflare dev`, vào bằng dev-bypass, rồi chạy lần lượt: LMS Setup → Câu đố Setup → Bài học cờ Setup → Nạp dữ liệu mẫu.
+3. Soạn một bài có `chess-fen`, `chess-pgn` (có `[FEN]`), `chess-puzzle`, `chess-lecture`, `lms-quiz` (có câu cờ).
+4. Ở chế độ khách: xem bài free, giải hết câu đố và quiz thì bài được đánh dấu hoàn thành trong trình duyệt. Bài trả phí chỉ hiện phần giới thiệu.
+5. Đăng nhập học viên: tiến độ trình duyệt được gộp lên tài khoản, trang "Học viên" trong admin thấy được tiến độ. Gọi route với `userId` của người khác thì bị từ chối.
+6. Trang trình chiếu: khách không thấy ghi chú HLV, HLV thì thấy.
+7. `pnpm query-counts`: trang công khai không tăng query, hoặc có giải trình.
 
