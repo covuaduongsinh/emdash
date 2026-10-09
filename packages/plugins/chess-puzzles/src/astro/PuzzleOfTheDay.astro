@@ -1,0 +1,58 @@
+---
+import "@duongsinh/chess-kit/theme.css";
+import PuzzleIsland from "./PuzzleIsland.jsx";
+
+interface Props {
+	puzzle: {
+		id: string;
+		title: string;
+		puzzle: {
+			fen: string;
+			moves?: string[];
+			solution?: string[];
+			orientation?: "white" | "black";
+		};
+		prompt?: string;
+		level?: string;
+		hint?: string;
+		explanation?: string;
+	};
+	title?: string;
+}
+
+const { puzzle, title = "Câu Đố Mỗi Ngày" } = Astro.props;
+const puzzleData = puzzle?.puzzle || { fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", moves: [] };
+const fen = puzzleData.fen;
+const solution = puzzleData.solution || puzzleData.moves || [];
+const orientation = puzzleData.orientation || (fen.split(" ")[1] === "b" ? "black" : "white");
+---
+
+<div class="chess-puzzle-of-the-day rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900" data-lms-requirement={`puzzle:${puzzle?.id || 'daily'}`}>
+	<div class="mb-4 flex items-center justify-between">
+		<div class="flex items-center gap-2">
+			<span class="text-xl font-extrabold text-blue-900 dark:text-blue-400">&#9818;</span>
+			<h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">{title}</h3>
+		</div>
+		{puzzle?.level && (
+			<span class="rounded bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 uppercase dark:bg-blue-950 dark:text-blue-300">
+				{puzzle.level}
+			</span>
+		)}
+	</div>
+
+	{puzzle && (
+		<div class="flex flex-col items-center">
+			<PuzzleIsland
+				client:visible
+				puzzleId={puzzle.id}
+				fen={fen}
+				solution={solution}
+				prompt={puzzle.prompt}
+				hint={puzzle.hint}
+				level={puzzle.level}
+				orientation={orientation}
+				explanation={puzzle.explanation}
+			/>
+		</div>
+	)}
+</div>
