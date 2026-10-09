@@ -1,12 +1,15 @@
 # Kế hoạch Triển khai Bảng điều khiển PGN (PGN Viewer)
 
 ## Tóm tắt Mục tiêu
+
 Tính năng hiển thị PGN hiện tại chỉ vẽ ra thế cờ ở nước đi cuối cùng. Yêu cầu mới là cần bổ sung một bảng điều khiển (Control Panel) bên dưới bàn cờ khi hiển thị PGN, cho phép người dùng lùi lại (Prev), tiến lên (Next), về đầu (Start), và tới cuối (End) trận đấu để xem lại từng nước đi.
 
 ## Phân tích Kỹ thuật
+
 Thư viện `chess.js` khi gọi hàm `loadPgn(pgn)` sẽ nạp toàn bộ ván đấu và dừng ở nước đi cuối cùng. Thư viện này không hỗ trợ con trỏ (pointer) để quay lui/tiến tới trực tiếp trên một object game.
 
 Do đó, giải pháp tối ưu cho React là:
+
 1. Khi nhận được PGN, load vào một object `Chess` tạm.
 2. Lấy toàn bộ lịch sử nước đi bằng `game.history({ verbose: true })`.
 3. Tạo một mảng lưu trữ tất cả các mã FEN tương ứng với từng nước đi (từ lúc bắt đầu đến khi kết thúc).
@@ -16,7 +19,9 @@ Do đó, giải pháp tối ưu cho React là:
 ## Các Thay Đổi Đề Xuất (Proposed Changes)
 
 ### `packages/plugins/chessfenpgn/src/ChessBoardIsland.tsx`
+
 #### [MODIFY] `ChessBoardIsland.tsx`
+
 Cập nhật React Component này để hỗ trợ điều hướng:
 
 ```tsx
@@ -70,36 +75,46 @@ export function ChessBoardIsland({ fen, pgn }: ChessBoardIslandProps) {
 	const isPgn = !!pgn && fens.length > 1;
 
 	return (
-		<div style={{ maxWidth: 400, margin: '20px auto', fontFamily: 'sans-serif' }}>
+		<div style={{ maxWidth: 400, margin: "20px auto", fontFamily: "sans-serif" }}>
 			<Chessboard position={fens[currentIndex]} arePiecesDraggable={false} />
-			
+
 			{isPgn && (
-				<div style={{ 
-					display: 'flex', 
-					justifyContent: 'center', 
-					gap: '10px', 
-					marginTop: '15px' 
-				}}>
-					<button 
-						onClick={() => setCurrentIndex(0)} 
+				<div
+					style={{
+						display: "flex",
+						justifyContent: "center",
+						gap: "10px",
+						marginTop: "15px",
+					}}
+				>
+					<button
+						onClick={() => setCurrentIndex(0)}
 						disabled={currentIndex === 0}
 						style={buttonStyle}
-					>⏮</button>
-					<button 
-						onClick={() => setCurrentIndex(c => Math.max(0, c - 1))} 
+					>
+						⏮
+					</button>
+					<button
+						onClick={() => setCurrentIndex((c) => Math.max(0, c - 1))}
 						disabled={currentIndex === 0}
 						style={buttonStyle}
-					>◀</button>
-					<button 
-						onClick={() => setCurrentIndex(c => Math.min(fens.length - 1, c + 1))} 
+					>
+						◀
+					</button>
+					<button
+						onClick={() => setCurrentIndex((c) => Math.min(fens.length - 1, c + 1))}
 						disabled={currentIndex === fens.length - 1}
 						style={buttonStyle}
-					>▶</button>
-					<button 
-						onClick={() => setCurrentIndex(fens.length - 1)} 
+					>
+						▶
+					</button>
+					<button
+						onClick={() => setCurrentIndex(fens.length - 1)}
 						disabled={currentIndex === fens.length - 1}
 						style={buttonStyle}
-					>⏭</button>
+					>
+						⏭
+					</button>
 				</div>
 			)}
 		</div>
@@ -107,17 +122,18 @@ export function ChessBoardIsland({ fen, pgn }: ChessBoardIslandProps) {
 }
 
 const buttonStyle = {
-	padding: '8px 12px',
-	cursor: 'pointer',
-	backgroundColor: '#f1f5f9',
-	border: '1px solid #cbd5e1',
-	borderRadius: '4px',
-	fontSize: '16px'
+	padding: "8px 12px",
+	cursor: "pointer",
+	backgroundColor: "#f1f5f9",
+	border: "1px solid #cbd5e1",
+	borderRadius: "4px",
+	fontSize: "16px",
 };
 ```
 
 ## Kế hoạch Xác minh (Verification Plan)
-- **Manual Verification:** 
+
+- **Manual Verification:**
   1. Tôi sẽ thay thế nội dung file `ChessBoardIsland.tsx` với đoạn mã trên.
   2. Bạn sẽ F5 lại trang Frontend (`/posts/test-chess`).
   3. Bàn cờ hiển thị PGN (khối phía dưới) sẽ xuất hiện thêm 4 nút điều hướng ⏮ ◀ ▶ ⏭.

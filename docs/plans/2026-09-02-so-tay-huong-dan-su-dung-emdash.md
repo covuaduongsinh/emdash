@@ -43,85 +43,40 @@ book/
 ## Danh sách 51 chương (5 Phần)
 
 **Phần I — Nhập môn & Cài đặt** (mọi vai trò)
+
 1. EmDash là gì và dành cho ai — `introduction.mdx`, `why-emdash.mdx`
 2. Cài đặt lần đầu và Trình cài đặt (Setup Wizard) — `getting-started.mdx`, `TEMPLATES.md`
 3. Thêm EmDash vào dự án Astro có sẵn — `existing-project.mdx`
 4. So sánh với WordPress / Astro thuần — `coming-from/wordpress.mdx`, `coming-from/astro.mdx`, `coming-from/astro-for-wp-devs.mdx`
 5. Các khái niệm cốt lõi (bản đồ thuật ngữ) — `concepts/collections.mdx`, `concepts/content-model.mdx`
 
-**Phần II — Dành cho người biên tập nội dung**
-6. Làm quen giao diện quản trị (Admin Panel) — `concepts/admin-panel.mdx` + ảnh chụp màn hình
-7. Đăng nhập không mật khẩu bằng Passkey — `guides/authentication.mdx`, `guides/atmosphere-auth.mdx`
-8. Soạn thảo nội dung và Portable Text — `guides/working-with-content.mdx`
-9. Thư viện Media — `guides/media-library.mdx`
-10. Menu điều hướng — `guides/menus.mdx`
-11. Widget & Vùng Widget — `guides/widgets.mdx`
-12. Phân loại nội dung (Taxonomies) — `guides/taxonomies.mdx`
-13. Xem trước (Preview) trước khi xuất bản — `guides/preview.mdx`
-14. Cài đặt trang web (Site Settings) — `guides/site-settings.mdx`
-15. Chế độ tối & tuỳ biến giao diện quản trị — `guides/dark-mode.mdx`
-16. Đa ngôn ngữ cho nội dung — `guides/internationalization.mdx`
+**Phần II — Dành cho người biên tập nội dung** 6. Làm quen giao diện quản trị (Admin Panel) — `concepts/admin-panel.mdx` + ảnh chụp màn hình 7. Đăng nhập không mật khẩu bằng Passkey — `guides/authentication.mdx`, `guides/atmosphere-auth.mdx` 8. Soạn thảo nội dung và Portable Text — `guides/working-with-content.mdx` 9. Thư viện Media — `guides/media-library.mdx` 10. Menu điều hướng — `guides/menus.mdx` 11. Widget & Vùng Widget — `guides/widgets.mdx` 12. Phân loại nội dung (Taxonomies) — `guides/taxonomies.mdx` 13. Xem trước (Preview) trước khi xuất bản — `guides/preview.mdx` 14. Cài đặt trang web (Site Settings) — `guides/site-settings.mdx` 15. Chế độ tối & tuỳ biến giao diện quản trị — `guides/dark-mode.mdx` 16. Đa ngôn ngữ cho nội dung — `guides/internationalization.mdx`
 
-**Phần III — Dành cho quản trị viên / vận hành**
-17. Xây dựng Loại nội dung (Content Types Builder) — `concepts/collections.mdx` (phần builder), `reference/field-types.mdx`
-18. Bố cục trang & Section — `guides/page-layouts.mdx`, `guides/sections.mdx`
-19. Quản lý người dùng, vai trò và quyền hạn — phần Roles trong `guides/authentication.mdx`
-20. Cài đặt & Quản lý Plugin (người dùng cuối) — `plugins/overview.mdx`, `installing.mdx`, `registry.mdx`, `registry-client.mdx`, `upgrading-sites.mdx`
-21. Chủ đề (Themes) — cài đặt và tuỳ biến cơ bản — `themes/overview.mdx`
-22. Sao lưu và phục hồi dữ liệu — `guides/backups.mdx`
-23. Di chuyển từ WordPress — `migration/from-wordpress.mdx`, `themes/porting-wp-themes.mdx`
-24. Nhập nội dung từ nguồn khác — `migration/content-import.mdx`
-25. Triển khai lên Cloudflare Workers — `deployment/cloudflare.mdx`, `deployment/storage.mdx`
-26. Triển khai trên Node.js — `deployment/nodejs.mdx`, `deployment/storage.mdx`
-27. Cơ sở dữ liệu (SQLite/PostgreSQL/D1) — `deployment/database.mdx`, `schema-evolution.mdx`, `core-migrations.mdx`
-28. Bí mật cấu hình & biến môi trường — `deployment/secrets.mdx`
-29. Bộ nhớ đệm đối tượng (Object Cache) — `deployment/object-cache.mdx`
-30. Nâng cấp phiên bản EmDash — `deployment/updating.mdx`
-31. Thanh toán tích hợp x402 — `guides/x402-payments.mdx`
-32. Công cụ AI tích hợp sẵn — `guides/ai-tools.mdx`
+**Phần III — Dành cho quản trị viên / vận hành** 17. Xây dựng Loại nội dung (Content Types Builder) — `concepts/collections.mdx` (phần builder), `reference/field-types.mdx` 18. Bố cục trang & Section — `guides/page-layouts.mdx`, `guides/sections.mdx` 19. Quản lý người dùng, vai trò và quyền hạn — phần Roles trong `guides/authentication.mdx` 20. Cài đặt & Quản lý Plugin (người dùng cuối) — `plugins/overview.mdx`, `installing.mdx`, `registry.mdx`, `registry-client.mdx`, `upgrading-sites.mdx` 21. Chủ đề (Themes) — cài đặt và tuỳ biến cơ bản — `themes/overview.mdx` 22. Sao lưu và phục hồi dữ liệu — `guides/backups.mdx` 23. Di chuyển từ WordPress — `migration/from-wordpress.mdx`, `themes/porting-wp-themes.mdx` 24. Nhập nội dung từ nguồn khác — `migration/content-import.mdx` 25. Triển khai lên Cloudflare Workers — `deployment/cloudflare.mdx`, `deployment/storage.mdx` 26. Triển khai trên Node.js — `deployment/nodejs.mdx`, `deployment/storage.mdx` 27. Cơ sở dữ liệu (SQLite/PostgreSQL/D1) — `deployment/database.mdx`, `schema-evolution.mdx`, `core-migrations.mdx` 28. Bí mật cấu hình & biến môi trường — `deployment/secrets.mdx` 29. Bộ nhớ đệm đối tượng (Object Cache) — `deployment/object-cache.mdx` 30. Nâng cấp phiên bản EmDash — `deployment/updating.mdx` 31. Thanh toán tích hợp x402 — `guides/x402-payments.mdx` 32. Công cụ AI tích hợp sẵn — `guides/ai-tools.mdx`
 
-**Phần IV — Dành cho lập trình viên**
-33. Tổng quan công cụ cho dev: CLI, API, MCP — `reference/cli.mdx`
-34. Truy vấn nội dung trong code Astro — `guides/querying-content.mdx`
-35. REST API tham chiếu — `reference/rest-api.mdx`, `reference/api.mdx`
-36. Cấu hình EmDash (`emdash.config`) — `reference/configuration.mdx`
-37. Hooks & vòng đời sự kiện — `reference/hooks.mdx`
-38. Máy chủ MCP cho AI Agent — `reference/mcp-server.mdx`
-39. Viết Plugin đầu tiên (sandboxed) — `creating-plugins/choosing-a-format.mdx`, `your-first-plugin.mdx`, `manifest.mdx`
-40. API Routes & Capabilities của Plugin — `creating-plugins/api-routes.mdx`, `capabilities.mdx`, `hooks.mdx`
-41. Giao diện Plugin: Block Kit, Field Kit, Settings — `creating-plugins/block-kit.mdx`, `plugins/field-kit.mdx`, `creating-plugins/settings.mdx`
-42. Lưu trữ dữ liệu Plugin & CLI plugin — `creating-plugins/storage.mdx`, `creating-plugins/cli.mdx`
-43. Phát hành Plugin lên Registry — `creating-plugins/publishing.mdx`, `migrating-to-the-cli.mdx`
-44. Plugin Native (nâng cao) — `creating-native-plugins/your-first-native-plugin.mdx`, `react-admin.mdx`
-45. Plugin Native: Page Fragments & Portable Text Components — `page-fragments.mdx`, `portable-text-components.mdx`, `distributing.mdx`
-46. Chuyển đổi Plugin WordPress sang EmDash — `migration/porting-plugins.mdx`
-47. Xây dựng Theme từ đầu — `themes/creating-themes.mdx`
-48. Seed Files — dữ liệu khởi tạo cho Theme — `themes/seed-files.mdx`
+**Phần IV — Dành cho lập trình viên** 33. Tổng quan công cụ cho dev: CLI, API, MCP — `reference/cli.mdx` 34. Truy vấn nội dung trong code Astro — `guides/querying-content.mdx` 35. REST API tham chiếu — `reference/rest-api.mdx`, `reference/api.mdx` 36. Cấu hình EmDash (`emdash.config`) — `reference/configuration.mdx` 37. Hooks & vòng đời sự kiện — `reference/hooks.mdx` 38. Máy chủ MCP cho AI Agent — `reference/mcp-server.mdx` 39. Viết Plugin đầu tiên (sandboxed) — `creating-plugins/choosing-a-format.mdx`, `your-first-plugin.mdx`, `manifest.mdx` 40. API Routes & Capabilities của Plugin — `creating-plugins/api-routes.mdx`, `capabilities.mdx`, `hooks.mdx` 41. Giao diện Plugin: Block Kit, Field Kit, Settings — `creating-plugins/block-kit.mdx`, `plugins/field-kit.mdx`, `creating-plugins/settings.mdx` 42. Lưu trữ dữ liệu Plugin & CLI plugin — `creating-plugins/storage.mdx`, `creating-plugins/cli.mdx` 43. Phát hành Plugin lên Registry — `creating-plugins/publishing.mdx`, `migrating-to-the-cli.mdx` 44. Plugin Native (nâng cao) — `creating-native-plugins/your-first-native-plugin.mdx`, `react-admin.mdx` 45. Plugin Native: Page Fragments & Portable Text Components — `page-fragments.mdx`, `portable-text-components.mdx`, `distributing.mdx` 46. Chuyển đổi Plugin WordPress sang EmDash — `migration/porting-plugins.mdx` 47. Xây dựng Theme từ đầu — `themes/creating-themes.mdx` 48. Seed Files — dữ liệu khởi tạo cho Theme — `themes/seed-files.mdx`
 
-**Phần V — Phụ lục**
-49. Bảng thuật ngữ đối chiếu Anh–Việt — tổng hợp toàn sách
-50. Lịch sử tính năng theo phiên bản — `packages/core/CHANGELOG.md`
-51. Câu hỏi thường gặp & khắc phục sự cố — tổng hợp từ các đoạn troubleshooting rải rác + README
+**Phần V — Phụ lục** 49. Bảng thuật ngữ đối chiếu Anh–Việt — tổng hợp toàn sách 50. Lịch sử tính năng theo phiên bản — `packages/core/CHANGELOG.md` 51. Câu hỏi thường gặp & khắc phục sự cố — tổng hợp từ các đoạn troubleshooting rải rác + README
 
-*Loại khỏi sổ tay (tài liệu kiến trúc/đóng góp code, không phải hướng dẫn sử dụng):* `concepts/architecture.mdx`, `contributing/*`, `AGENTS.md`, `CONTRIBUTING.md`, `docs/technical-specs/*`.
+_Loại khỏi sổ tay (tài liệu kiến trúc/đóng góp code, không phải hướng dẫn sử dụng):_ `concepts/architecture.mdx`, `contributing/*`, `AGENTS.md`, `CONTRIBUTING.md`, `docs/technical-specs/*`.
 
 ## Chia giai đoạn triển khai (13 giai đoạn)
 
-| Giai đoạn | Nội dung | Chương |
-|---|---|---|
-| GĐ0 | Viết Đề cương chi tiết toàn sách | — |
-| GĐ1 | Phần I — Nhập môn & Cài đặt | 1–5 |
-| GĐ2 | Phần II.A — Admin Panel, Đăng nhập, Soạn thảo, Media | 6–9 |
-| GĐ3 | Phần II.B — Menu, Widget, Taxonomy, Preview, Settings, Dark mode, i18n | 10–16 |
-| GĐ4 | Phần III.A — Content Types, Layout, Users/Roles, Plugin (end-user), Theme cơ bản | 17–21 |
-| GĐ5 | Phần III.B — Sao lưu, Di chuyển WP, Nhập nội dung | 22–24 |
-| GĐ6 | Phần III.C — Triển khai (Cloudflare, Node.js, DB, Secrets, Object Cache, Updating) | 25–30 |
-| GĐ7 | Phần III.D — x402 Payments, AI Tools | 31–32 |
-| GĐ8 | Phần IV.A — CLI/API/Config/Hooks/MCP (có thể tách GĐ8a/GĐ8b nếu quá tải — CLI+Config+Hooks / REST API+MCP) | 33–38 |
-| GĐ9 | Phần IV.B — Viết Plugin sandboxed (từ đầu đến publish) | 39–43 |
-| GĐ10 | Phần IV.C — Plugin Native + Porting Plugin WP | 44–46 |
-| GĐ11 | Phần IV.D — Xây dựng Theme + Seed Files | 47–48 |
-| GĐ12 | Phần V — Phụ lục (Thuật ngữ, Changelog, FAQ) + rà soát nhất quán toàn sách | 49–51 |
+| Giai đoạn | Nội dung                                                                                                   | Chương |
+| --------- | ---------------------------------------------------------------------------------------------------------- | ------ |
+| GĐ0       | Viết Đề cương chi tiết toàn sách                                                                           | —      |
+| GĐ1       | Phần I — Nhập môn & Cài đặt                                                                                | 1–5    |
+| GĐ2       | Phần II.A — Admin Panel, Đăng nhập, Soạn thảo, Media                                                       | 6–9    |
+| GĐ3       | Phần II.B — Menu, Widget, Taxonomy, Preview, Settings, Dark mode, i18n                                     | 10–16  |
+| GĐ4       | Phần III.A — Content Types, Layout, Users/Roles, Plugin (end-user), Theme cơ bản                           | 17–21  |
+| GĐ5       | Phần III.B — Sao lưu, Di chuyển WP, Nhập nội dung                                                          | 22–24  |
+| GĐ6       | Phần III.C — Triển khai (Cloudflare, Node.js, DB, Secrets, Object Cache, Updating)                         | 25–30  |
+| GĐ7       | Phần III.D — x402 Payments, AI Tools                                                                       | 31–32  |
+| GĐ8       | Phần IV.A — CLI/API/Config/Hooks/MCP (có thể tách GĐ8a/GĐ8b nếu quá tải — CLI+Config+Hooks / REST API+MCP) | 33–38  |
+| GĐ9       | Phần IV.B — Viết Plugin sandboxed (từ đầu đến publish)                                                     | 39–43  |
+| GĐ10      | Phần IV.C — Plugin Native + Porting Plugin WP                                                              | 44–46  |
+| GĐ11      | Phần IV.D — Xây dựng Theme + Seed Files                                                                    | 47–48  |
+| GĐ12      | Phần V — Phụ lục (Thuật ngữ, Changelog, FAQ) + rà soát nhất quán toàn sách                                 | 49–51  |
 
 Mỗi giai đoạn (trừ GĐ0): trước khi viết chương, tạo file `giai-doan/GD<NN>-*.md` nêu rõ danh sách chương, nguồn `.mdx` cụ thể, thuật ngữ cần tái sử dụng. Sau khi viết xong toàn bộ chương trong giai đoạn, tạo `bao-cao/GD<NN>-BAO-CAO.md` (file đã tạo, vấn đề phát sinh, việc tồn đọng). Nếu phải dừng giữa chừng một giai đoạn do quá tải/hết quota, tạo `ban-giao/BAN-GIAO-GD<NN>-*.md` ghi rõ chương nào xong/dở dang, kèm khối prompt sẵn để dán vào phiên mới (prompt phải chỉ định: đọc file bàn giao này + `01-DE-CUONG.md` trước, rồi tiếp tục đúng điểm dang dở).
 

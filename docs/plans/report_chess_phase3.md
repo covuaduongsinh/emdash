@@ -8,15 +8,16 @@
 ## 1. Các Công Việc Đã Thực Hiện
 
 ### 1.1. Mở Rộng Schema & Định Nghĩa Type (Additive & Tương Thích Ngược)
+
 - [`packages/plugins/emdash-lms/src/types.ts`](file:///D:/code/emdash/packages/plugins/emdash-lms/src/types.ts):
   - Cập nhật kiểu `QuestionType` hỗ trợ: `"single" | "multiple" | "text" | "fill_blank" | "chess"`.
   - Định nghĩa interface `ChessQuestionAnswers`:
     ```ts
     export interface ChessQuestionAnswers {
-      fen: string;
-      solution: string[]; // Các nước đi đúng theo định dạng UCI (ví dụ: ["e2e4", "e7e5"])
-      orientation?: "white" | "black";
-      prompt?: string;
+    	fen: string;
+    	solution: string[]; // Các nước đi đúng theo định dạng UCI (ví dụ: ["e2e4", "e7e5"])
+    	orientation?: "white" | "black";
+    	prompt?: string;
     }
     ```
 - [`packages/plugins/emdash-lms/src/schema/definitions.ts`](file:///D:/code/emdash/packages/plugins/emdash-lms/src/schema/definitions.ts):
@@ -24,6 +25,7 @@
   - Bảo toàn 100% các trường dữ liệu và collection hiện hữu.
 
 ### 1.2. Routes Quản Trị Soạn Quiz & Câu Hỏi (Admin API)
+
 - [`packages/plugins/emdash-lms/src/routes/admin-quiz.ts`](file:///D:/code/emdash/packages/plugins/emdash-lms/src/routes/admin-quiz.ts):
   - `admin/quiz/list` (`content:read`): Lấy danh sách quiz, đếm tổng số câu hỏi theo từng quiz.
   - `admin/quiz/get` (`content:read`): Lấy chi tiết quiz và toàn bộ danh sách câu hỏi đã sắp xếp thứ tự `sort_order`.
@@ -35,6 +37,7 @@
   - `admin/question/reorder` (`content:edit_any`): Đổi thứ tự hiển thị của các câu hỏi trong quiz theo mảng `questionIds`.
 
 ### 1.3. Routes Phục Vụ Học Viên & Chấm Điểm Server-Side
+
 - [`packages/plugins/emdash-lms/src/routes/quiz-present.ts`](file:///D:/code/emdash/packages/plugins/emdash-lms/src/routes/quiz-present.ts):
   - Route `quiz/present` (`public: true`):
     - Trả về cấu trúc đề thi cho client.
@@ -51,6 +54,7 @@
     - Đối với `me/quiz/submit`, lưu kết quả vào collection `quiz_submissions` và cập nhật lịch sử làm bài của học viên.
 
 ### 1.4. Giao Diện Quản Trị "Soạn Quiz" (Kumo Design System)
+
 - [`packages/plugins/emdash-lms/src/admin.tsx`](file:///D:/code/emdash/packages/plugins/emdash-lms/src/admin.tsx):
   - Thêm menu và route Quản trị `/quizzes` ("Soạn Quiz").
   - Giao diện danh sách Quiz, modal tạo/sửa Quiz, và màn hình quản lý câu hỏi trong Quiz.
@@ -60,6 +64,7 @@
     - **Câu cờ vua tương tác:** Tích hợp `PositionEditor` và `MoveRecorder` từ thư viện `@duongsinh/chess-kit/react`. Cho phép người soạn xếp thế cờ FEN trực quan, kéo cờ trên bàn cờ để hệ thống tự động ghi nhận chuỗi nước đi UCI làm lời giải chuẩn `solution`.
 
 ### 1.5. Khối Portable Text `lms-quiz` & Component `QuizRunner`
+
 - [`packages/plugins/emdash-lms/src/react/QuizRunner.tsx`](file:///D:/code/emdash/packages/plugins/emdash-lms/src/react/QuizRunner.tsx):
   - Component React tương tác phía học viên:
     - Tải đề từ `quiz/present`.
@@ -75,7 +80,9 @@
 ## 2. Kết Quả Kiểm Chứng Thực Tế
 
 ### 2.1. Kiểm Tra Unit Test (`vitest`)
+
 Đã thiết kế bộ kiểm thử toàn diện trong [`packages/plugins/emdash-lms/tests/quiz.test.ts`](file:///D:/code/emdash/packages/plugins/emdash-lms/tests/quiz.test.ts) (13 tests):
+
 - Schema validation & mở rộng `questions.type = "chess"`.
 - Admin CRUD Quiz & Options route.
 - Admin CRUD Question (lưu cấu trúc FEN, nước đi UCI, prompt).
@@ -88,10 +95,13 @@
 - Lưu kết quả học viên vào `quiz_submissions` qua `me/quiz/submit`.
 
 **Lệnh chạy kiểm tra:**
+
 ```bash
 pnpm --filter emdash-lms test
 ```
+
 **Kết quả thực tế:**
+
 ```text
  ✓ tests/routes.test.ts (8 tests) 21ms
  ✓ tests/setup-schema.test.ts (2 tests) 12ms
@@ -104,6 +114,7 @@ pnpm --filter emdash-lms test
 ```
 
 ### 2.2. Kiểm Tra Linter & Typecheck
+
 - `pnpm --filter emdash-lms typecheck` -> **0 errors** (Thành công).
 - `pnpm lint:quick` -> **0 diagnostics** (Sạch hoàn toàn).
 - `pnpm typecheck:demos` -> **0 errors, 0 warnings** trên toàn bộ 6 site demo Astro.
@@ -113,24 +124,28 @@ pnpm --filter emdash-lms test
 ## 3. Runbook Bàn Giao Cho Thầy Tường
 
 ### 3.1. Đồng Bộ Schema Lên D1 Production
+
 Khi cập nhật plugin lên production, Thầy chỉ cần đăng nhập Admin tại `https://covuahocduong.com/_emdash/admin` và vào mục:
+
 1. **LMS -> Cài đặt LMS** (`/settings/setup`).
 2. Bấm nút **"Chạy cài đặt / Cập nhật Schema"** (gọi route `setup/run`).
 3. Hệ thống sẽ tự động cập nhật validation cho trường `questions.type` nhận giá trị `"chess"`.
 
 ### 3.2. Soạn Thử Quiz Cờ Vua Mẫu
+
 1. Vào menu **LMS -> Soạn Quiz** (`/_emdash/admin/quizzes`).
-2. Bấm **"Tạo Quiz mới"**, nhập tiêu đề (ví dụ: *"Kiểm tra Chiến thuật Nhập môn"*), chọn bài học liên kết, đặt điểm đạt (ví dụ: 70%) và thời gian làm bài (ví dụ: 10 phút).
+2. Bấm **"Tạo Quiz mới"**, nhập tiêu đề (ví dụ: _"Kiểm tra Chiến thuật Nhập môn"_), chọn bài học liên kết, đặt điểm đạt (ví dụ: 70%) và thời gian làm bài (ví dụ: 10 phút).
 3. Bấm **"Soạn câu hỏi"**:
    - Thêm câu hỏi loại **"Thế cờ / Bài tập cờ vua"**.
    - Dùng bàn cờ xếp thế (hoặc dán FEN), sau đó thực hiện các nước đi lời giải trên bàn cờ ghi nước (ví dụ: `Qh7#`).
-   - Nhập gợi ý/yêu cầu đề bài (ví dụ: *"Trắng đi trước và chiếu hết sau 1 nước"*).
+   - Nhập gợi ý/yêu cầu đề bài (ví dụ: _"Trắng đi trước và chiếu hết sau 1 nước"_).
    - Bấm **"Lưu câu hỏi"**.
 4. Vào bài học tương ứng trong Quản trị Nội dung, chèn khối **"Bài tập trắc nghiệm (Quiz)"** và chọn Quiz vừa tạo.
 
 ---
 
 ## 4. Trạng Thái Hoàn Thành & Chuyển Giao
+
 - **Giai đoạn 3 (Quiz có câu hỏi cờ) đã hoàn thành 100%** đúng thiết kế v3 và kế hoạch tổng thể.
 - Đảm bảo tính tương thích ngược tuyệt đối với các khóa học và dữ liệu hiện có.
 - Sẵn sàng chuyển sang **Giai đoạn 4: Plugin chess-puzzles (kho bài tập cờ độc lập và phân cấp)**.

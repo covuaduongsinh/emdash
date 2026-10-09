@@ -10,38 +10,45 @@
 Đã nghiên cứu và đối chiếu theo tài liệu chính thức của SePay ([https://docs.sepay.vn](https://docs.sepay.vn) & [https://sepay.vn](https://sepay.vn)):
 
 ### 1.1. Cơ Chế Xác Thực Webhook
+
 - **Phương thức xác thực:** API Key qua HTTP Header:
   ```http
   Authorization: Apikey <SEPAY_API_KEY>
   ```
-  *(Hỗ trợ cả định dạng `Bearer <SEPAY_API_KEY>` hoặc header `x-sepay-api-key`).*
+  _(Hỗ trợ cả định dạng `Bearer <SEPAY_API_KEY>` hoặc header `x-sepay-api-key`)._
 - **Xử lý bảo mật:** Plugin `emdash-lms` bắt buộc kiểm tra header này khớp với cấu hình `sepay_api_key` trong KV settings hoặc biến môi trường `SEPAY_API_KEY`. Nếu thiếu hoặc sai khóa, hệ thống từ chối ngay với mã `401 Unauthorized` (`PluginRouteError.unauthorized`).
 
 ### 1.2. Cấu Trúc Payload Giao Dịch
+
 Khi có chuyển khoản ngân hàng, SePay gửi HTTP POST JSON:
+
 ```json
 {
-  "id": 92704,
-  "gateway": "MB",
-  "transactionDate": "2026-10-09 12:00:00",
-  "accountNumber": "0987654321",
-  "subAccount": "",
-  "code": "SEVN63DC8E5C",
-  "content": "LMS-7K9F2A8B thanh toan the thu vien",
-  "transferType": "in",
-  "description": "NGUYEN VAN A chuyen tien LMS-7K9F2A8B",
-  "transferAmount": 500000,
-  "accumulated": 105000000,
-  "referenceCode": "FT26100912345"
+	"id": 92704,
+	"gateway": "MB",
+	"transactionDate": "2026-10-09 12:00:00",
+	"accountNumber": "0987654321",
+	"subAccount": "",
+	"code": "SEVN63DC8E5C",
+	"content": "LMS-7K9F2A8B thanh toan the thu vien",
+	"transferType": "in",
+	"description": "NGUYEN VAN A chuyen tien LMS-7K9F2A8B",
+	"transferAmount": 500000,
+	"accumulated": 105000000,
+	"referenceCode": "FT26100912345"
 }
 ```
 
 ### 1.3. Cấu Trúc Link Ảnh VietQR
+
 Được tạo động theo chuẩn:
+
 ```text
 https://qr.sepay.vn/img?acc={bankAccount}&bank={bankCode}&amount={amount}&des={orderCode}&template={template}
 ```
+
 Trong đó:
+
 - `bank`: Mã ngân hàng (`MB`, `VCB`, `ACB`, `ICB`, `TCB`...).
 - `acc`: Số tài khoản nhận tiền.
 - `amount`: Số tiền chính xác tính phía server.
@@ -53,6 +60,7 @@ Trong đó:
 ## 2. Các Công Việc Đã Thực Hiện
 
 ### 2.1. Mã Nguồn Cốt Lõi Thanh Toán & Webhook
+
 - [`packages/plugins/emdash-lms/src/providers/sepay.ts`](file:///D:/code/emdash/packages/plugins/emdash-lms/src/providers/sepay.ts): Adapter SePay chính thức, bóc tách mã đơn `LMS-XXXXXXXX` qua regex chuẩn tĩnh, tạo URL VietQR và kiểm tra chữ ký/API Key.
 - [`packages/plugins/emdash-lms/src/routes/checkout-create.ts`](file:///D:/code/emdash/packages/plugins/emdash-lms/src/routes/checkout-create.ts): Route `checkout/create` (permission: `content:read`):
   - Bắt buộc đăng nhập (`ctx.user.id`).
@@ -77,6 +85,7 @@ Trong đó:
   - Trường hợp không tìm thấy mã đơn: trả về `200` kèm thông điệp ghi log (theo khuyến nghị SePay để tránh gửi lại các giao dịch không liên quan).
 
 ### 2.2. Giao Diện Người Dùng Học Viên & Admin (Kumo)
+
 - [`packages/plugins/emdash-lms/src/pages/plans.astro`](file:///D:/code/emdash/packages/plugins/emdash-lms/src/pages/plans.astro): Trang Thẻ Thư Viện chuẩn hóa học đường, bỏ các huy hiệu giảm giá thương mại, hiển thị rõ gói định kỳ và nút đăng ký trỏ sang `/checkout/[slug]`.
 - [`packages/plugins/emdash-lms/src/pages/checkout/[id].astro`](file:///D:/code/emdash/packages/plugins/emdash-lms/src/pages/checkout/[id].astro):
   - Chưa đăng nhập: hiện thẻ hướng dẫn đăng nhập / đăng ký tài khoản học viên.
@@ -90,23 +99,25 @@ Trong đó:
 ---
 
 ## 3. Đề Xuất Về Stripe
+
 - Trong `demos/cloudflare/astro.config.mjs`, hiện có `providers: ["sepay", "stripe"]`.
 - Do site `covuahocduong.com` phục vụ thị trường học đường trong nước sử dụng chuẩn chuyển khoản VietQR, hệ thống hiện tại **không đăng ký Stripe provider khi chưa cấu hình khóa Stripe**.
-- **Đề xuất:** Xóa `"stripe"` khỏi cấu hình `demos/cloudflare/astro.config.mjs` để giao diện và luồng thanh toán gọn gàng, thuần VietQR SePay. *(Chờ Thầy Tường xác nhận trước khi sửa file demo)*.
+- **Đề xuất:** Xóa `"stripe"` khỏi cấu hình `demos/cloudflare/astro.config.mjs` để giao diện và luồng thanh toán gọn gàng, thuần VietQR SePay. _(Chờ Thầy Tường xác nhận trước khi sửa file demo)_.
 
 ---
 
 ## 4. Kết Quả Kiểm Chứng Thực Tế
 
-| Lệnh kiểm chứng | Kết quả | Trạng thái |
-| :--- | :--- | :---: |
-| `pnpm --filter emdash-lms test` | **30 passed (4 test files, 100% pass)** | ✅ PASS |
-| `pnpm --filter emdash-lms typecheck` | **tsgo --noEmit (Exit code 0)** | ✅ PASS |
-| `pnpm typecheck:demos` | **6 demos (100% pass, 0 errors, 0 warnings)** | ✅ PASS |
-| `pnpm --filter @emdash-cms/demo-cloudflare typecheck` | **36 files (0 errors, 0 warnings, 0 hints)** | ✅ PASS |
-| `pnpm lint:quick` | **0 errors, 0 warnings trong emdash-lms** | ✅ PASS |
+| Lệnh kiểm chứng                                       | Kết quả                                       | Trạng thái |
+| :---------------------------------------------------- | :-------------------------------------------- | :--------: |
+| `pnpm --filter emdash-lms test`                       | **30 passed (4 test files, 100% pass)**       |  ✅ PASS   |
+| `pnpm --filter emdash-lms typecheck`                  | **tsgo --noEmit (Exit code 0)**               |  ✅ PASS   |
+| `pnpm typecheck:demos`                                | **6 demos (100% pass, 0 errors, 0 warnings)** |  ✅ PASS   |
+| `pnpm --filter @emdash-cms/demo-cloudflare typecheck` | **36 files (0 errors, 0 warnings, 0 hints)**  |  ✅ PASS   |
+| `pnpm lint:quick`                                     | **0 errors, 0 warnings trong emdash-lms**     |  ✅ PASS   |
 
 ### Danh mục ca kiểm thử trong `payment-sepay.test.ts`:
+
 1. `rejects webhook request when Authorization header is missing` (401 Unauthorized)
 2. `rejects webhook request when Authorization key is invalid` (401 Unauthorized)
 3. `accepts webhook request with valid Authorization header (Apikey or Bearer)` (200 + kích hoạt Membership)
@@ -132,22 +143,27 @@ Trong đó:
 > Toàn bộ thông tin nhạy cảm (API Key SePay, Số tài khoản) không được lưu trong Git. Thầy tự thực hiện các bước sau trên Cloudflare Dashboard / Trang quản trị.
 
 ### Bước 1: Sao lưu cơ sở dữ liệu D1
+
 Chạy lệnh sao lưu D1 trên máy tính hoặc Cloudflare Dashboard:
+
 ```bash
 npx wrangler d1 export emdash_db --remote --output backup_pre_sepay.sql
 ```
 
 ### Bước 2: Cấu hình biến môi trường / Cài đặt thanh toán
+
 Truy cập trang Quản trị EmDash tại `/_emdash/admin/settings/payment`:
+
 1. **Mã ngân hàng:** Nhập mã ngân hàng của Thầy (ví dụ: `MB`, `VCB`, `ACB`...).
 2. **Số tài khoản:** Nhập số tài khoản ngân hàng nhận tiền.
 3. **Tên chủ tài khoản:** `CTY CP CO VUA DUONG SINH` (hoặc tên tài khoản của Thầy).
 4. **SePay API Key:** Nhập API Key tạo từ SePay (dạng `SEPAY_...` hoặc chuỗi khóa bí mật).
 5. Nhấn **"Lưu Cài Đặt Thanh Toán"**.
 
-*(Hoặc cấu hình qua biến môi trường Worker / Secrets: `SEPAY_API_KEY`, `SEPAY_BANK_CODE`, `SEPAY_BANK_ACCOUNT`, `SEPAY_ACCOUNT_NAME`).*
+_(Hoặc cấu hình qua biến môi trường Worker / Secrets: `SEPAY_API_KEY`, `SEPAY_BANK_CODE`, `SEPAY_BANK_ACCOUNT`, `SEPAY_ACCOUNT_NAME`)._
 
 ### Bước 3: Đăng ký Webhook trên SePay
+
 1. Đăng nhập vào [https://my.sepay.vn](https://my.sepay.vn).
 2. Vào mục **Tích hợp Webhook** &rarr; **Thêm Webhook mới**.
 3. Điền các thông tin:
@@ -158,6 +174,7 @@ Truy cập trang Quản trị EmDash tại `/_emdash/admin/settings/payment`:
 4. Lưu cấu hình Webhook.
 
 ### Bước 4: Kiểm thử giao dịch nhỏ
+
 1. Mở trang `https://covuahocduong.com/plans` trên trình duyệt.
 2. Đăng nhập tài khoản học viên thử nghiệm.
 3. Chọn gói Thẻ thư viện hoặc một Chuyên đề cờ vua và bấm **"Đăng ký Thẻ Thư Viện"**.

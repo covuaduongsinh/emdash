@@ -9,6 +9,7 @@
 ## 1. Các Công Việc Đã Thực Hiện
 
 ### 1.1. Tích Hợp Thư Viện `@duongsinh/chess-kit` & Đóng Gói Plugin
+
 - [`packages/plugins/chessfenpgn/package.json`](file:///D:/code/emdash/packages/plugins/chessfenpgn/package.json):
   - Thêm dependency `"@duongsinh/chess-kit": "workspace:*"`.
   - Giữ nguyên phiên bản `chess.js` (`^1.0.0-beta.8`) và `react-chessboard` (`^4.7.2`).
@@ -20,6 +21,7 @@
   - Viết tài liệu hướng dẫn tiếng Việt chi tiết về các tính năng, cách chèn khối FEN/PGN và cách cấu hình plugin.
 
 ### 1.2. Khắc Phục Lỗi Hồi Quy & Thay Thế `ChessBoardIsland`
+
 - [`packages/plugins/chessfenpgn/src/ChessBoardIsland.tsx`](file:///D:/code/emdash/packages/plugins/chessfenpgn/src/ChessBoardIsland.tsx):
   - Thay thế toàn bộ mã tự viết cũ bằng các component chuẩn từ `@duongsinh/chess-kit/react` (`Board` và `PgnViewer`).
   - **Sửa lỗi PGN có `[FEN]` và `[SetUp "1"]`**: Component `PgnViewer` sử dụng `replayPositions` và `parsePgn` từ `chess-kit/core`, đảm bảo khởi tạo đúng thế xuất phát từ tag `[FEN]` thay vì bàn cờ tiêu chuẩn.
@@ -27,6 +29,7 @@
   - Tự động chuyển đổi mượt mà giữa hiển thị thế cờ tĩnh (`<figure><Board .../></figure>`) và trình duyệt ván cờ động (`<PgnViewer .../>`).
 
 ### 1.3. Cập Nhật Các Thành Phần Astro Frontend
+
 - [`packages/plugins/chessfenpgn/src/ChessFen.astro`](file:///D:/code/emdash/packages/plugins/chessfenpgn/src/ChessFen.astro):
   - Import `@duongsinh/chess-kit/theme.css` để đảm bảo styling bàn cờ, màu ô cờ chuẩn Dương Sinh (`--ds-navy`, `--ds-gold`).
   - Bổ sung interface `Props` có kiểu dữ liệu chặt chẽ (`BoardOrientation`, `BoardSize`).
@@ -38,6 +41,7 @@
   - Truyền vào `ChessBoardIsland` (`client:visible`).
 
 ### 1.4. Mở Rộng Cấu Hình Portable Text Blocks & Category "Cờ Vua"
+
 - [`packages/plugins/chessfenpgn/src/index.ts`](file:///D:/code/emdash/packages/plugins/chessfenpgn/src/index.ts):
   - Phân nhóm danh mục `category: "Cờ vua"` cho cả 2 khối: `chess-fen` và `chess-pgn`.
   - Khối **`chess-fen`**:
@@ -56,6 +60,7 @@
   - Khai báo trang Quản trị: `admin.pages = [{ path: "/editor", label: "Bàn cờ", icon: "grid" }]`.
 
 ### 1.5. Nâng Cấp Widget Quản Trị & Trang "Bàn Cờ" (`/editor`)
+
 - [`packages/plugins/chessfenpgn/src/admin.tsx`](file:///D:/code/emdash/packages/plugins/chessfenpgn/src/admin.tsx):
   - **Widget `chess-board` (`ChessWidget`)**:
     - Hỗ trợ cả 2 chế độ: `fen` (xếp thế qua `PositionEditor`) và `pgn` (nhập chuỗi hoặc xem ván đấu).
@@ -74,7 +79,9 @@
 ## 2. Kết Quả Kiểm Chứng Thực Tế
 
 ### 2.1. Kiểm Tra Unit Test (`vitest`)
+
 Toàn bộ 9 tests của `chessfenpgn` đã vượt qua 100%:
+
 - [`packages/plugins/chessfenpgn/tests/regression-pgn-fen.test.ts`](file:///D:/code/emdash/packages/plugins/chessfenpgn/tests/regression-pgn-fen.test.ts):
   - ✓ Replays from custom starting FEN when SetUp tag is present (Kiểm tra hồi quy thế cờ xuất phát).
   - ✓ Handles standard PGN without FEN tag starting from standard position.
@@ -90,9 +97,11 @@ Toàn bộ 9 tests của `chessfenpgn` đã vượt qua 100%:
   - ✓ Renders properly with PGN props and options.
 
 **Kết quả chạy lệnh tổng thể:**
+
 ```bash
 pnpm --filter @emdash-cms/plugin-chessfenpgn test && pnpm --filter @duongsinh/chess-kit test && pnpm --filter emdash-lms test
 ```
+
 ```text
  ✓ packages/plugins/chessfenpgn/tests/regression-pgn-fen.test.ts (3 tests)
  ✓ packages/plugins/chessfenpgn/tests/island-and-widget.test.ts (2 tests)
@@ -117,6 +126,7 @@ pnpm --filter @emdash-cms/plugin-chessfenpgn test && pnpm --filter @duongsinh/ch
 ```
 
 ### 2.2. Kiểm Tra Linter, Typecheck & Production Build
+
 - `pnpm lint:quick` -> **0 diagnostics** (Sạch 100%).
 - `pnpm --filter @emdash-cms/plugin-chessfenpgn typecheck` -> **0 errors**.
 - `pnpm --filter @duongsinh/chess-kit typecheck` -> **0 errors**.
@@ -129,6 +139,7 @@ pnpm --filter @emdash-cms/plugin-chessfenpgn test && pnpm --filter @duongsinh/ch
 ## 3. Runbook Bàn Giao Cho Thầy Tường
 
 ### 3.1. Sử Dụng Trang "Bàn Cờ" Trong Quản Trị
+
 1. Đăng nhập trang quản trị Admin tại `https://covuahocduong.com/_emdash/admin`.
 2. Trên thanh điều hướng bên trái (Sidebar), bấm chọn mục **"Bàn cờ"** (`/_emdash/admin/editor`).
 3. **Xếp thế cờ (FEN)**:
@@ -141,7 +152,9 @@ pnpm --filter @emdash-cms/plugin-chessfenpgn test && pnpm --filter @duongsinh/ch
    - Bấm **"Sao chép JSON Block"** để lấy mã nhúng vào nội dung bài giảng.
 
 ### 3.2. Chèn Khối Cờ Vua Vào Trình Soạn Thảo Bài Viết
+
 Trong giao diện soạn bài học / bài viết Portable Text:
+
 1. Gõ `/` hoặc bấm dấu `+` để mở menu chèn khối.
 2. Tìm nhóm danh mục **"Cờ vua"**:
    - Chọn **`Chess (FEN)`** nếu muốn nhúng hình ảnh thế cờ tĩnh có mũi tên chỉ dẫn.
@@ -150,5 +163,6 @@ Trong giao diện soạn bài học / bài viết Portable Text:
 ---
 
 ## 4. Trạng Thái Hoàn Thành & Chuyển Giao
+
 - **Giai đoạn 4 (Nâng cấp plugin chessfenpgn) đã hoàn thành 100%**.
 - Sẵn sàng chuyển sang **Giai đoạn 5: Plugin `chess-puzzles` (kho câu đố, widget soạn, block chess-puzzle, trình nhập)**.

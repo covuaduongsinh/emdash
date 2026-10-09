@@ -290,6 +290,35 @@ export function PuzzlesAdminPage() {
 		}
 	};
 
+	const handleSeedSamplePuzzles = async () => {
+		setLoading(true);
+		setMessage(null);
+		try {
+			const res = await fetch("/_emdash/api/plugins/chess-puzzles/puzzles/seed", {
+				method: "POST",
+				headers: {
+					"X-EmDash-Request": "1",
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({}),
+			});
+			if (res.ok) {
+				const data = await res.json();
+				setMessage(
+					`Nạp câu đố mẫu hoàn tất: Đã tạo mới ${data.data?.created || 0} câu, Bỏ qua ${data.data?.skipped || 0} câu đã có.`,
+				);
+				fetchStats();
+			} else {
+				const body = await res.json().catch(() => ({}));
+				setMessage(body.error?.message || "Lỗi khi nạp câu đố mẫu.");
+			}
+		} catch {
+			setMessage("Không thể kết nối máy chủ.");
+		} finally {
+			setLoading(false);
+		}
+	};
+
 	const levelCards = useMemo(() => {
 		return Object.keys(LEVELS).map((lvlKey) => {
 			const info = LEVELS[lvlKey as ChessLevel["id"]];
@@ -313,7 +342,10 @@ export function PuzzlesAdminPage() {
 						Ngân hàng câu đố phân bổ theo 6 cấp độ cờ vua Dương Sinh
 					</p>
 				</div>
-				<div className="flex gap-2">
+				<div className="flex flex-wrap gap-2">
+					<Button variant="secondary" onClick={handleSeedSamplePuzzles} disabled={loading}>
+						Nạp 6 câu đố mẫu (6 cấp)
+					</Button>
 					<Button variant="secondary" onClick={handleRefreshSnapshots} disabled={loading}>
 						Làm mới Snapshot
 					</Button>

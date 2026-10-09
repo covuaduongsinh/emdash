@@ -10,19 +10,20 @@ Mỗi giai đoạn chạy trong **một phiên Claude Code mới**.
 2. Dán **Prompt chung** rồi tới **Prompt GĐ…** ngay bên dưới, trong cùng một tin nhắn.
 3. Thứ tự: **GĐ0 → GĐ1 → GĐ2a → GĐ2b → GĐ3 → GĐ4 → GĐ5 → GĐ6 → GĐ7**.
 
-   | GĐ | Nội dung |
-   |---|---|
-   | 0 | Kiểm kê |
-   | 1 | chess-kit |
-   | 2a | Ổn định LMS |
-   | 2b | SePay |
-   | 3 | Quiz |
-   | 4 | chessfenpgn |
-   | 5 | Câu đố |
-   | 6 | Bài học/Bài giảng |
-   | 7 | Hoàn thiện site |
+   | GĐ  | Nội dung          |
+   | --- | ----------------- |
+   | 0   | Kiểm kê           |
+   | 1   | chess-kit         |
+   | 2a  | Ổn định LMS       |
+   | 2b  | SePay             |
+   | 3   | Quiz              |
+   | 4   | chessfenpgn       |
+   | 5   | Câu đố            |
+   | 6   | Bài học/Bài giảng |
+   | 7   | Hoàn thiện site   |
 
    Xong mỗi giai đoạn: đọc `docs/plans/report_chess_phaseN.md`, merge vào `main`, rồi mới mở phiên tiếp theo.
+
 4. **Chuẩn bị cho GĐ0:** Thầy chạy lệnh sau trên máy có quyền Cloudflare rồi đưa file cho phiên làm việc (đặt ngoài git, ví dụ thư mục tạm của phiên):
 
    ```bash
@@ -30,6 +31,7 @@ Mỗi giai đoạn chạy trong **một phiên Claude Code mới**.
    ```
 
    **Không commit file này**, vì nó chứa dữ liệu người dùng.
+
 5. **Không deploy giữa GĐ2a và GĐ2b.** Mọi lần deploy, Thầy tự làm theo runbook trong báo cáo.
 6. Sau GĐ2a, GĐ2b và GĐ3 **bắt buộc** chạy Prompt kiểm tra chéo trong một phiên khác trước khi merge.
 
@@ -447,7 +449,7 @@ Tiêu chí hoàn thành:
 
 ## Prompt GĐ6: Plugin `chess-lessons`
 
-```text
+````text
 GĐ6: PLUGIN chess-lessons, BÀI HỌC CỜ + BÀI GIẢNG (xem mục 4 "GĐ6" trong docs/plans/chess_lms_plan.md)
 
 Mục tiêu: tạo packages/plugins/chess-lessons (package "@duongsinh/plugin-chess-lessons", "private": true, id "chess-lessons", native). Không import code của LMS hay chess-puzzles.
@@ -486,7 +488,7 @@ Tiêu chí hoàn thành:
 - [ ] Đã viết docs/plans/report_chess_phase6.md kèm ảnh và runbook.
 
 ĐIỂM DỪNG: LMS Setup xóa hoặc ghi đè field do chess-lessons thêm.
-```
+````
 
 ---
 

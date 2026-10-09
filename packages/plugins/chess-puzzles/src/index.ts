@@ -3,6 +3,7 @@ import { definePlugin } from "emdash";
 
 import { puzzlesImportHandler } from "./handlers/import.js";
 import { puzzlesOptionsHandler } from "./handlers/options.js";
+import { puzzlesSeedHandler, SAMPLE_SIX_LEVEL_PUZZLES } from "./handlers/seed.js";
 import { setupRunHandler } from "./handlers/setup.js";
 import { snapshotsRefreshHandler, traverseAndSnapshot } from "./handlers/snapshots.js";
 import { puzzlesStatsHandler } from "./handlers/stats.js";
@@ -152,6 +153,10 @@ export function createPlugin(_options: ChessPuzzlesPluginOptions = {}): Resolved
 				handler: puzzlesImportHandler,
 				permission: "content:create",
 			},
+			"puzzles/seed": {
+				handler: puzzlesSeedHandler,
+				permission: "content:create",
+			},
 			"puzzles/stats": {
 				handler: puzzlesStatsHandler,
 				permission: "content:read",
@@ -179,6 +184,7 @@ export * from "./types.js";
 export * from "./schema/definitions.js";
 export * from "./schema/setup.js";
 export * from "./handlers/snapshots.js";
+export * from "./handlers/seed.js";
 export * from "./importers/lichess-csv.js";
 export * from "./importers/epd.js";
 export * from "./importers/pgn.js";

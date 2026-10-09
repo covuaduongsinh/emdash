@@ -9,6 +9,7 @@
 ## 1. Các Công Việc Đã Hoàn Thành
 
 ### 1.1. Cấu Trúc Package & Plugin Descriptor
+
 - [`packages/plugins/chess-lessons/package.json`](file:///D:/code/emdash/packages/plugins/chess-lessons/package.json):
   - Tên package: `@duongsinh/plugin-chess-lessons`, `"private": true`, version `0.1.0`.
   - Exports: `.` (main), `./admin` (adminEntry), `./astro` (componentsEntry).
@@ -23,6 +24,7 @@
 - [`packages/plugins/chess-lessons/README.md`](file:///D:/code/emdash/packages/plugins/chess-lessons/README.md): Tài liệu hướng dẫn sử dụng, cấu hình và quy ước soạn Markdown cho vault `OBSIDIAN2026`.
 
 ### 1.2. Schema & Setup CSDL Idempotent & Bổ Sung Trường Cờ Vua
+
 - [`packages/plugins/chess-lessons/src/schema/definitions.ts`](file:///D:/code/emdash/packages/plugins/chess-lessons/src/schema/definitions.ts):
   - Bổ sung trường vào collection `courses`:
     - `level`: Select 6 cấp độ Dương Sinh (`tot`, `ma`, `tuong`, `xe`, `hau`, `vua`).
@@ -40,6 +42,7 @@
   - Route `setup/run` yêu cầu quyền `schema:manage`.
 
 ### 1.3. Widget `lecture-builder` & Giao Diện Quản Trị Sư Phạm
+
 - [`packages/plugins/chess-lessons/src/admin.tsx`](file:///D:/code/emdash/packages/plugins/chess-lessons/src/admin.tsx):
   - **Widget `lecture-builder` (`LectureBuilderWidget`)**:
     - Soạn kịch bản bài giảng gồm danh sách các bước (`steps`).
@@ -55,14 +58,15 @@
       4. **"Làm mới Snapshot bài giảng"** (Route `snapshots/refresh`).
 
 ### 1.4. Trình Nhập Bài Học Từ Obsidian Markdown (`/import-obsidian`)
+
 - [`packages/plugins/chess-lessons/src/importers/obsidian.ts`](file:///D:/code/emdash/packages/plugins/chess-lessons/src/importers/obsidian.ts):
   - Đọc YAML frontmatter (`title`, `course`, `module`, `order`, `level`, `themes`, `objectives`).
   - Phát hiện và cảnh báo các liên kết Obsidian Wikilink `![[...]]` và `[[...]]`.
   - Phân tích và chuyển đổi các code fence đặc thù cờ vua:
-    - ````fen ... ```` &rarr; Khối Portable Text `chess-fen`.
-    - ````pgn ... ```` &rarr; Khối Portable Text `chess-pgn`.
-    - ````puzzle ... ```` &rarr; Khối Portable Text `chess-puzzle`.
-    - ````lecture ... ```` &rarr; Khối Portable Text `chess-lecture`.
+    - `fen ... ` &rarr; Khối Portable Text `chess-fen`.
+    - `pgn ... ` &rarr; Khối Portable Text `chess-pgn`.
+    - `puzzle ... ` &rarr; Khối Portable Text `chess-puzzle`.
+    - `lecture ... ` &rarr; Khối Portable Text `chess-lecture`.
   - Chuyển đổi các đoạn văn bản Markdown bằng `markdownToPortableText` từ `emdash/client`.
 - [`packages/plugins/chess-lessons/src/handlers/import-obsidian.ts`](file:///D:/code/emdash/packages/plugins/chess-lessons/src/handlers/import-obsidian.ts):
   - Route `lessons/import-obsidian` (yêu cầu quyền `content:create`).
@@ -72,11 +76,13 @@
 - [`packages/plugins/chess-lessons/tests/fixtures/sample_obsidian_lesson.md`](file:///D:/code/emdash/packages/plugins/chess-lessons/tests/fixtures/sample_obsidian_lesson.md): File fixture kiểm thử bài học mẫu từ Obsidian.
 
 ### 1.5. Cơ Chế Snapshot Hook `content:beforeSave` & Bảo Mật `teacherNotes`
+
 - [`packages/plugins/chess-lessons/src/handlers/snapshots.ts`](file:///D:/code/emdash/packages/plugins/chess-lessons/src/handlers/snapshots.ts):
   - Hook `content:beforeSave`: Tự động duyệt đệ quy cây Portable Text khi biên tập viên lưu bài viết/bài học. Khi phát hiện khối `chess-lecture` có liên kết `lectureId`, tự động đọc bài giảng đã xuất bản và snapshot các trường `title`, `summary`, `level`, `steps` trực tiếp vào node.
   - **BẢO MẬT TUYỆT ĐỐI:** Trong toàn bộ các step của snapshot, trường `teacherNotes` bị **LOẠI BỎ TRIỆT ĐỂ** (`delete step.teacherNotes`) nhằm ngăn chặn việc rò rỉ ghi chú sư phạm của giáo viên sang phía client học sinh hoặc khách.
 
 ### 1.6. Chế Độ Trình Chiếu Toàn Màn Hình & Thành Phần Frontend
+
 - [`packages/plugins/chess-lessons/src/astro/LecturePresenter.astro`](file:///D:/code/emdash/packages/plugins/chess-lessons/src/astro/LecturePresenter.astro) & [`LecturePresenterIsland.tsx`](file:///D:/code/emdash/packages/plugins/chess-lessons/src/astro/LecturePresenterIsland.tsx):
   - Giao diện trình chiếu bài giảng toàn màn hình tối ưu cho giảng dạy trên lớp hoặc trực tuyến.
   - Phím tắt: `PageUp`/`PageDown`, `←`/`→`, `Space`/`Backspace`, `Home`/`End`, Phím `B` (Blackout tắt màn hình), Đồng hồ bấm giờ buổi học (`Timer`).
@@ -91,10 +97,12 @@
 ## 2. Kết Quả Kiểm Chứng Thực Tế
 
 ### 2.1. Kiểm Tra Unit & Integration Test (`vitest`)
+
 Toàn bộ 15 test của `chess-lessons` và 100 test của toàn bộ bộ plugin cờ / LMS đã vượt qua 100%:
+
 - [`packages/plugins/chess-lessons/tests/importers.test.ts`](file:///D:/code/emdash/packages/plugins/chess-lessons/tests/importers.test.ts):
   - ✓ Phân tích chính xác YAML frontmatter (title, course, module, level, themes, objectives, order).
-  - ✓ Trích xuất và chuyển đổi các code fence ````fen````, ````pgn````, ````puzzle````, ````lecture```` thành các block node Portable Text tương ứng.
+  - ✓ Trích xuất và chuyển đổi các code fence `fen`, `pgn`, `puzzle`, `lecture` thành các block node Portable Text tương ứng.
   - ✓ Cảnh báo chính xác các liên kết Obsidian Wikilink `![[...]]` và `[[...]]`.
 - [`packages/plugins/chess-lessons/tests/setup-schema.test.ts`](file:///D:/code/emdash/packages/plugins/chess-lessons/tests/setup-schema.test.ts):
   - ✓ Báo lỗi rõ ràng nếu các collection LMS cơ sở chưa được cài đặt.
@@ -116,6 +124,7 @@ Toàn bộ 15 test của `chess-lessons` và 100 test của toàn bộ bộ plug
   - ✓ Plugin descriptor khai báo đúng ID, capabilities, blocks và routes.
 
 ### 2.2. Kiểm Tra Lint & Typecheck
+
 - `pnpm lint:quick` / `pnpm lint:json`: **0 diagnostics** (sạch 100%).
 - `pnpm typecheck`: Các package `@duongsinh/chess-kit`, `@duongsinh/plugin-chess-lessons`, `@duongsinh/plugin-chess-puzzles`, `@duongsinh/plugin-chessfenpgn`, `emdash-lms` đều đã được kiểm tra typecheck thành công (`Done`).
 - `pnpm format`: Định dạng chuẩn toàn bộ codebase.
@@ -123,12 +132,14 @@ Toàn bộ 15 test của `chess-lessons` và 100 test của toàn bộ bộ plug
 ---
 
 ## 3. Chỗ Lệch So Với Kế Hoạch & Lý Do
+
 - **Không có lệch tiêu cực**: Plugin tuân thủ 100% các tiêu chí đặt ra trong kế hoạch v3 và prompt GĐ6.
 - **Cải tiến bảo mật**: Triển khai cơ chế bảo mật hai lớp cho `teacherNotes` (lớp 1 tại hook `content:beforeSave` cho Portable Text snapshot, lớp 2 tại server-side rendering của `LecturePresenter.astro`).
 
 ---
 
 ## 4. Việc Tồn Đọng Chuyển Sang Giai Đoạn 7 (GĐ7)
+
 1. Đăng ký `@duongsinh/plugin-chess-lessons` vào `demos/cloudflare/astro.config.mjs` cùng các plugin đã hoàn thiện (`emdash-lms`, `chessfenpgn`, `chess-puzzles`).
 2. Thiết lập các trang Astro giao diện công khai trên `demos/cloudflare`:
    - `/bai-giang/[slug]`: Trang xem bài giảng độc lập.
@@ -147,10 +158,10 @@ Toàn bộ 15 test của `chess-lessons` và 100 test của toàn bộ bộ plug
    import { chessLessonsPlugin } from "@duongsinh/plugin-chess-lessons";
    // ...
    export default defineConfig({
-     plugins: [
-       // ...
-       chessLessonsPlugin(),
-     ],
+   	plugins: [
+   		// ...
+   		chessLessonsPlugin(),
+   	],
    });
    ```
 2. **Triển khai lên Cloudflare Workers Preview**:
