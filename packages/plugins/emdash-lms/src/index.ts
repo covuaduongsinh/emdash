@@ -14,26 +14,38 @@ import { definePlugin } from "emdash";
 import {
 	accessRoute,
 	accessRouteInputSchema,
-	adminStudentsRoute,
+	adminOrdersConfirmInputSchema,
+	adminOrdersConfirmRoute,
+	adminOrdersListInputSchema,
+	adminOrdersListRoute,
+	adminPaymentSettingsInputSchema,
+	adminPaymentSettingsRoute,
 	adminStudentsInputSchema,
-	meAccessRoute,
+	adminStudentsRoute,
+	checkoutCreateInputSchema,
+	checkoutCreateRoute,
 	meAccessInputSchema,
-	meEnrollRoute,
+	meAccessRoute,
 	meEnrollInputSchema,
-	meProgressRoute,
+	meEnrollRoute,
+	meOrdersGetInputSchema,
+	meOrdersGetRoute,
 	meProgressInputSchema,
+	meProgressRoute,
 	membersRoute,
 	membersRouteInputSchema,
 	ordersRoute,
 	ordersRouteInputSchema,
 	plansRoute,
 	plansRouteInputSchema,
-	progressCompleteRoute,
 	progressCompleteInputSchema,
-	progressSyncRoute,
+	progressCompleteRoute,
 	progressSyncInputSchema,
-	setupRunRoute,
+	progressSyncRoute,
 	setupRunInputSchema,
+	setupRunRoute,
+	webhookSepayInputSchema,
+	webhookSepayRoute,
 } from "./routes/index.js";
 
 // Re-export types & schemas
@@ -82,23 +94,27 @@ export interface LmsPluginOptions {
 	};
 }
 
+const ADMIN_PAGES = [
+	{ path: "/settings/setup", label: "Cài đặt LMS", icon: "wrench", group: "lms" },
+	{ path: "/students", label: "Học viên", icon: "student", group: "lms" },
+	{ path: "/orders", label: "Đơn hàng", icon: "receipt", group: "lms" },
+	{ path: "/plans", label: "Thẻ thư viện", icon: "credit-card", group: "lms" },
+	{ path: "/members", label: "Hội viên", icon: "user-check", group: "lms" },
+	{ path: "/settings/payment", label: "Thanh toán", icon: "banknotes", group: "lms" },
+	{ path: "/settings", label: "Cài đặt", icon: "gear", group: "lms" },
+];
+
 /**
  * Plugin factory - returns a descriptor for the integration
  */
 export function lmsPlugin(options: LmsPluginOptions = {}): PluginDescriptor<LmsPluginOptions> {
-	const adminPages = [
-		{ path: "/settings/setup", label: "Cài đặt LMS", icon: "wrench", group: "lms" },
-		{ path: "/students", label: "Học viên", icon: "student", group: "lms" },
-		{ path: "/settings", label: "Cài đặt", icon: "gear", group: "lms" },
-	];
-
 	return {
 		id: "lms",
 		version: "0.2.0",
 		entrypoint: "emdash-lms",
 		adminEntry: "emdash-lms/admin",
 		options,
-		adminPages,
+		adminPages: ADMIN_PAGES,
 	};
 }
 
@@ -106,12 +122,6 @@ export function lmsPlugin(options: LmsPluginOptions = {}): PluginDescriptor<LmsP
  * Create the resolved plugin - called by the generated virtual module
  */
 export function createPlugin(_options: LmsPluginOptions = {}): ResolvedPlugin {
-	const adminPages = [
-		{ path: "/settings/setup", label: "Cài đặt LMS", icon: "wrench", group: "lms" },
-		{ path: "/students", label: "Học viên", icon: "student", group: "lms" },
-		{ path: "/settings", label: "Cài đặt", icon: "gear", group: "lms" },
-	];
-
 	return definePlugin({
 		id: "lms",
 		version: "0.2.0",
@@ -122,7 +132,7 @@ export function createPlugin(_options: LmsPluginOptions = {}): ResolvedPlugin {
 
 		admin: {
 			entry: "emdash-lms/admin",
-			pages: adminPages,
+			pages: ADMIN_PAGES,
 		},
 
 		routes: {
@@ -162,6 +172,11 @@ export function createPlugin(_options: LmsPluginOptions = {}): ResolvedPlugin {
 				permission: "content:read",
 				handler: meProgressRoute,
 			},
+			"me/orders/get": {
+				input: meOrdersGetInputSchema,
+				permission: "content:read",
+				handler: meOrdersGetRoute,
+			},
 			"progress/complete": {
 				input: progressCompleteInputSchema,
 				permission: "content:read",
@@ -172,10 +187,35 @@ export function createPlugin(_options: LmsPluginOptions = {}): ResolvedPlugin {
 				permission: "content:read",
 				handler: progressSyncRoute,
 			},
+			"checkout/create": {
+				input: checkoutCreateInputSchema,
+				permission: "content:read",
+				handler: checkoutCreateRoute,
+			},
+			"webhook/sepay": {
+				input: webhookSepayInputSchema,
+				public: true,
+				handler: webhookSepayRoute,
+			},
 			"admin/students": {
 				input: adminStudentsInputSchema,
 				permission: "content:read",
 				handler: adminStudentsRoute,
+			},
+			"admin/orders/list": {
+				input: adminOrdersListInputSchema,
+				permission: "content:read",
+				handler: adminOrdersListRoute,
+			},
+			"admin/orders/confirm": {
+				input: adminOrdersConfirmInputSchema,
+				permission: "content:edit_any",
+				handler: adminOrdersConfirmRoute,
+			},
+			"admin/settings/payment": {
+				input: adminPaymentSettingsInputSchema,
+				permission: "schema:manage",
+				handler: adminPaymentSettingsRoute,
 			},
 		},
 	});

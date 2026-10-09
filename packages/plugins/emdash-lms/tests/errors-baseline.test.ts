@@ -4,7 +4,7 @@ import * as adminModule from "../src/admin.js";
 import { createPlugin } from "../src/index.js";
 import { plansRoute } from "../src/routes/plans.js";
 
-describe("Phase 2a: Resolved Errors Baseline (L1, L2, L10)", () => {
+describe("Phase 2a & 2b: Resolved Errors Baseline (L1, L2, L5, L6, L10, L12)", () => {
 	// L1: Handler expects 1 single RouteContext object { input, ... }
 	it("L1: plansRoute succeeds when called with EmDash single RouteContext argument", async () => {
 		const mockRouteContext = {
@@ -28,6 +28,10 @@ describe("Phase 2a: Resolved Errors Baseline (L1, L2, L10)", () => {
 		expect(typeof adminModule.pages).toBe("object");
 		expect(adminModule.pages["/settings/setup"]).toBeDefined();
 		expect(adminModule.pages["/students"]).toBeDefined();
+		expect(adminModule.pages["/orders"]).toBeDefined();
+		expect(adminModule.pages["/plans"]).toBeDefined();
+		expect(adminModule.pages["/members"]).toBeDefined();
+		expect(adminModule.pages["/settings/payment"]).toBeDefined();
 		expect(adminModule.pages["/settings"]).toBeDefined();
 	});
 
@@ -45,11 +49,13 @@ describe("Phase 2a: Resolved Errors Baseline (L1, L2, L10)", () => {
 		expect(plugin.routes["admin/students"]).toBeDefined();
 	});
 
-	// L12: Checkout route will be registered in Phase 2b (currently disabled for safety)
-	it.fails("L12 (Deferred to Phase 2b): checkout route will be enabled with SePay VietQR in Phase 2b", () => {
+	// L5, L6, L12: Checkout & SePay Webhook registered and verified in Phase 2b
+	it("L5, L6, L12: checkout and SePay webhook routes are registered securely", () => {
 		const plugin = createPlugin();
 		const routes = (plugin as unknown as { routes: Record<string, { public?: boolean }> }).routes;
-		// Intentionally undefined in Phase 2a for production safety
-		expect(routes.checkout).toBeDefined();
+		expect(routes["checkout/create"]).toBeDefined();
+		expect(routes["me/orders/get"]).toBeDefined();
+		expect(routes["webhook/sepay"]).toBeDefined();
+		expect(routes["webhook/sepay"].public).toBe(true);
 	});
 });

@@ -1,6 +1,7 @@
 ---
 /**
- * /plans - Membership pricing page
+ * /plans - Thẻ Thư Viện Học Đường (Membership Plans)
+ * Định hướng học đường, không dùng huy hiệu thương mại giảm giá
  */
 import { getEmDashCollection } from "emdash";
 import Layout from "virtual:emdash-lms/layout";
@@ -18,13 +19,28 @@ function formatPrice(price: number, currency: string = "VND"): string {
     minimumFractionDigits: 0,
   }).format(price);
 }
+
+function getPeriodLabel(period?: string): string {
+  switch (period) {
+    case "monthly":
+      return "tháng";
+    case "quarterly":
+      return "quý (3 tháng)";
+    case "yearly":
+      return "năm (12 tháng)";
+    case "lifetime":
+      return "trọn đời";
+    default:
+      return period ? `${period}` : "";
+  }
+}
 ---
 
-<Layout title="Thẻ Thư Viện Bài Giảng Học Đường — covuahocduong.com" description="Đăng ký quyền truy cập kho học liệu cờ vua học đường chuẩn hóa">
+<Layout title="Thẻ Thư Viện Học Đường — covuahocduong.com" description="Đăng ký quyền truy cập kho học liệu cờ vua học đường chuẩn hóa">
   <div class="lms-pricing">
     <header class="lms-page-header">
-      <h1>Thẻ Thư Viện Bài Giảng Học Đường</h1>
-      <p>Đồng hành cùng học sinh và nhà trường với nguồn học liệu cờ vua chuẩn hóa toàn diện</p>
+      <h1>Thẻ Thư Viện Học Liệu Cờ Vua</h1>
+      <p>Đồng hành cùng học sinh, phụ huynh và nhà trường với nguồn học liệu cờ vua chuẩn hóa toàn diện</p>
     </header>
 
     {publishedPlans.length === 0 ? (
@@ -33,35 +49,23 @@ function formatPrice(price: number, currency: string = "VND"): string {
       <div class="lms-plans-grid">
         {publishedPlans.map((plan) => {
           const currency = plan.data.currency ?? "VND";
-          const hasDiscount =
-            plan.data.sale_price != null &&
-            plan.data.sale_price < plan.data.price;
+          const finalPrice = plan.data.sale_price ?? plan.data.price ?? 0;
+          const periodLabel = getPeriodLabel(plan.data.billing_period);
 
           return (
             <div class="lms-plan-card">
               <h3>{plan.data.name}</h3>
 
               <div class="lms-plan-price">
-                {hasDiscount ? (
-                  <>
-                    <span class="lms-price-original">
-                      {formatPrice(plan.data.price, currency)}
-                    </span>
-                    <span class="lms-price-sale">
-                      {formatPrice(plan.data.sale_price!, currency)}
-                    </span>
-                  </>
-                ) : (
-                  <span>{formatPrice(plan.data.price, currency)}</span>
-                )}
-                {plan.data.billing_period && (
+                <span>{formatPrice(finalPrice, currency)}</span>
+                {periodLabel && (
                   <span class="lms-billing-period">
-                    /{plan.data.billing_period}
+                    /{periodLabel}
                   </span>
                 )}
               </div>
 
-              {plan.data.description && <p>{plan.data.description}</p>}
+              {plan.data.description && <p class="lms-plan-description">{plan.data.description}</p>}
 
               {plan.data.features && plan.data.features.length > 0 && (
                 <ul class="lms-plan-features">
@@ -71,8 +75,8 @@ function formatPrice(price: number, currency: string = "VND"): string {
                 </ul>
               )}
 
-              <a href={`${basePath}/checkout/${plan.id || plan.data.slug}`} class="lms-plan-cta">
-                Đăng ký thẻ thư viện
+              <a href={`${basePath}/checkout/${plan.data.slug || plan.id}`} class="lms-plan-cta">
+                Đăng ký Thẻ Thư Viện
               </a>
             </div>
           );

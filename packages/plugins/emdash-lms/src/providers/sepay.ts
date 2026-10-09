@@ -1,8 +1,6 @@
 /**
- * Sepay Payment Provider (Vietnam)
- *
- * Sepay is a Vietnamese payment gateway supporting bank transfers and e-wallets.
- * https://sepay.vn
+ * SePay Payment Provider (Vietnam)
+ * Official Webhook & VietQR integration for SePay (https://sepay.vn)
  */
 
 import type {
@@ -15,31 +13,88 @@ import type {
 } from "../types.js";
 
 const SEPAY_API_URL = "https://my.sepay.vn/userapi";
+const ORDER_CODE_REGEX = /LMS-[A-Z0-9]{6,12}/i;
+const AUTH_HEADER_PREFIX_REGEX = /^(Apikey|Bearer)\s+/i;
+
+export interface SepayWebhookPayload {
+	id: number | string;
+	gateway?: string;
+	transactionDate?: string;
+	accountNumber?: string;
+	subAccount?: string | null;
+	code?: string | null;
+	content?: string;
+	transferType?: "in" | "out";
+	description?: string | null;
+	transferAmount?: number;
+	accumulated?: number;
+	referenceCode?: string | null;
+}
+
+export function extractLmsOrderCode(content: string = ""): string | null {
+	const match = content.match(ORDER_CODE_REGEX);
+	return match ? match[0].toUpperCase() : null;
+}
+
+export function generateVietQrUrl(params: {
+	bankCode: string;
+	bankAccount: string;
+	amount: number;
+	description: string;
+	template?: string;
+}): string {
+	const template = params.template || "compact";
+	const search = new URLSearchParams({
+		acc: params.bankAccount,
+		bank: params.bankCode,
+		amount: String(Math.round(params.amount)),
+		des: params.description,
+		template,
+	});
+	return `https://qr.sepay.vn/img?${search.toString()}`;
+}
+
+export function verifySepayApiKey(
+	authHeader: string | null | undefined,
+	configuredKey: string | null | undefined,
+): boolean {
+	if (!configuredKey || configuredKey.trim().length === 0) {
+		return false;
+	}
+	if (!authHeader || authHeader.trim().length === 0) {
+		return false;
+	}
+
+	// SePay sends header `Authorization: Apikey <API_KEY>` or `Bearer <API_KEY>` or raw API key
+	const cleanedHeader = authHeader.replace(AUTH_HEADER_PREFIX_REGEX, "").trim();
+	return cleanedHeader === configuredKey.trim();
+}
 
 export const sepayProvider: PaymentProvider = {
 	id: "sepay",
-	name: "Sepay",
+	name: "SePay VietQR",
 
 	async createCheckout(order: Order, config: PaymentProviderConfig): Promise<CheckoutSession> {
-		// Sepay uses QR code / bank transfer flow
-		// Generate a unique transaction reference
-		const transactionRef = `LMS-${order.id.slice(-8).toUpperCase()}`;
+		const orderCode =
+			((order.metadata as Record<string, unknown> | undefined)?.order_code as string) ||
+			`LMS-${order.id.slice(-8).toUpperCase()}`;
 
-		// For Sepay, we generate a payment page URL with order info
-		// The actual payment is verified via webhook when user completes transfer
-		const params = new URLSearchParams({
-			amount: String(Math.round(order.amount)),
-			description: `${order.type === "membership" ? "Membership" : "Course"} - ${order.item_id}`,
-			reference: transactionRef,
-			order_id: order.id,
+		const bankCode = config.credentials.bank_code || "MB";
+		const bankAccount = config.credentials.bank_account || "";
+		const template = config.credentials.qr_template || "compact";
+
+		const qrUrl = generateVietQrUrl({
+			bankCode,
+			bankAccount,
+			amount: order.amount,
+			description: orderCode,
+			template,
 		});
 
-		const checkoutUrl = `${config.credentials.checkout_page_url}?${params}`;
-
 		return {
-			id: transactionRef,
-			url: checkoutUrl,
-			expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 minutes
+			id: orderCode,
+			url: qrUrl,
+			expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
 		};
 	},
 
@@ -48,27 +103,27 @@ export const sepayProvider: PaymentProvider = {
 		headers: Record<string, string>,
 		config: PaymentProviderConfig,
 	): Promise<WebhookResult> {
-		const data = payload as SepayWebhookPayload;
+		const authHeader = headers["authorization"] || headers["x-sepay-api-key"] || headers["x-api-key"];
+		const apiKey = config.credentials.api_key || config.webhook_secret;
 
-		// Verify webhook signature
-		const signature = headers["x-sepay-signature"] || headers["authorization"];
-		if (!verifySignature(data, signature, config.webhook_secret || "")) {
-			throw new Error("Invalid webhook signature");
+		if (!verifySepayApiKey(authHeader, apiKey)) {
+			throw new Error("Invalid SePay authorization header");
 		}
 
-		// Sepay webhook format
-		if (data.transferType === "in" && data.transferAmount > 0) {
-			// Extract order_id from content/description
-			const orderId = extractOrderId(data.content);
+		const data = payload as SepayWebhookPayload;
+		if (data.transferType === "in" && (data.transferAmount ?? 0) > 0) {
+			const fullContent = `${data.content || ""} ${data.description || ""} ${data.code || ""}`;
+			const orderCode = extractLmsOrderCode(fullContent);
 
 			return {
 				event: "payment.completed",
-				orderId,
+				orderId: orderCode || undefined,
 				status: "completed",
 				metadata: {
 					transactionId: data.id,
 					bankCode: data.gateway,
 					amount: data.transferAmount,
+					referenceCode: data.referenceCode,
 				},
 			};
 		}
@@ -77,9 +132,12 @@ export const sepayProvider: PaymentProvider = {
 	},
 
 	async verifyPayment(paymentId: string, config: PaymentProviderConfig): Promise<PaymentStatus> {
-		// Query Sepay API to verify transaction
+		if (!config.credentials.api_key) {
+			return { paid: false, status: "unconfigured" };
+		}
+
 		const response = await fetch(
-			`${SEPAY_API_URL}/transactions/list?reference_number=${paymentId}`,
+			`${SEPAY_API_URL}/transactions/list?reference_number=${encodeURIComponent(paymentId)}`,
 			{
 				headers: {
 					Authorization: `Bearer ${config.credentials.api_key}`,
@@ -92,9 +150,16 @@ export const sepayProvider: PaymentProvider = {
 			return { paid: false, status: "unknown" };
 		}
 
-		const data = (await response.json()) as SepayTransactionResponse;
-		const transaction = data.transactions?.[0];
+		const data = (await response.json()) as {
+			transactions?: Array<{
+				id: number;
+				transferType: "in" | "out";
+				transferAmount: number;
+				content: string;
+			}>;
+		};
 
+		const transaction = data.transactions?.[0];
 		if (!transaction) {
 			return { paid: false, status: "not_found" };
 		}
@@ -107,47 +172,3 @@ export const sepayProvider: PaymentProvider = {
 		};
 	},
 };
-
-// Sepay types
-interface SepayWebhookPayload {
-	id: number;
-	gateway: string;
-	transactionDate: string;
-	accountNumber: string;
-	transferType: "in" | "out";
-	transferAmount: number;
-	content: string;
-	referenceCode?: string;
-}
-
-interface SepayTransactionResponse {
-	transactions: Array<{
-		id: number;
-		transferType: "in" | "out";
-		transferAmount: number;
-		content: string;
-	}>;
-}
-
-function verifySignature(payload: unknown, signature: string, secret: string): boolean {
-	if (!secret) return true; // Skip if no secret configured
-
-	// Sepay uses Bearer token or HMAC signature
-	if (signature.startsWith("Bearer ")) {
-		return signature.slice(7) === secret;
-	}
-
-	// For HMAC verification (if implemented)
-	// const computed = crypto.createHmac('sha256', secret).update(JSON.stringify(payload)).digest('hex');
-	// return computed === signature;
-
-	return true;
-}
-
-const ORDER_ID_PATTERN = /LMS-([A-Z0-9]{8})/i;
-
-function extractOrderId(content: string): string | undefined {
-	// Look for LMS-XXXXXXXX pattern in transfer content
-	const match = content.match(ORDER_ID_PATTERN);
-	return match ? match[0] : undefined;
-}

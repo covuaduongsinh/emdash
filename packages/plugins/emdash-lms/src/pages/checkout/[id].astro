@@ -1,7 +1,6 @@
 ---
 /**
- * /checkout/{id} - Checkout page
- * In Phase 2a: Temporarily shows maintenance notice. Full SePay VietQR checkout is implemented in Phase 2b.
+ * /checkout/{id} - Cổng thanh toán VietQR SePay & Kích hoạt Thẻ Thư Viện / Khóa Học
  */
 import { getEmDashCollection } from "emdash";
 import Layout from "virtual:emdash-lms/layout";
@@ -11,10 +10,13 @@ const { id } = Astro.params;
 if (!id) return Astro.redirect(`${basePath}/plans`);
 
 const type = Astro.url.searchParams.get("type") === "course" ? "course" : "membership";
+const user = Astro.locals.user;
 
-let itemName = "Thẻ Thư Viện / Khóa Học";
+let itemTitle = "Thẻ Thư Viện / Chuyên Đề Cờ Vua";
+let itemDescription = "";
 let price = 0;
 let currency = "VND";
+let targetSlug = id;
 
 if (type === "course") {
   const { entries: courses } = await getEmDashCollection("courses", {
@@ -23,9 +25,11 @@ if (type === "course") {
   });
   const course = courses[0];
   if (course) {
-    itemName = course.data.title;
+    itemTitle = course.data.title;
+    itemDescription = course.data.excerpt || "";
     price = course.data.sale_price ?? course.data.price ?? 0;
     currency = course.data.currency ?? "VND";
+    targetSlug = course.data.slug || course.id;
   }
 } else {
   const { entries: plans } = await getEmDashCollection("membership_plans", {
@@ -34,9 +38,11 @@ if (type === "course") {
   });
   const plan = plans[0];
   if (plan) {
-    itemName = plan.data.name;
+    itemTitle = plan.data.name;
+    itemDescription = plan.data.description || "";
     price = plan.data.sale_price ?? plan.data.price ?? 0;
     currency = plan.data.currency ?? "VND";
+    targetSlug = plan.data.slug || plan.id;
   }
 }
 
@@ -49,47 +55,293 @@ function formatPrice(p: number, curr: string): string {
 }
 ---
 
-<Layout title={`Đăng ký học liệu - ${itemName}`} description="Cổng thanh toán & Kích hoạt Thẻ thư viện">
-  <div class="lms-checkout">
-    <nav class="lms-breadcrumb">
-      <a href={type === "course" ? `${basePath}/courses` : `${basePath}/plans`}>
+<Layout title={`Đăng ký học liệu - ${itemTitle}`} description="Cổng thanh toán tự động VietQR SePay cho kho học liệu cờ vua học đường">
+  <div class="lms-checkout-container" style="max-width: 840px; margin: 2rem auto; padding: 0 1rem; font-family: inherit;">
+    <nav class="lms-breadcrumb" style="margin-bottom: 1.5rem; font-size: 0.95rem;">
+      <a href={type === "course" ? `${basePath}/courses` : `${basePath}/plans`} style="color: var(--kumo-brand, #2B3990); text-decoration: none; font-weight: 500;">
         &larr; {type === "course" ? "Quay lại Kho học liệu" : "Quay lại Thẻ Thư Viện"}
       </a>
     </nav>
 
-    <h1>Đăng ký Thẻ Thư Viện & Học Liệu Cờ Vua</h1>
+    <h1 style="font-size: 1.75rem; font-weight: 700; color: #1F2937; margin-bottom: 0.5rem;">
+      Đăng Ký & Kích Hoạt Học Liệu
+    </h1>
+    <p style="color: #6B7280; margin-bottom: 2rem;">
+      Thanh toán an toàn, minh bạch qua chuyển khoản VietQR tự động 24/7
+    </p>
 
-    <div class="lms-checkout-layout">
-      <section class="lms-checkout-summary">
-        <h2>Thông tin đăng ký</h2>
-        <div class="lms-checkout-item">
-          <div class="lms-item-details">
-            <span class="lms-item-name">{itemName}</span>
-          </div>
-          <span class="lms-item-price">
+    <div class="lms-checkout-grid" style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+      <!-- Order item summary -->
+      <div class="lms-summary-card" style="border: 1px solid #E5E7EB; border-radius: 12px; padding: 1.5rem; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; border-bottom: 1px solid #F3F4F6; padding-bottom: 0.75rem;">
+          Thông tin học liệu
+        </h2>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+          <strong style="font-size: 1.15rem; color: #111827;">{itemTitle}</strong>
+          <span style="font-size: 1.35rem; font-weight: 700; color: var(--kumo-brand, #2B3990);">
             {formatPrice(price, currency)}
           </span>
         </div>
-      </section>
+        {itemDescription && <p style="color: #6B7280; font-size: 0.95rem; margin-top: 0.5rem;">{itemDescription}</p>}
+      </div>
 
-      <section class="lms-checkout-form-section">
-        <div class="lms-maintenance-card" style="padding: 2rem; border: 1px solid var(--kumo-brand, #2B3990); border-radius: 8px; background: rgba(43, 57, 144, 0.05); text-align: center;">
-          <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; color: #2B3990;">
-            Hệ thống thanh toán tự động VietQR đang được nâng cấp
+      <!-- Main action / VietQR payment panel -->
+      {!user ? (
+        <div class="lms-auth-prompt" style="border: 1px solid #E5E7EB; border-radius: 12px; padding: 2rem; background: #F9FAFB; text-align: center;">
+          <h3 style="font-size: 1.25rem; font-weight: 600; color: #1F2937; margin-bottom: 0.75rem;">
+            Vui lòng đăng nhập hoặc tạo tài khoản học viên
           </h3>
-          <p style="color: #4B5563; margin-bottom: 1.5rem; line-height: 1.6;">
-            Cổng thanh toán tự động SePay sẽ chính thức kích hoạt ở phiên bản tiếp theo. Quý phụ huynh và học viên có nhu cầu kích hoạt Thẻ thư viện hoặc ghi danh chuyên đề cờ vua xin vui lòng liên hệ trực tiếp Ban Huấn Luyện Cờ Vua Học Đường.
+          <p style="color: #4B5563; max-width: 500px; margin: 0 auto 1.5rem auto; line-height: 1.6;">
+            Tài khoản học viên giúp bảo lưu quyền truy cập Thẻ thư viện, theo dõi tiến độ bài học và nhận chứng nhận hoàn thành.
           </p>
-          <div style="display: flex; justify-content: center; gap: 1rem;">
-            <a href="https://covuahocduong.com" class="lms-btn lms-btn-primary">
-              Liên hệ Ban Huấn Luyện
-            </a>
-            <a href={`${basePath}/plans`} class="lms-btn lms-btn-outline">
-              Xem các gói Thẻ thư viện
+          <a
+            href={`/_emdash/admin/login?redirect=${encodeURIComponent(Astro.url.pathname + Astro.url.search)}`}
+            style="display: inline-block; background: var(--kumo-brand, #2B3990); color: #FFFFFF; padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600; text-decoration: none;"
+          >
+            Đăng nhập / Đăng ký
+          </a>
+        </div>
+      ) : (
+        <div id="lms-vietqr-checkout" data-item-id={id} data-type={type} data-redirect-url={type === "course" ? `${basePath}/course/${targetSlug}` : `${basePath}/courses`}>
+          <div id="lms-checkout-loading" style="text-align: center; padding: 2.5rem; background: #F9FAFB; border-radius: 12px; border: 1px solid #E5E7EB;">
+            <div style="font-size: 1.1rem; color: #4B5563; margin-bottom: 1rem;">Đang tạo mã thanh toán VietQR...</div>
+            <div style="display: inline-block; width: 32px; height: 32px; border: 3px solid #E5E7EB; border-top-color: var(--kumo-brand, #2B3990); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+          </div>
+
+          <div id="lms-checkout-qr-view" style="display: none; border: 1px solid #E5E7EB; border-radius: 12px; padding: 2rem; background: #FFFFFF; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+            <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: center; justify-content: center;">
+              <!-- QR Code image -->
+              <div style="text-align: center;">
+                <div style="padding: 10px; background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 8px; display: inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                  <img id="lms-qr-image" src="" alt="Mã VietQR thanh toán SePay" style="width: 240px; height: 240px; object-fit: contain;" />
+                </div>
+                <div style="margin-top: 0.75rem; font-size: 0.85rem; color: #6B7280;">
+                  Quét mã bằng app ngân hàng bất kỳ
+                </div>
+              </div>
+
+              <!-- Payment details table -->
+              <div style="flex: 1; min-width: 280px;">
+                <h3 style="font-size: 1.15rem; font-weight: 600; color: #111827; margin-bottom: 1rem;">
+                  Thông tin chuyển khoản chính xác:
+                </h3>
+
+                <div style="display: grid; gap: 0.75rem; font-size: 0.95rem;">
+                  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #F3F4F6; padding-bottom: 0.5rem;">
+                    <span style="color: #6B7280;">Ngân hàng:</span>
+                    <strong id="lms-info-bank" style="color: #111827;">--</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F3F4F6; padding-bottom: 0.5rem;">
+                    <span style="color: #6B7280;">Số tài khoản:</span>
+                    <div>
+                      <strong id="lms-info-account" style="color: #111827; font-family: monospace; font-size: 1.05rem;">--</strong>
+                      <button type="button" class="lms-copy-btn" data-target="lms-info-account" style="margin-inline-start: 8px; padding: 2px 8px; font-size: 0.75rem; border: 1px solid #D1D5DB; border-radius: 4px; background: #F9FAFB; cursor: pointer;">Chép</button>
+                    </div>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #F3F4F6; padding-bottom: 0.5rem;">
+                    <span style="color: #6B7280;">Chủ tài khoản:</span>
+                    <strong id="lms-info-name" style="color: #111827;">--</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F3F4F6; padding-bottom: 0.5rem;">
+                    <span style="color: #6B7280;">Số tiền:</span>
+                    <div>
+                      <strong id="lms-info-amount" style="color: var(--kumo-brand, #2B3990); font-size: 1.15rem;">--</strong>
+                      <button type="button" class="lms-copy-btn" data-target="lms-info-amount-raw" style="margin-inline-start: 8px; padding: 2px 8px; font-size: 0.75rem; border: 1px solid #D1D5DB; border-radius: 4px; background: #F9FAFB; cursor: pointer;">Chép</button>
+                      <span id="lms-info-amount-raw" style="display: none;"></span>
+                    </div>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; background: #FEF3C7; border: 1px solid #FDE68A; border-radius: 6px; padding: 0.75rem;">
+                    <span style="color: #92400E; font-weight: 500;">Nội dung CK:</span>
+                    <div>
+                      <strong id="lms-info-content" style="color: #92400E; font-family: monospace; font-size: 1.15rem; letter-spacing: 1px;">--</strong>
+                      <button type="button" class="lms-copy-btn" data-target="lms-info-content" style="margin-inline-start: 8px; padding: 2px 8px; font-size: 0.75rem; border: 1px solid #F59E0B; border-radius: 4px; background: #FFFBEB; color: #92400E; font-weight: 600; cursor: pointer;">Chép</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="margin-top: 1rem; font-size: 0.85rem; color: #DC2626; line-height: 1.4;">
+                  * <strong>Lưu ý quan trọng:</strong> Vui lòng giữ chính xác nội dung chuyển khoản để hệ thống tự động kích hoạt ngay sau khi chuyển.
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: 2rem; border-top: 1px solid #F3F4F6; padding-top: 1.5rem; text-align: center;">
+              <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: #059669; font-weight: 500;">
+                <div style="width: 10px; height: 10px; background: #059669; border-radius: 50%; animation: pulse 1.5s infinite;"></div>
+                <span>Đang chờ chuyển khoản... Hệ thống sẽ tự động chuyển hướng khi hoàn tất</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Success View -->
+          <div id="lms-checkout-success-view" style="display: none; border: 1px solid #A7F3D0; border-radius: 12px; padding: 2.5rem; background: #ECFDF5; text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎉</div>
+            <h3 style="font-size: 1.5rem; font-weight: 700; color: #065F46; margin-bottom: 0.5rem;">
+              Kích hoạt học liệu thành công!
+            </h3>
+            <p style="color: #047857; margin-bottom: 1.5rem;">
+              Cảm ơn bạn! Thẻ thư viện / Khóa học của bạn đã được kích hoạt trên hệ thống Cờ Vua Học Đường.
+            </p>
+            <a id="lms-success-redirect-btn" href={`${basePath}/courses`} style="display: inline-block; background: #059669; color: #FFFFFF; padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600; text-decoration: none;">
+              Bắt đầu học ngay &rarr;
             </a>
           </div>
         </div>
-      </section>
+      )}
     </div>
   </div>
 </Layout>
+
+<style>
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.9); }
+  }
+</style>
+
+<script>
+  import { apiFetch } from "emdash/plugin-utils";
+
+  const container = document.getElementById("lms-vietqr-checkout");
+  if (container) {
+    const itemId = container.getAttribute("data-item-id");
+    const type = container.getAttribute("data-type") || "membership";
+    const redirectUrl = container.getAttribute("data-redirect-url") || "/courses";
+
+    const loadingView = document.getElementById("lms-checkout-loading");
+    const qrView = document.getElementById("lms-checkout-qr-view");
+    const successView = document.getElementById("lms-checkout-success-view");
+
+    let currentOrderId: string | null = null;
+    let pollInterval: ReturnType<typeof setInterval> | null = null;
+
+    async function initCheckout() {
+      try {
+        const res = await apiFetch<{
+          orderId: string;
+          orderCode: string;
+          amount: number;
+          bankCode: string;
+          bankAccount: string;
+          accountName: string;
+          content: string;
+          qrUrl: string;
+        }>("/_emdash/api/plugins/lms/checkout/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-EmDash-Request": "1",
+          },
+          body: JSON.stringify({ itemId, type }),
+        });
+
+        if (!res.ok || !res.data) {
+          throw new Error(res.error?.message || "Không thể tạo đơn hàng");
+        }
+
+        const data = res.data;
+        currentOrderId = data.orderId;
+
+        // Populate details
+        const img = document.getElementById("lms-qr-image") as HTMLImageElement;
+        if (img) img.src = data.qrUrl;
+
+        const bankEl = document.getElementById("lms-info-bank");
+        if (bankEl) bankEl.textContent = data.bankCode;
+
+        const accEl = document.getElementById("lms-info-account");
+        if (accEl) accEl.textContent = data.bankAccount;
+
+        const nameEl = document.getElementById("lms-info-name");
+        if (nameEl) nameEl.textContent = data.accountName;
+
+        const amountEl = document.getElementById("lms-info-amount");
+        if (amountEl) {
+          amountEl.textContent = new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+            minimumFractionDigits: 0,
+          }).format(data.amount);
+        }
+
+        const rawAmountEl = document.getElementById("lms-info-amount-raw");
+        if (rawAmountEl) rawAmountEl.textContent = String(data.amount);
+
+        const contentEl = document.getElementById("lms-info-content");
+        if (contentEl) contentEl.textContent = data.content;
+
+        if (loadingView) loadingView.style.display = "none";
+        if (qrView) qrView.style.display = "block";
+
+        // Start polling order status
+        startPolling(data.orderId);
+      } catch (err: any) {
+        if (loadingView) {
+          loadingView.innerHTML = `<div style="color: #DC2626; font-weight: 500;">Lỗi: ${err.message || "Không thể khởi tạo thanh toán"}</div>`;
+        }
+      }
+    }
+
+    function startPolling(orderId: string) {
+      if (pollInterval) clearInterval(pollInterval);
+
+      pollInterval = setInterval(async () => {
+        try {
+          const res = await apiFetch<{ id: string; status: string }>(
+            "/_emdash/api/plugins/lms/me/orders/get",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-EmDash-Request": "1",
+              },
+              body: JSON.stringify({ orderId }),
+            }
+          );
+
+          if (res.ok && res.data?.status === "completed") {
+            if (pollInterval) clearInterval(pollInterval);
+            if (qrView) qrView.style.display = "none";
+            if (successView) successView.style.display = "block";
+
+            const btn = document.getElementById("lms-success-redirect-btn") as HTMLAnchorElement;
+            if (btn) btn.href = redirectUrl;
+
+            // Auto redirect after 3 seconds
+            setTimeout(() => {
+              window.location.href = redirectUrl;
+            }, 3000);
+          }
+        } catch {
+          // Ignore intermittent network errors while polling
+        }
+      }, 4000);
+    }
+
+    // Setup copy buttons
+    document.querySelectorAll(".lms-copy-btn").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const targetId = btn.getAttribute("data-target");
+        if (!targetId) return;
+        const targetEl = document.getElementById(targetId);
+        if (!targetEl) return;
+        const text = targetEl.textContent || "";
+        try {
+          await navigator.clipboard.writeText(text.trim());
+          const originalText = btn.textContent;
+          btn.textContent = "✓ Đã chép";
+          setTimeout(() => {
+            btn.textContent = originalText;
+          }, 2000);
+        } catch {
+          // Ignore
+        }
+      });
+    });
+
+    initCheckout();
+  }
+</script>
