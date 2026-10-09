@@ -1,25 +1,47 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import PageHero from '../../components/PageHero.astro';
-import ConsultForm from '../../components/ConsultForm.astro';
+import { getEmDashEntry, decodeSlug } from "emdash";
+import { PortableText } from "emdash/ui";
+import Layout from "../../layouts/Layout.astro";
+import PageHero from "../../components/PageHero.astro";
+import { getReadingTime } from "../../utils/reading-time";
 
-const { slug } = Astro.params;
+const rawSlug = Astro.params.slug;
+const slug = decodeSlug(rawSlug);
 
-const article = {
-  title: 'Tại sao cờ vua là môn thể thao trí tuệ lý tưởng cho trẻ 4–6 tuổi?',
-  category: 'Phương pháp giáo dục',
-  date: '15/09/2026',
-  author: 'HLV. Dương Sinh',
-  readTime: '4 phút đọc',
-};
+if (!slug) {
+  return Astro.redirect("/404");
+}
+
+const { entry: post, cacheHint } = await getEmDashEntry("posts", slug);
+
+if (!post) {
+  return Astro.redirect("/404");
+}
+
+if (cacheHint) {
+  Astro.cache?.set(cacheHint);
+}
+
+const title = post.data.title || "Bài viết";
+const category = post.data.terms?.category?.[0]?.label || "Kiến thức cờ vua";
+const readingTime = getReadingTime(post.data.content);
+const publishDate = post.data.publishedAt
+  ? new Date(post.data.publishedAt).toLocaleDateString("vi-VN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+  : "";
+
+const authorName = post.data.bylines?.[0]?.byline?.displayName || "HLV. Dương Sinh";
 ---
 
-<Layout title={`${article.title} — dsc.edu.vn`}>
+<Layout title={`${title} — Dương Sinh Chess Academy`}>
   <PageHero
-    title={article.title}
-    lead={`Chuyên mục: ${article.category} · Tác giả: ${article.author} · Ngày đăng: ${article.date}`}
+    title={title}
+    lead={`Chuyên mục: ${category} · Tác giả: ${authorName} ${publishDate ? `· Ngày đăng: ${publishDate}` : ''} · ${readingTime} phút đọc`}
     crumbCurrent="Chi tiết bài viết"
-    badge={article.category.toUpperCase()}
+    badge={category.toUpperCase()}
   />
 
   <section class="sec alt">
@@ -27,32 +49,15 @@ const article = {
       <div class="article-container">
         <!-- Nội dung chính -->
         <article class="article-content">
-          <p class="lead-paragraph">
-            Nhiều phụ huynh thường nghĩ cờ vua là môn học trừu tượng và khó tiếp cận đối với trẻ nhỏ dưới 6 tuổi. Tuy nhiên, theo các nghiên cứu từ các chuyên gia tâm lý học giáo dục hàng đầu, lứa tuổi 4–6 lại là giai đoạn vàng phát triển não bộ mạnh mẽ nhất.
-          </p>
+          {post.data.excerpt && (
+            <p class="lead-paragraph">
+              {post.data.excerpt}
+            </p>
+          )}
 
-          <h2>1. Phát triển tư duy không gian và nhận diện quy luật</h2>
-          <p>
-            Bàn cờ vua với 64 ô đen trắng đan xen cùng sự chuyển động đa dạng của các quân cờ (quân Mã nhảy chữ L, quân Tượng đi chéo, quân Xe đi thẳng) là một thế giới mô phỏng không gian trực quan hoàn hảo. Việc quan sát và di chuyển quân cờ giúp trẻ kích hoạt vùng não phải phụ trách hình tượng và không gian.
-          </p>
-
-          <blockquote class="quote-box">
-            "Cờ vua không chỉ dạy trẻ cách chơi một trò chơi, mà dạy trẻ cách suy nghĩ trước khi hành động trong cuộc sống."
-            <cite>— HLV. Dương Sinh (Chủ nhiệm DSC Academy)</cite>
-          </blockquote>
-
-          <h2>2. Rèn luyện sự kiên nhẫn và khả năng tập trung sâu</h2>
-          <p>
-            Trong kỷ nguyên của màn hình điện thoại và video ngắn, khả năng tập trung của trẻ em ngày càng bị phân mảnh. Một ván cờ vua đòi hỏi trẻ phải ngồi yên, tập trung theo dõi từng nước đi của đối thủ và suy nghĩ phương án đáp trả.
-          </p>
-          <p>
-            Tại Học viện Cờ Vua Dương Sinh, phương pháp <em>"Cờ vua Kể chuyện"</em> biến mỗi quân cờ thành một người bạn đồng hành, giúp trẻ duy trì sự hào hứng và tập trung tự nhiên suốt 60–90 phút học tập.
-          </p>
-
-          <h2>3. Học cách quản lý cảm xúc và chấp nhận thử thách</h2>
-          <p>
-            Không ai có thể thắng mọi ván cờ. Khi thua một ván đấu, trẻ học được cách nhìn nhận lại sai lầm của mình, không đổ lỗi cho ngoại cảnh và nỗ lực hơn trong ván tiếp theo. Đây là phẩm chất quan trọng bậc nhất giúp hình thành bản lĩnh kiên cường cho con khi trưởng thành.
-          </p>
+          <div class="prose-content">
+            <PortableText value={post.data.content} />
+          </div>
 
           <div class="article-author-card">
             <div class="author-avatar">
@@ -60,7 +65,7 @@ const article = {
             </div>
             <div>
               <div class="author-role">TÁC GIẢ BÀI VIẾT</div>
-              <div class="author-name">HLV. Dương Sinh</div>
+              <div class="author-name">{authorName}</div>
               <p class="author-desc">
                 Chủ nhiệm Học viện Cờ Vua Dương Sinh (DSC), người sáng lập chương trình đào tạo cờ vua 6 cấp độ chuẩn hóa.
               </p>
@@ -73,7 +78,7 @@ const article = {
           <div class="sidebar-box">
             <h3>Đăng ký cho bé học thử</h3>
             <p>Kiểm tra trình độ và trải nghiệm buổi học cờ vua đầu tiên hoàn toàn miễn phí tại cơ sở DSC gần nhất.</p>
-            <a href="/lien-he" class="btn btn--primary" style="width: 100%; margin-top: 14px;">
+            <a href="/#tu-van" class="btn btn--primary" style="width: 100%; margin-top: 14px;">
               Đăng ký ngay
             </a>
           </div>
@@ -108,21 +113,31 @@ const article = {
     border-bottom: 1px solid var(--line-soft);
   }
 
-  .article-content h2 {
+  .prose-content {
+    font-size: 16.5px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+  }
+
+  .prose-content :global(h2) {
     font-size: 24px;
     font-weight: 900;
     color: var(--navy);
     margin: 32px 0 14px;
   }
 
-  .article-content p {
-    font-size: 16px;
-    line-height: 1.8;
-    color: var(--text-secondary);
+  .prose-content :global(h3) {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 24px 0 12px;
+  }
+
+  .prose-content :global(p) {
     margin-bottom: 18px;
   }
 
-  .quote-box {
+  .prose-content :global(blockquote) {
     margin: 28px 0;
     padding: 24px 28px;
     background: var(--navy-soft);
@@ -134,13 +149,11 @@ const article = {
     line-height: 1.6;
   }
 
-  .quote-box cite {
-    display: block;
-    margin-top: 10px;
-    font-size: 13.5px;
-    font-weight: 500;
-    color: var(--teal-deep);
-    font-style: normal;
+  .prose-content :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--r-lg);
+    margin: 20px 0;
   }
 
   .article-author-card {

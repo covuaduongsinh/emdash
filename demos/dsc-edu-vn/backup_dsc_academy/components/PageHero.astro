@@ -1,0 +1,153 @@
+---
+interface Props {
+  title: string;
+  lead?: string;
+  badge?: string;
+  chips?: string[];
+  crumbCurrent: string;
+}
+
+const { title, lead, badge, chips = [], crumbCurrent } = Astro.props;
+---
+
+<div class="phero">
+  <div class="pat" aria-hidden="true"></div>
+  <div class="glow" aria-hidden="true"></div>
+  <img src="/brand/symbol-white.svg" alt="" class="king" aria-hidden="true" />
+
+  <div class="wrap">
+    <div class="phero-in">
+      <nav class="crumb" aria-label="Breadcrumb">
+        <a href="/">Trang chủ</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+        <span>{crumbCurrent}</span>
+      </nav>
+
+      {badge && <div class="overline overline--light" style="margin-bottom: 12px;">{badge}</div>}
+      <h1>{title}</h1>
+      {lead && <p class="lead">{lead}</p>}
+
+      {chips.length > 0 && (
+        <div class="pchips">
+          {chips.map((chip) => (
+            <div class="pchip">
+              <span class="dot" aria-hidden="true"></span>
+              <span>{chip}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+</div>
+
+<style>
+  .phero {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(160deg, var(--navy), var(--navy-ink));
+    color: #fff;
+  }
+
+  .phero .pat {
+    position: absolute;
+    inset: 0;
+    background-image: url('/brand/pattern-tile-white.svg');
+    background-size: 66px;
+    opacity: 0.05;
+    pointer-events: none;
+  }
+
+  .phero .glow {
+    position: absolute;
+    width: 520px;
+    height: 520px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(61, 187, 149, 0.18), transparent 68%);
+    right: -160px;
+    top: -200px;
+    pointer-events: none;
+  }
+
+  .phero .king {
+    position: absolute;
+    right: -30px;
+    bottom: -50px;
+    width: 230px;
+    opacity: 0.10;
+    pointer-events: none;
+  }
+
+  .phero-in {
+    position: relative;
+    z-index: 1;
+    padding: 46px 0 56px;
+  }
+
+  .crumb {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 13.5px;
+    color: rgba(255, 255, 255, 0.65);
+    margin-bottom: 16px;
+  }
+
+  .crumb a {
+    color: rgba(255, 255, 255, 0.65);
+    transition: color var(--dur);
+  }
+
+  .crumb a:hover {
+    color: #fff;
+  }
+
+  .crumb svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0.6;
+  }
+
+  .phero h1 {
+    font-size: clamp(30px, 3.6vw, 46px);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .phero .lead {
+    font-size: 18px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    margin-top: 14px;
+    max-width: 620px;
+  }
+
+  .phero .pchips {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+  }
+
+  .pchip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: var(--r-pill);
+    padding: 7px 16px;
+    font-size: 13.5px;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+</style>

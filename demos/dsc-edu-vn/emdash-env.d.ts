@@ -5,6 +5,324 @@
 
 import type { ContentBylineCredit, TaxonomyTerm, PortableTextBlock } from "emdash";
 
+export interface CertificateTemplate {
+  id: string;
+  slug: string | null;
+  status: string;
+  name: string;
+  description?: string;
+  design: string;
+  course_id?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
+export interface Certificate {
+  id: string;
+  slug: string | null;
+  status: string;
+  user_id: string;
+  course_id: string;
+  template_id: string;
+  certificate_number: string;
+  issued_at?: string;
+  metadata?: unknown;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
+export interface Coupon {
+  id: string;
+  slug: string | null;
+  status: string;
+  code: string;
+  description?: string;
+  type?: string;
+  value: number;
+  applies_to?: string;
+  applicable_ids?: unknown;
+  usage_limit?: number;
+  usage_count?: number;
+  per_user_limit?: number;
+  min_purchase?: number;
+  valid_from?: string;
+  valid_until?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
+export interface CourseCategory {
+  id: string;
+  slug: string | null;
+  status: string;
+  name: string;
+  description?: string;
+  sort_order?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
+export interface CourseReview {
+  id: string;
+  slug: string | null;
+  status: string;
+  course_id: string;
+  user_id: string;
+  rating: number;
+  title?: string;
+  content?: string;
+  verified_purchase?: boolean;
+  helpful_count?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
+export interface Course {
+  id: string;
+  slug: string | null;
+  status: string;
+  title: string;
+  excerpt?: string;
+  description?: string;
+  featured_image?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } };
+  content?: PortableTextBlock[];
+  category_id?: string;
+  prerequisite_id?: string;
+  access_level?: string;
+  is_purchasable?: boolean;
+  required_plan_ids?: unknown;
+  price?: number;
+  currency?: string;
+  sale_price?: number;
+  sale_start?: string;
+  sale_end?: string;
+  duration_hours?: number;
+  difficulty?: string;
+  featured?: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
+export interface Enrollment {
+  id: string;
+  slug: string | null;
+  status: string;
+  user_id: string;
+  course_id: string;
+  source: string;
+  order_id?: string;
+  progress?: number;
+  started_at?: string;
+  completed_at?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
+export interface LessonProgress {
+  id: string;
+  slug: string | null;
+  status: string;
+  user_id: string;
+  lesson_id: string;
+  course_id: string;
+  completed?: boolean;
+  completed_at?: string;
+  last_position?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
+export interface Lesson {
+  id: string;
+  slug: string | null;
+  status: string;
+  title: string;
+  module_id: string;
+  course_id: string;
+  excerpt?: string;
+  featured_image?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } };
+  content?: PortableTextBlock[];
+  summary?: PortableTextBlock[];
+  video_url?: string;
+  duration_minutes?: number;
+  sort_order?: number;
+  is_preview?: boolean;
+  prerequisite_id?: string;
+  complexity?: string;
+  resources?: unknown;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
+export interface MembershipPlan {
+  id: string;
+  slug: string | null;
+  status: string;
+  name: string;
+  description?: string;
+  price: number;
+  currency?: string;
+  sale_price?: number;
+  sale_start?: string;
+  sale_end?: string;
+  billing_period?: string;
+  features?: unknown;
+  limits?: unknown;
+  sort_order?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
+export interface Membership {
+  id: string;
+  slug: string | null;
+  status: string;
+  user_id: string;
+  plan_id: string;
+  membership_type?: string;
+  started_at?: string;
+  expires_at?: string;
+  cancelled_at?: string;
+  payment_provider?: string;
+  subscription_id?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
+export interface Module {
+  id: string;
+  slug: string | null;
+  status: string;
+  title: string;
+  course_id: string;
+  description?: string;
+  sort_order?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
+export interface Order {
+  id: string;
+  slug: string | null;
+  status: string;
+  user_id: string;
+  type: string;
+  item_id: string;
+  subtotal?: number;
+  discount_amount?: number;
+  amount: number;
+  currency?: string;
+  coupon_id?: string;
+  coupon_code?: string;
+  payment_provider?: string;
+  payment_id?: string;
+  metadata?: unknown;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
+export interface Question {
+  id: string;
+  slug: string | null;
+  status: string;
+  quiz_id: string;
+  question: string;
+  question_image?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } };
+  type?: string;
+  answers?: unknown;
+  grade?: number;
+  sort_order?: number;
+  explanation?: string;
+  random_order?: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
+export interface QuizSubmission {
+  id: string;
+  slug: string | null;
+  status: string;
+  user_id: string;
+  quiz_id: string;
+  lesson_id?: string;
+  course_id?: string;
+  score: number;
+  max_score: number;
+  percentage?: number;
+  passed?: boolean;
+  answers?: unknown;
+  started_at?: string;
+  submitted_at?: string;
+  time_spent_seconds?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
+export interface Quizze {
+  id: string;
+  slug: string | null;
+  status: string;
+  title: string;
+  lesson_id: string;
+  description?: string;
+  passmark?: number;
+  pass_required?: boolean;
+  timer_minutes?: number;
+  allow_reset?: boolean;
+  random_order?: boolean;
+  grade_type?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
 export interface Page {
   id: string;
   slug: string | null;
@@ -35,6 +353,22 @@ export interface Post {
 
 declare module "emdash" {
   interface EmDashCollections {
+    certificate_templates: CertificateTemplate;
+    certificates: Certificate;
+    coupons: Coupon;
+    course_categories: CourseCategory;
+    course_reviews: CourseReview;
+    courses: Course;
+    enrollments: Enrollment;
+    lesson_progress: LessonProgress;
+    lessons: Lesson;
+    membership_plans: MembershipPlan;
+    memberships: Membership;
+    modules: Module;
+    orders: Order;
+    questions: Question;
+    quiz_submissions: QuizSubmission;
+    quizzes: Quizze;
     pages: Page;
     posts: Post;
   }

@@ -1,6 +1,8 @@
 import node from "@astrojs/node";
 import react from "@astrojs/react";
 import { defineConfig, fontProviders } from "astro/config";
+import { lmsPlugin } from "emdash-lms";
+import { lmsIntegration } from "emdash-lms/astro";
 import emdash, { local } from "emdash/astro";
 import { sqlite } from "emdash/db";
 
@@ -21,6 +23,32 @@ export default defineConfig({
 				directory: "./uploads",
 				baseUrl: "/_emdash/api/media/file",
 			}),
+			plugins: [
+				lmsPlugin({
+					mode: "full",
+					currency: {
+						base: "VND",
+						display: "VND",
+						exchangeRate: 1,
+					},
+					courses: {
+						enabled: true,
+						individualPurchase: true,
+					},
+					membership: {
+						enabled: true,
+					},
+					checkout: {
+						enabled: true,
+						providers: ["sepay", "stripe"],
+					},
+				}),
+			],
+		}),
+		lmsIntegration({
+			layout: "./src/layouts/Layout.astro",
+			basePath: "",
+			styles: "plugin",
 		}),
 	],
 	fonts: [

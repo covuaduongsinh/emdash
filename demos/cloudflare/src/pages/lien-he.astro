@@ -4,22 +4,23 @@ import PageHero from '../components/PageHero.astro';
 import ConsultForm from '../components/ConsultForm.astro';
 ---
 
-<Layout title="Liên hệ & Đăng ký Tuyển sinh — dsc.edu.vn">
+<Layout title="Liên Hệ & Hợp Tác Phát Triển Cờ Vua Học Đường Toàn Quốc">
   <PageHero
-    title="Liên Hệ & Tuyển Sinh DSC"
-    lead="Đội ngũ chuyên viên tư vấn học vụ Học viện Cờ Vua Dương Sinh sẵn sàng giải đáp mọi thắc mắc và hỗ trợ phụ huynh sắp xếp lịch học thử cho con."
+    title="Liên Hệ & Hợp Tác Học Đường"
+    lead="Ban Thư ký & Hội đồng Chuyên môn Cờ Vua Học Đường sẵn sàng đồng hành cùng Ban Giám hiệu các trường, quý thầy cô và phụ huynh trên toàn quốc."
     crumbCurrent="Liên hệ"
-    badge="HỖ TRỢ PHỤ HUYNH 24/7"
+    badge="KẾT NỐI TOÀN QUỐC 24/7"
+    chips={['Hợp tác nhà trường', 'Chuyển giao giáo trình', 'Tập huấn giáo viên', 'Hỗ trợ giải đấu']}
   />
 
   <section class="sec alt reveal">
     <div class="wrap">
       <div class="contact-grid">
-        <!-- Cột trái: Thông tin học viện -->
+        <!-- Cột trái: Thông tin liên hệ nền tảng -->
         <div class="contact-info-card">
-          <span class="c-tag">TRỤ SỞ & HỖ TRỢ</span>
-          <h2>Thông tin Học viện Cờ Vua Dương Sinh</h2>
-          <p class="c-lead">Quý phụ huynh có thể liên hệ trực tiếp qua hotline hoặc ghé thăm các cơ sở đào tạo của chúng tôi tại Hà Nội.</p>
+          <span class="c-tag">BAN ĐIỀU PHỐI TOÀN QUỐC</span>
+          <h2>Cờ Vua Học Đường Việt Nam</h2>
+          <p class="c-lead">Nền tảng kết nối, chuyển giao mô hình câu lạc bộ cờ vua, chuẩn hóa giáo trình và tổ chức giải đấu thể thao học sinh các cấp.</p>
 
           <div class="contact-items">
             <div class="contact-item">
@@ -27,8 +28,8 @@ import ConsultForm from '../components/ConsultForm.astro';
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
               </div>
               <div>
-                <div class="item-lbl">Cơ sở 1 (Ba Đình)</div>
-                <div class="item-val">Số 16 phố Vĩnh Phúc, Q. Ba Đình, Hà Nội</div>
+                <div class="item-lbl">Thường trực Ban Điều phối Miền Bắc</div>
+                <div class="item-val">Hà Nội (Hỗ trợ mạng lưới các tỉnh phía Bắc)</div>
               </div>
             </div>
 
@@ -37,8 +38,8 @@ import ConsultForm from '../components/ConsultForm.astro';
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
               </div>
               <div>
-                <div class="item-lbl">Cơ sở 2 (Đống Đa)</div>
-                <div class="item-val">Số 22, ngõ 11 Lương Định Của, Q. Đống Đa, Hà Nội</div>
+                <div class="item-lbl">Thường trực Ban Điều phối Miền Nam</div>
+                <div class="item-val">TP. Hồ Chí Minh (Hỗ trợ các tỉnh phía Nam & Tây Nguyên)</div>
               </div>
             </div>
 
@@ -47,7 +48,7 @@ import ConsultForm from '../components/ConsultForm.astro';
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
               </div>
               <div>
-                <div class="item-lbl">Hotline tư vấn tuyển sinh (24/7)</div>
+                <div class="item-lbl">Hotline / Zalo Thường trực (24/7)</div>
                 <div class="item-val"><a href="tel:0983119819">0983.119.819</a></div>
               </div>
             </div>
@@ -57,24 +58,24 @@ import ConsultForm from '../components/ConsultForm.astro';
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
               </div>
               <div>
-                <div class="item-lbl">Hòm thư điện tử</div>
-                <div class="item-val"><a href="mailto:covuaduongsinh@gmail.com">covuaduongsinh@gmail.com</a></div>
+                <div class="item-lbl">Hòm thư tiếp nhận đề án & chuyển giao giáo trình</div>
+                <div class="item-val"><a href="mailto:covuahocduongvn@gmail.com">covuahocduongvn@gmail.com</a></div>
               </div>
             </div>
 
             <div class="contact-item">
               <div class="c-icon-box">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
               </div>
               <div>
-                <div class="item-lbl">Fanpage Facebook chính thức</div>
-                <div class="item-val"><a href="https://facebook.com/covuaduongsinh" target="_blank" rel="noopener noreferrer">facebook.com/covuaduongsinh</a></div>
+                <div class="item-lbl">Cổng thông tin chính thức</div>
+                <div class="item-val"><a href="https://covuahocduong.com">covuahocduong.com</a></div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Cột phải: Form tư vấn -->
+        <!-- Cột phải: Form tư vấn & kết nối -->
         <div class="contact-form-card">
           <ConsultForm id="lien-he-form" hasNote={true} />
         </div>

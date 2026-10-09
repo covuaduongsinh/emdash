@@ -1,0 +1,138 @@
+---
+/**
+ * /checkout/{id} - Checkout page for membership plans
+ */
+import { getEmDashCollection } from "emdash";
+import Layout from "virtual:emdash-lms/layout";
+import { basePath } from "virtual:emdash-lms/config";
+
+const { id } = Astro.params;
+if (!id) return Astro.redirect(`${basePath}/plans`);
+
+const type = Astro.url.searchParams.get("type") === "course" ? "course" : "membership";
+
+let itemName = "";
+let price = 0;
+let salePrice: number | undefined;
+let currency = "VND";
+let billingPeriod: string | undefined;
+let features: string[] = [];
+
+if (type === "course") {
+  const { entries: courses } = await getEmDashCollection("courses");
+  const course = courses.find((c) => c.id === id || c.data?.id === id || c.data?.slug === id);
+  if (!course) return Astro.redirect(`${basePath}/courses`);
+  itemName = course.data.title;
+  price = course.data.price ?? 0;
+  salePrice = course.data.sale_price;
+  currency = course.data.currency ?? "VND";
+} else {
+  const { entries: plans } = await getEmDashCollection("membership_plans");
+  const plan = plans.find((p) => p.id === id || p.data?.id === id || p.data?.slug === id);
+  if (!plan) return Astro.redirect(`${basePath}/plans`);
+  itemName = plan.data.name;
+  price = plan.data.price ?? 0;
+  salePrice = plan.data.sale_price;
+  currency = plan.data.currency ?? "VND";
+  billingPeriod = plan.data.billing_period;
+  features = plan.data.features ?? [];
+}
+
+const finalPrice = salePrice ?? price;
+
+function formatPrice(p: number, curr: string): string {
+  return new Intl.NumberFormat(curr === "VND" ? "vi-VN" : "en-US", {
+    style: "currency",
+    currency: curr,
+    minimumFractionDigits: 0,
+  }).format(p);
+}
+
+// Checkout API endpoint
+const checkoutUrl = "/_emdash/api/plugins/lms/checkout";
+---
+
+<Layout title={`Đăng ký học liệu - ${itemName}`} description="Xác nhận đóng góp học phí & kích hoạt quyền truy cập">
+  <div class="lms-checkout">
+    <nav class="lms-breadcrumb">
+      <a href={type === "course" ? `${basePath}/courses` : `${basePath}/plans`}>
+        &larr; {type === "course" ? "Quay lại Kho học liệu" : "Quay lại Thẻ Thư Viện"}
+      </a>
+    </nav>
+
+    <h1>Xác nhận đăng ký học liệu & Thẻ thư viện</h1>
+
+    <div class="lms-checkout-layout">
+      <section class="lms-checkout-summary">
+        <h2>Thông tin học liệu</h2>
+
+        <div class="lms-checkout-item">
+          <div class="lms-item-details">
+            <span class="lms-item-name">{itemName}</span>
+            {billingPeriod && (
+              <span class="lms-item-period">
+                Thời hạn: {billingPeriod}
+              </span>
+            )}
+          </div>
+          <span class="lms-item-price">
+            {formatPrice(finalPrice, currency)}
+          </span>
+        </div>
+
+        {salePrice != null && salePrice < price && (
+          <div class="lms-checkout-discount">
+            <span>Hỗ trợ học phí</span>
+            <span>
+              -{formatPrice(price - salePrice, currency)}
+            </span>
+          </div>
+        )}
+
+        <div class="lms-checkout-total">
+          <span>Tổng mức đóng góp</span>
+          <span>{formatPrice(finalPrice, currency)}</span>
+        </div>
+      </section>
+
+      <section class="lms-checkout-form-section">
+        <h2>Phương thức chuyển khoản học phí</h2>
+        <form action={checkoutUrl} method="POST" class="lms-checkout-form">
+          <input type="hidden" name="type" value={type} />
+          <input type="hidden" name="item_id" value={id} />
+          <input type="hidden" name="provider_id" value="sepay" />
+          <input type="hidden" name="redirect_url" value={Astro.url.href} />
+
+          <div class="lms-payment-methods">
+            <label class="lms-payment-method lms-payment-method--selected">
+              <input type="radio" name="provider_select" value="sepay" checked />
+              <div class="lms-payment-method-info">
+                <strong>Chuyển khoản Ngân hàng (VietQR / SePay)</strong>
+                <p>Tự động kích hoạt quyền truy cập ngay sau khi quét mã QR thành công</p>
+              </div>
+            </label>
+          </div>
+
+          <p class="lms-checkout-note">
+            Hệ thống sẽ hiển thị mã VietQR chính xác kèm mã định danh để tự động kích hoạt tài khoản.
+          </p>
+
+          <button type="submit" class="lms-checkout-btn">
+            Xác nhận & Quét mã QR ({formatPrice(finalPrice, currency)})
+          </button>
+        </form>
+      </section>
+    </div>
+
+    {features.length > 0 && (
+      <aside class="lms-plan-includes">
+        <h3>Quyền lợi bao gồm</h3>
+        <ul>
+          {features.map((feature: string) => (
+            <li>{feature}</li>
+          ))}
+        </ul>
+      </aside>
+    )}
+  </div>
+</Layout>

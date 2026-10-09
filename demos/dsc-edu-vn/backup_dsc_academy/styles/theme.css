@@ -1,0 +1,288 @@
+/* ============================================================
+   dsc.edu.vn — Theme & Design Tokens
+   Thương hiệu Dương Sinh Chess Academy (DSC)
+   Navy chủ đạo (#2B3990) + CTA Navy + Điểm nhấn Teal (#3DBB95) & Blue (#2275B4).
+   TUYỆT ĐỐI KHÔNG DÙNG MÀU CAM.
+   ============================================================ */
+
+:root {
+	/* Brand colors */
+	--navy: #2b3990;
+	--navy-hover: #22307a;
+	--navy-deep: #1e2a6b;
+	--navy-ink: #151d49;
+	--blue: #2275b4;
+	--teal: #3dbb95;
+	--teal-deep: #2a9c7c;
+	--green: #2da44a;
+
+	/* Surfaces & Neutrals */
+	--bg: #f8f9fc;
+	--white: #ffffff;
+	--paper: #fcfcfe;
+	--ink: #1a1a2e;
+	--text-secondary: #4a4f63;
+	--muted: #6b7280;
+	--line: #e6e8f0;
+	--line-soft: #eef0f7;
+	--navy-soft: #eef0fa;
+	--teal-soft: #e7f6f0;
+	--blue-soft: #e9f2f9;
+
+	/* Typography */
+	--font: var(
+		--font-sans,
+		"Roboto",
+		system-ui,
+		-apple-system,
+		BlinkMacSystemFont,
+		"Segoe UI",
+		sans-serif
+	);
+	--font-cond: var(--font-cond, "Roboto Condensed", "Roboto", sans-serif);
+
+	/* Radius */
+	--r-xs: 6px;
+	--r-sm: 8px;
+	--r-md: 12px;
+	--r-lg: 16px;
+	--r-xl: 22px;
+	--r-2xl: 28px;
+	--r-pill: 999px;
+
+	/* Shadows (Cool navy-tinted) */
+	--sh-xs: 0 1px 2px rgba(21, 29, 73, 0.06);
+	--sh-sm: 0 2px 8px rgba(21, 29, 73, 0.07);
+	--sh-md: 0 8px 24px rgba(21, 29, 73, 0.1);
+	--sh-lg: 0 18px 48px rgba(21, 29, 73, 0.16);
+	--sh-navy: 0 12px 30px rgba(43, 57, 144, 0.28);
+
+	/* Motion */
+	--ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--dur: 0.18s;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	margin: 0;
+	font-family: var(--font);
+	color: var(--ink);
+	background: var(--bg);
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+img {
+	display: block;
+	max-width: 100%;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+	margin: 0;
+}
+
+.wrap {
+	max-width: 1180px;
+	margin: 0 auto;
+	padding: 0 28px;
+}
+
+/* Button variants */
+.btn {
+	font-family: var(--font);
+	font-weight: 700;
+	font-size: 15px;
+	border: none;
+	border-radius: var(--r-pill);
+	padding: 13px 26px;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 9px;
+	transition:
+		transform var(--dur) var(--ease),
+		background var(--dur),
+		box-shadow var(--dur);
+	white-space: nowrap;
+	line-height: 1;
+}
+
+.btn svg {
+	width: 18px;
+	height: 18px;
+}
+
+.btn--primary {
+	background: var(--navy);
+	color: #fff;
+}
+
+.btn--primary:hover {
+	background: var(--navy-hover);
+	transform: translateY(-2px);
+	box-shadow: var(--sh-navy);
+}
+
+.btn--ghost {
+	background: transparent;
+	color: var(--navy);
+	box-shadow: inset 0 0 0 1.6px var(--navy);
+}
+
+.btn--ghost:hover {
+	background: var(--navy-soft);
+	transform: translateY(-2px);
+}
+
+.btn--onnavy {
+	background: #fff;
+	color: var(--navy);
+}
+
+.btn--onnavy:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+.btn--outnavy {
+	background: transparent;
+	color: #fff;
+	box-shadow: inset 0 0 0 1.6px rgba(255, 255, 255, 0.5);
+}
+
+.btn--outnavy:hover {
+	background: rgba(255, 255, 255, 0.12);
+	transform: translateY(-2px);
+}
+
+.btn--teal {
+	background: var(--teal);
+	color: #063;
+}
+
+.btn--teal:hover {
+	background: var(--teal-deep);
+	color: #fff;
+	transform: translateY(-2px);
+}
+
+.btn:active {
+	transform: translateY(0) scale(0.98);
+}
+
+.btn--lg {
+	padding: 16px 32px;
+	font-size: 16px;
+}
+
+.btn--sm {
+	padding: 9px 18px;
+	font-size: 13.5px;
+}
+
+/* Overlines & typography badges */
+.overline {
+	font-family: var(--font-cond);
+	font-weight: 700;
+	font-size: 13px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--navy);
+}
+
+.overline--muted {
+	color: var(--muted);
+}
+
+.overline--teal {
+	color: var(--teal-deep);
+}
+
+.overline--light {
+	color: rgba(255, 255, 255, 0.75);
+}
+
+/* Sections */
+.sec {
+	padding: 80px 0;
+}
+
+.sec.alt {
+	background: var(--white);
+}
+
+.shead {
+	max-width: 680px;
+	margin: 0 auto 48px;
+	text-align: center;
+}
+
+.shead.left {
+	margin-left: 0;
+	text-align: left;
+}
+
+.shead h2 {
+	font-size: clamp(27px, 2.8vw, 38px);
+	font-weight: 900;
+	letter-spacing: -0.02em;
+	color: var(--ink);
+	margin-top: 10px;
+	line-height: 1.15;
+}
+
+.shead p {
+	font-size: 17px;
+	line-height: 1.6;
+	color: var(--muted);
+	margin-top: 14px;
+}
+
+/* Scroll reveal */
+.reveal {
+	opacity: 0;
+	transform: translateY(20px);
+	transition:
+		opacity 0.7s var(--ease),
+		transform 0.7s var(--ease);
+}
+
+.reveal.in {
+	opacity: 1;
+	transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.reveal {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+}
+
+@media (max-width: 520px) {
+	.wrap {
+		padding: 0 18px;
+	}
+}
