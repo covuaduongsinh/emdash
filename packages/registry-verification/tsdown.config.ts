@@ -5,10 +5,11 @@ import { defineConfig } from "tsdown";
 const rebundleSafeRequire = {
 	name: "rebundle-safe-require",
 	renderChunk(code: string) {
-		return code.replace(
-			"createRequire(import.meta.url)",
-			'createRequire("file:///emdash-registry-verification.js")',
-		);
+		const base =
+			process.platform === "win32"
+				? "file:///C:/emdash-registry-verification.js"
+				: "file:///emdash-registry-verification.js";
+		return code.replace("createRequire(import.meta.url)", `createRequire("${base}")`);
 	},
 };
 

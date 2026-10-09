@@ -13,26 +13,37 @@ import { definePlugin } from "emdash";
 
 import {
 	accessRoute,
-	checkoutRoute,
+	accessRouteInputSchema,
+	adminStudentsRoute,
+	adminStudentsInputSchema,
+	meAccessRoute,
+	meAccessInputSchema,
+	meEnrollRoute,
+	meEnrollInputSchema,
+	meProgressRoute,
+	meProgressInputSchema,
 	membersRoute,
+	membersRouteInputSchema,
 	ordersRoute,
+	ordersRouteInputSchema,
 	plansRoute,
-	webhooksRoute,
+	plansRouteInputSchema,
+	progressCompleteRoute,
+	progressCompleteInputSchema,
+	progressSyncRoute,
+	progressSyncInputSchema,
+	setupRunRoute,
+	setupRunInputSchema,
 } from "./routes/index.js";
 
-// Re-export types
+// Re-export types & schemas
 export * from "./types.js";
 export * from "./access-control.js";
 export * from "./providers/index.js";
+export * from "./schema/setup.js";
 
 // Re-export Astro integration for convenience
 export { lmsIntegration, type LmsIntegrationOptions } from "./integration.js";
-
-// Collections defined in seed/seed.json:
-// - membership_plans, memberships, orders, enrollments
-// - courses, modules, lessons, quizzes, questions
-// - lesson_progress, quiz_submissions, certificates
-// - coupons, course_reviews, certificate_templates
 
 export interface LmsPluginOptions {
 	/** Plugin mode. Default: "full" */
@@ -62,7 +73,7 @@ export interface LmsPluginOptions {
 
 	/** Currency configuration */
 	currency?: {
-		/** Base currency code. Default: "USD" */
+		/** Base currency code. Default: "VND" */
 		base?: string;
 		/** Display currency code. Default: same as base */
 		display?: string;
@@ -75,40 +86,14 @@ export interface LmsPluginOptions {
  * Plugin factory - returns a descriptor for the integration
  */
 export function lmsPlugin(options: LmsPluginOptions = {}): PluginDescriptor<LmsPluginOptions> {
-	const mode = options.mode ?? "full";
-
-	// Determine which features are enabled based on mode
-	const membershipEnabled =
-		options.membership?.enabled ?? (mode === "membership" || mode === "full");
-	const coursesEnabled = options.courses?.enabled ?? (mode === "lms" || mode === "full");
-
-	// Build admin pages based on enabled features
-	const adminPages: { path: string; label: string; icon: string; group: string }[] = [];
-
-	if (membershipEnabled) {
-		adminPages.push(
-			{ path: "/plans", label: "Plans", icon: "crown", group: "lms" },
-			{ path: "/members", label: "Members", icon: "users", group: "lms" },
-		);
-	}
-
-	if (coursesEnabled) {
-		adminPages.push(
-			{ path: "/courses", label: "Courses", icon: "graduation-cap", group: "lms" },
-			{ path: "/students", label: "Students", icon: "student", group: "lms" },
-		);
-	}
-
-	// Orders page always available
-	adminPages.push(
-		{ path: "/orders", label: "Orders", icon: "receipt", group: "lms" },
-		{ path: "/settings", label: "Settings", icon: "settings", group: "lms" },
-	);
+	const adminPages = [
+		{ path: "/settings/setup", label: "Cài đặt LMS", icon: "wrench", group: "lms" },
+		{ path: "/students", label: "Học viên", icon: "student", group: "lms" },
+		{ path: "/settings", label: "Cài đặt", icon: "gear", group: "lms" },
+	];
 
 	return {
 		id: "lms",
-		name: "EmDash LMS",
-		description: "Learning Management System — Courses, Memberships, Quizzes & SePay Checkout",
 		version: "0.2.0",
 		entrypoint: "emdash-lms",
 		adminEntry: "emdash-lms/admin",
@@ -120,44 +105,19 @@ export function lmsPlugin(options: LmsPluginOptions = {}): PluginDescriptor<LmsP
 /**
  * Create the resolved plugin - called by the generated virtual module
  */
-export function createPlugin(options: LmsPluginOptions = {}): ResolvedPlugin {
-	const mode = options.mode ?? "full";
-	const membershipEnabled =
-		options.membership?.enabled ?? (mode === "membership" || mode === "full");
-	const coursesEnabled = options.courses?.enabled ?? (mode === "lms" || mode === "full");
+export function createPlugin(_options: LmsPluginOptions = {}): ResolvedPlugin {
+	const adminPages = [
+		{ path: "/settings/setup", label: "Cài đặt LMS", icon: "wrench", group: "lms" },
+		{ path: "/students", label: "Học viên", icon: "student", group: "lms" },
+		{ path: "/settings", label: "Cài đặt", icon: "gear", group: "lms" },
+	];
 
-	const adminPages: { path: string; label: string; icon: string; group: string }[] = [];
-
-	if (membershipEnabled) {
-		adminPages.push(
-			{ path: "/plans", label: "Plans", icon: "crown", group: "lms" },
-			{ path: "/members", label: "Members", icon: "users", group: "lms" },
-		);
-	}
-
-	if (coursesEnabled) {
-		adminPages.push(
-			{ path: "/courses", label: "Courses", icon: "graduation-cap", group: "lms" },
-			{ path: "/students", label: "Students", icon: "student", group: "lms" },
-		);
-	}
-
-	adminPages.push(
-		{ path: "/orders", label: "Orders", icon: "receipt", group: "lms" },
-		{ path: "/settings", label: "Settings", icon: "settings", group: "lms" },
-	);
-
-	// Use type assertion to help TypeScript resolve the correct overload
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	return definePlugin({
 		id: "lms",
-		name: "EmDash LMS",
-		description: "Learning Management System — Courses, Memberships, Quizzes & SePay Checkout",
 		version: "0.2.0",
 
-		capabilities: ["read:content", "write:content", "read:users"],
+		capabilities: ["content:read", "content:write", "users:read"],
 
-		// Empty storage - collections are defined in seed/seed.json
 		storage: {},
 
 		admin: {
@@ -167,26 +127,58 @@ export function createPlugin(options: LmsPluginOptions = {}): ResolvedPlugin {
 
 		routes: {
 			plans: {
+				input: plansRouteInputSchema,
 				handler: plansRoute,
 			},
 			members: {
+				input: membersRouteInputSchema,
 				handler: membersRoute,
 			},
 			orders: {
+				input: ordersRouteInputSchema,
 				handler: ordersRoute,
 			},
-			checkout: {
-				handler: checkoutRoute,
-			},
 			access: {
+				input: accessRouteInputSchema,
 				handler: accessRoute,
 			},
-			"webhook/:providerId": {
-				handler: webhooksRoute,
-				public: true,
+			"setup/run": {
+				input: setupRunInputSchema,
+				permission: "schema:manage",
+				handler: setupRunRoute,
+			},
+			"me/access": {
+				input: meAccessInputSchema,
+				permission: "content:read",
+				handler: meAccessRoute,
+			},
+			"me/enroll": {
+				input: meEnrollInputSchema,
+				permission: "content:read",
+				handler: meEnrollRoute,
+			},
+			"me/progress": {
+				input: meProgressInputSchema,
+				permission: "content:read",
+				handler: meProgressRoute,
+			},
+			"progress/complete": {
+				input: progressCompleteInputSchema,
+				permission: "content:read",
+				handler: progressCompleteRoute,
+			},
+			"progress/sync": {
+				input: progressSyncInputSchema,
+				permission: "content:read",
+				handler: progressSyncRoute,
+			},
+			"admin/students": {
+				input: adminStudentsInputSchema,
+				permission: "content:read",
+				handler: adminStudentsRoute,
 			},
 		},
-	} as any);
+	});
 }
 
 export default lmsPlugin;

@@ -1,8 +1,9 @@
 ---
 /**
  * /course/{slug} - Course detail page
+ * Optimized query paths with requestCached and field-filtered collection queries (Max 3 queries).
  */
-import { getEmDashCollection } from "emdash";
+import { getEmDashCollection, getEmDashEntry, requestCached } from "emdash";
 import { PortableText } from "emdash/ui";
 import Layout from "virtual:emdash-lms/layout";
 import { basePath } from "virtual:emdash-lms/config";
@@ -10,32 +11,54 @@ import { basePath } from "virtual:emdash-lms/config";
 const { slug } = Astro.params;
 if (!slug) return Astro.redirect(`${basePath}/courses`);
 
-const { entries: courses } = await getEmDashCollection("courses");
-const course = courses.find((c) => c.data.slug === slug || c.id === slug);
-if (!course) return Astro.redirect(`${basePath}/courses`);
+// 1. Fetch single course by slug (Cached per-request)
+const courseData = await requestCached(`lms:course:${slug}`, async () => {
+  const { entry: course } = await getEmDashEntry("courses", slug);
+  if (!course) return null;
 
-const { entries: modules } = await getEmDashCollection("modules");
-const { entries: lessons } = await getEmDashCollection("lessons");
+  const courseId = course.id;
 
-// Use both course.id and course.data.id for matching (data structure varies)
-const courseId = course.data.id || course.id;
+  // 2. Fetch modules for this course
+  const { entries: modules } = await getEmDashCollection("modules", {
+    where: { fieldFilters: { course_id: courseId } },
+  });
 
-const courseModules = modules
-  .filter((m) => m.data.course_id === courseId || m.data.course_id === course.id)
-  .toSorted((a, b) => (a.data.sort_order ?? 0) - (b.data.sort_order ?? 0));
+  // 3. Fetch lessons for this course
+  const { entries: lessons } = await getEmDashCollection("lessons", {
+    where: { fieldFilters: { course_id: courseId } },
+  });
 
-const moduleLessons = courseModules.map((mod) => ({
-  module: mod,
-  lessons: lessons
-    .filter((l) => l.data.module_id === mod.id || l.data.module_id === mod.data.id)
-    .toSorted((a, b) => (a.data.sort_order ?? 0) - (b.data.sort_order ?? 0)),
-}));
+  const sortedModules = modules.toSorted(
+    (a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0)
+  );
 
-const totalLessons = moduleLessons.reduce((sum, m) => sum + m.lessons.length, 0);
-const totalDuration = moduleLessons.reduce(
-  (sum, m) => sum + m.lessons.reduce((s, l) => s + (l.data.duration_minutes ?? 0), 0),
-  0
-);
+  const moduleLessons = sortedModules.map((mod) => ({
+    module: mod,
+    lessons: lessons
+      .filter((l) => l.data.module_id === mod.id)
+      .toSorted((a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0)),
+  }));
+
+  const totalLessons = moduleLessons.reduce((sum, m) => sum + m.lessons.length, 0);
+  const totalDuration = moduleLessons.reduce(
+    (sum, m) => sum + m.lessons.reduce((s, l) => s + (Number(l.data.duration_minutes) || 0), 0),
+    0
+  );
+
+  return {
+    course,
+    sortedModules,
+    moduleLessons,
+    totalLessons,
+    totalDuration,
+  };
+});
+
+if (!courseData || !courseData.course) {
+  return Astro.redirect(`${basePath}/courses`);
+}
+
+const { course, sortedModules, moduleLessons, totalLessons, totalDuration } = courseData;
 
 function formatDuration(minutes: number): string {
   const hours = Math.floor(minutes / 60);
@@ -46,9 +69,9 @@ function formatDuration(minutes: number): string {
 }
 
 const difficultyLabels: Record<string, string> = {
-  beginner: "Nhập môn & Vỡ lòng",
-  intermediate: "Căn bản & Trung cấp",
-  advanced: "Nâng cao & Chiến lược",
+  beginner: "Tốt — Nhập môn & Vỡ lòng",
+  intermediate: "Mã & Tượng — Căn bản & Trung cấp",
+  advanced: "Xe & Hậu — Nâng cao & Chiến lược",
 };
 ---
 
@@ -93,50 +116,59 @@ const difficultyLabels: Record<string, string> = {
                 {formatDuration(totalDuration)}
               </span>
             )}
-            {courseModules.length > 0 && (
+            {sortedModules.length > 0 && (
               <span class="lms-stat">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
                   <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
                 </svg>
-                {courseModules.length} học phần
+                {sortedModules.length} chương học
               </span>
             )}
           </div>
         </header>
 
         {course.data.content && (
-          <section class="lms-course-description">
-            <h2>Mục tiêu & Giới thiệu chuyên đề</h2>
-            <div class="lms-prose">
-              <PortableText value={course.data.content} />
-            </div>
-          </section>
+          <div class="lms-course-content">
+            <PortableText value={course.data.content} />
+          </div>
         )}
 
-        {moduleLessons.length > 0 && (
-          <section class="lms-curriculum">
-            <h2>Khung chương trình bài giảng</h2>
-            <div class="lms-modules-list">
-              {moduleLessons.map(({ module, lessons }, i) => (
-                <details class="lms-module-accordion" open={i === 0}>
+        <!-- Curriculum -->
+        <section class="lms-curriculum">
+          <h2>Chương trình bài học</h2>
+          {moduleLessons.length === 0 ? (
+            <p class="lms-empty">Nội dung các bài học đang được cập nhật.</p>
+          ) : (
+            <div class="lms-modules">
+              {moduleLessons.map(({ module: mod, lessons: modLessons }, i) => (
+                <details class="lms-module" open={i === 0}>
                   <summary class="lms-module-header">
-                    <span class="lms-module-title">{module.data.title}</span>
-                    <span class="lms-module-meta">{lessons.length} bài học</span>
+                    <div class="lms-module-title">
+                      <span class="lms-module-index">Chương {i + 1}</span>
+                      <h3>{mod.data.title}</h3>
+                    </div>
+                    <span class="lms-module-meta">{modLessons.length} bài</span>
                   </summary>
-                  <ul class="lms-lessons-list">
-                    {lessons.map((lesson) => (
-                      <li>
-                        <a href={`${basePath}/lesson/${lesson.data.slug || lesson.id}`}>
+                  {mod.data.description && (
+                    <p class="lms-module-desc">{mod.data.description}</p>
+                  )}
+                  <ul class="lms-lessons">
+                    {modLessons.map((lesson) => (
+                      <li class="lms-lesson-item">
+                        <a href={`${basePath}/lesson/${lesson.data.slug || lesson.id}`} class="lms-lesson-link">
+                          <span class="lms-lesson-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                          </span>
                           <span class="lms-lesson-title">{lesson.data.title}</span>
-                          <span class="lms-lesson-meta">
+                          <span class="lms-lesson-badges">
                             {lesson.data.is_preview && (
-                              <span class="lms-preview-badge">Học thử</span>
+                              <span class="lms-badge-preview">Học thử</span>
                             )}
                             {lesson.data.duration_minutes && (
-                              <span class="lms-lesson-duration">
-                                {formatDuration(lesson.data.duration_minutes)}
-                              </span>
+                              <span class="lms-lesson-time">{lesson.data.duration_minutes}p</span>
                             )}
                           </span>
                         </a>
@@ -146,41 +178,40 @@ const difficultyLabels: Record<string, string> = {
                 </details>
               ))}
             </div>
-          </section>
-        )}
+          )}
+        </section>
       </div>
 
+      <!-- Sidebar Card -->
       <aside class="lms-course-sidebar">
-        <div class="lms-sidebar-card">
-          {course.data.featured_image && (
-            <div class="lms-sidebar-thumbnail">
-              <img src={course.data.featured_image} alt={course.data.title} />
-            </div>
-          )}
-          <div class="lms-sidebar-body">
-            <div class="lms-sidebar-stats">
-              {totalLessons > 0 && (
-                <div class="lms-sidebar-stat">
-                  <span class="lms-stat-label">Số bài học</span>
-                  <span class="lms-stat-value">{totalLessons}</span>
-                </div>
-              )}
-              {courseModules.length > 0 && (
-                <div class="lms-sidebar-stat">
-                  <span class="lms-stat-label">Học phần</span>
-                  <span class="lms-stat-value">{courseModules.length}</span>
-                </div>
-              )}
-              {totalDuration > 0 && (
-                <div class="lms-sidebar-stat">
-                  <span class="lms-stat-label">Thời lượng</span>
-                  <span class="lms-stat-value">{formatDuration(totalDuration)}</span>
-                </div>
-              )}
-            </div>
-            <a href={`${basePath}/plans`} class="lms-enroll-btn">
-              Đăng ký Thẻ Thư Viện
-            </a>
+        <div class="lms-enroll-card">
+          <div class="lms-card-body">
+            {course.data.access_level === "free" ? (
+              <>
+                <p class="lms-card-badge">Chuyên đề mở</p>
+                <div class="lms-card-price">Miễn phí 100%</div>
+                <p class="lms-card-desc">Dành cho mọi học viên yêu thích cờ vua.</p>
+                {moduleLessons[0]?.lessons[0] && (
+                  <a
+                    href={`${basePath}/lesson/${moduleLessons[0].lessons[0].data.slug || moduleLessons[0].lessons[0].id}`}
+                    class="lms-btn lms-btn-primary lms-btn-block"
+                  >
+                    Bắt đầu học ngay
+                  </a>
+                )}
+              </>
+            ) : (
+              <>
+                <p class="lms-card-badge">Chuyên đề Thẻ thư viện</p>
+                <div class="lms-card-price">Thẻ Thư Viện</div>
+                <p class="lms-card-desc">
+                  Mở khóa toàn bộ bài giảng, chuyên đề và kho câu đố cờ vua.
+                </p>
+                <a href={`${basePath}/plans`} class="lms-btn lms-btn-primary lms-btn-block">
+                  Đăng ký Thẻ thư viện
+                </a>
+              </>
+            )}
           </div>
         </div>
       </aside>

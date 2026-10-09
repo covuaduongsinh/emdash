@@ -49,22 +49,31 @@
     "typecheck": "tsgo --noEmit",
     "prepublishOnly": "pnpm build"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@duongsinh/chess-kit": "workspace:*"
+  },
   "optionalDependencies": {
     "stripe": "^17.0.0"
   },
   "devDependencies": {
+    "@cloudflare/kumo": "catalog:",
     "@phosphor-icons/react": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "react": "catalog:",
+    "react-dom": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "zod": "catalog:"
   },
   "peerDependencies": {
+    "@cloudflare/kumo": "catalog:",
+    "@phosphor-icons/react": "^2.1.10",
     "astro": "catalog:",
     "emdash": "workspace:*",
-    "react": "^18 || ^19"
+    "react": "^18 || ^19",
+    "zod": "catalog:"
   }
 }

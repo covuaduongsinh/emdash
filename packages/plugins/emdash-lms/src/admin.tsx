@@ -1,220 +1,384 @@
 /**
  * EmDash LMS Admin UI
  *
- * Admin pages for managing:
- * - Membership Plans & Members
- * - Courses & Students
- * - Orders
+ * Admin pages for:
+ * - LMS Setup & Schema Status (/settings/setup)
+ * - Students & Enrollment Management (/students)
+ * - LMS Settings (/settings)
  */
 
-import {
-	Crown,
-	Users,
-	GraduationCap,
-	Student,
-	Receipt,
-	Gear,
-	CreditCard,
-} from "@phosphor-icons/react";
+import { Button, Input, Select, Badge, Loader } from "@cloudflare/kumo";
+import { Student, Gear, Wrench, CheckCircle, WarningCircle, UserPlus } from "@phosphor-icons/react";
 import * as React from "react";
+import { useState, useEffect } from "react";
 
 // ============================================================================
-// Plans Page
+// API Helper
 // ============================================================================
 
-export function PlansPage() {
+async function callPluginApi<T = unknown>(route: string, body?: unknown): Promise<T> {
+	const response = await fetch(`/_emdash/api/plugins/lms/${route}`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			"X-EmDash-Request": "1",
+		},
+		body: body ? JSON.stringify(body) : JSON.stringify({}),
+	});
+
+	if (!response.ok) {
+		const err = await response.json().catch(() => ({ error: { message: response.statusText } }));
+		throw new Error(err.error?.message || `API error: ${response.status}`);
+	}
+
+	const json = await response.json();
+	return json.data as T;
+}
+
+// ============================================================================
+// Setup Page (/settings/setup)
+// ============================================================================
+
+export function SetupPage() {
+	const [running, setRunning] = useState(false);
+	const [result, setResult] = useState<{
+		success: boolean;
+		orphanedTablesRegistered: string[];
+		collectionsCreated: string[];
+		fieldsAdded: string[];
+		fieldsUpdated: string[];
+		totalCollections: number;
+	} | null>(null);
+	const [error, setError] = useState<string | null>(null);
+
+	async function handleRunSetup() {
+		setRunning(true);
+		setError(null);
+		try {
+			const res = await callPluginApi<{
+				success: boolean;
+				orphanedTablesRegistered: string[];
+				collectionsCreated: string[];
+				fieldsAdded: string[];
+				fieldsUpdated: string[];
+				totalCollections: number;
+			}>("setup/run");
+			setResult(res);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "Đồng bộ schema thất bại");
+		} finally {
+			setRunning(false);
+		}
+	}
+
 	return (
-		<div className="p-6">
+		<div className="p-6 max-w-4xl">
 			<div className="flex items-center gap-3 mb-6">
-				<Crown className="w-6 h-6 text-amber-500" weight="fill" />
-				<h1 className="text-xl font-semibold">Membership Plans</h1>
+				<Wrench className="w-6 h-6 text-kumo-brand" />
+				<div>
+					<h1 className="text-xl font-semibold">Cài đặt LMS & Đồng bộ Schema</h1>
+					<p className="text-sm text-kumo-subtle">
+						Đồng bộ 16 collection LMS, đăng ký các bảng mồ côi và chuẩn hóa trường dữ liệu
+					</p>
+				</div>
 			</div>
 
-			<div className="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
-				<Crown className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-				<p className="font-medium">Plans Management</p>
-				<p className="text-sm">Configure subscription tiers and access limits</p>
+			<div className="bg-kumo-surface rounded-lg border border-kumo-line p-6 mb-6">
+				<h2 className="font-medium text-base mb-2">Đồng bộ cơ sở dữ liệu</h2>
+				<p className="text-sm text-kumo-subtle mb-4">
+					Quá trình này kiểm tra cấu trúc bảng trong D1, đăng ký các bảng `ec_*` chưa có trong
+					`_emdash_collections`, bổ sung các trường còn thiếu và bảo toàn 100% dữ liệu hiện có mà
+					không làm mất khóa học hay bài học.
+				</p>
+
+				<Button
+					variant="primary"
+					onClick={handleRunSetup}
+					disabled={running}
+					className="flex items-center gap-2"
+				>
+					{running && <Loader className="w-4 h-4 animate-spin" />}
+					{running ? "Đang đồng bộ..." : "Chạy Setup / Đồng bộ Schema"}
+				</Button>
+
+				{error && (
+					<div className="mt-4 p-4 rounded-md bg-kumo-danger/10 border border-kumo-danger text-kumo-danger flex items-center gap-2 text-sm">
+						<WarningCircle className="w-5 h-5 flex-shrink-0" />
+						<span>{error}</span>
+					</div>
+				)}
+
+				{result && (
+					<div className="mt-4 p-4 rounded-md bg-kumo-success/10 border border-kumo-success text-kumo-success text-sm space-y-2">
+						<div className="flex items-center gap-2 font-medium">
+							<CheckCircle className="w-5 h-5" />
+							<span>Đồng bộ Schema thành công! (16/16 Collections sẵn sàng)</span>
+						</div>
+						<ul className="list-disc ps-5 space-y-1 text-kumo-body text-xs">
+							<li>Bảng mồ côi đã đăng ký: {result.orphanedTablesRegistered.length || "0"}</li>
+							<li>Collection mới đã tạo: {result.collectionsCreated.length || "0"}</li>
+							<li>Trường mới đã bổ sung: {result.fieldsAdded.length || "0"}</li>
+							<li>Trường đã chuẩn hóa lựa chọn: {result.fieldsUpdated.length || "0"}</li>
+						</ul>
+					</div>
+				)}
 			</div>
 		</div>
 	);
 }
 
 // ============================================================================
-// Members Page
+// Students Page (/students)
 // ============================================================================
 
-export function MembersPage() {
-	return (
-		<div className="p-6">
-			<div className="flex items-center gap-3 mb-6">
-				<Users className="w-6 h-6 text-blue-500" />
-				<h1 className="text-xl font-semibold">Members</h1>
-			</div>
-
-			<div className="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
-				<Users className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-				<p className="font-medium">Active Memberships</p>
-				<p className="text-sm">View and manage subscriber memberships</p>
-			</div>
-		</div>
-	);
+interface StudentEnrollment {
+	id: string;
+	user_id: string;
+	course_id: string;
+	progress?: number;
+	started_at?: string;
+	completed_at?: string;
+	studentName?: string;
+	studentEmail?: string;
 }
 
-// ============================================================================
-// Courses Page
-// ============================================================================
-
-export function CoursesPage() {
-	return (
-		<div className="p-6">
-			<div className="flex items-center gap-3 mb-6">
-				<GraduationCap className="w-6 h-6 text-purple-500" />
-				<h1 className="text-xl font-semibold">Courses</h1>
-			</div>
-
-			<div className="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
-				<GraduationCap className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-				<p className="font-medium">Course Management</p>
-				<p className="text-sm">Create and organize learning content</p>
-			</div>
-		</div>
-	);
+interface CourseOption {
+	id: string;
+	title: string;
+	slug: string;
 }
-
-// ============================================================================
-// Students Page
-// ============================================================================
 
 export function StudentsPage() {
+	const [courses, setCourses] = useState<CourseOption[]>([]);
+	const [selectedCourse, setSelectedCourse] = useState<string>("");
+	const [enrollments, setEnrollments] = useState<StudentEnrollment[]>([]);
+	const [loading, setLoading] = useState(true);
+
+	// Manual enrollment form
+	const [email, setEmail] = useState("");
+	const [enrolling, setEnrolling] = useState(false);
+	const [msg, setMsg] = useState<string | null>(null);
+
+	useEffect(() => {
+		async function loadCourses() {
+			try {
+				const res = await callPluginApi<{ items: CourseOption[] }>("admin/students", {
+					action: "listCourses",
+				});
+				setCourses(res.items || []);
+			} catch {
+				// Ignore
+			}
+		}
+		loadCourses();
+	}, []);
+
+	async function loadEnrollments(courseId?: string) {
+		setLoading(true);
+		try {
+			const res = await callPluginApi<{ items: StudentEnrollment[] }>("admin/students", {
+				action: "list",
+				courseId: courseId || undefined,
+			});
+			setEnrollments(res.items || []);
+		} catch {
+			setEnrollments([]);
+		} finally {
+			setLoading(false);
+		}
+	}
+
+	useEffect(() => {
+		loadEnrollments(selectedCourse);
+	}, [selectedCourse]);
+
+	async function handleManualEnroll(e: React.FormEvent) {
+		e.preventDefault();
+		if (!email || !selectedCourse) {
+			setMsg("Vui lòng nhập email và chọn khóa học");
+			return;
+		}
+
+		setEnrolling(true);
+		setMsg(null);
+		try {
+			await callPluginApi("admin/students", {
+				action: "enrollManual",
+				email,
+				courseId: selectedCourse,
+			});
+			setMsg(`Đã ghi danh thành công cho học viên ${email}`);
+			setEmail("");
+			loadEnrollments(selectedCourse);
+		} catch (err) {
+			setMsg(err instanceof Error ? err.message : "Ghi danh thất bại");
+		} finally {
+			setEnrolling(false);
+		}
+	}
+
 	return (
-		<div className="p-6">
-			<div className="flex items-center gap-3 mb-6">
-				<Student className="w-6 h-6 text-green-500" />
-				<h1 className="text-xl font-semibold">Students</h1>
+		<div className="p-6 max-w-5xl">
+			<div className="flex items-center justify-between mb-6">
+				<div className="flex items-center gap-3">
+					<Student className="w-6 h-6 text-kumo-brand" />
+					<div>
+						<h1 className="text-xl font-semibold">Quản lý Học viên</h1>
+						<p className="text-sm text-kumo-subtle">
+							Theo dõi tiến độ học tập và ghi danh học viên vào các khóa cờ vua
+						</p>
+					</div>
+				</div>
 			</div>
 
-			<div className="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
-				<Student className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-				<p className="font-medium">Enrollments & Progress</p>
-				<p className="text-sm">Track student learning progress</p>
+			{/* Filter & Manual Enroll Bar */}
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+				<div className="bg-kumo-surface p-4 rounded-lg border border-kumo-line md:col-span-1">
+					<Select
+						label="Lọc theo Khóa học"
+						value={selectedCourse}
+						onValueChange={(v) => setSelectedCourse(v ?? "")}
+						items={[
+							{ value: "", label: "Tất cả các khóa" },
+							...courses.map((c) => ({ value: c.id, label: c.title })),
+						]}
+					/>
+				</div>
+
+				<form
+					onSubmit={handleManualEnroll}
+					className="bg-kumo-surface p-4 rounded-lg border border-kumo-line md:col-span-2 flex flex-col md:flex-row gap-3 items-end"
+				>
+					<div className="flex-1 w-full">
+						<label className="block text-xs font-medium text-kumo-subtle mb-1">
+							Ghi danh thủ công bằng Email
+						</label>
+						<Input
+							type="email"
+							placeholder="học-viên@gmail.com"
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+							className="w-full"
+						/>
+					</div>
+					<Button
+						type="submit"
+						variant="primary"
+						disabled={enrolling || !selectedCourse || !email}
+						className="flex items-center gap-2 whitespace-nowrap"
+					>
+						<UserPlus className="w-4 h-4" />
+						{enrolling ? "Đang xử lý..." : "Ghi danh"}
+					</Button>
+				</form>
+			</div>
+
+			{msg && (
+				<div className="mb-4 p-3 rounded-md bg-kumo-brand/10 border border-kumo-brand text-kumo-brand text-sm">
+					{msg}
+				</div>
+			)}
+
+			{/* Enrollments Table */}
+			<div className="bg-kumo-surface rounded-lg border border-kumo-line overflow-hidden">
+				{loading ? (
+					<div className="p-8 text-center text-kumo-subtle">Đang tải danh sách học viên...</div>
+				) : enrollments.length === 0 ? (
+					<div className="p-8 text-center text-kumo-subtle">Chưa có học viên nào ghi danh.</div>
+				) : (
+					<div className="overflow-x-auto">
+						<table className="w-full text-start text-sm">
+							<thead className="bg-kumo-surface-subtle border-b border-kumo-line text-xs font-medium text-kumo-subtle">
+								<tr>
+									<th className="p-3 text-start">Học viên</th>
+									<th className="p-3 text-start">Email</th>
+									<th className="p-3 text-start">Khóa học</th>
+									<th className="p-3 text-start">Tiến độ</th>
+									<th className="p-3 text-start">Bắt đầu</th>
+									<th className="p-3 text-start">Hoàn thành</th>
+								</tr>
+							</thead>
+							<tbody className="divide-y divide-kumo-line">
+								{enrollments.map((enr) => {
+									const course = courses.find((c) => c.id === enr.course_id);
+									return (
+										<tr key={enr.id} className="hover:bg-kumo-surface-subtle/50">
+											<td className="p-3 font-medium">{enr.studentName || enr.user_id}</td>
+											<td className="p-3 text-kumo-subtle">{enr.studentEmail || "N/A"}</td>
+											<td className="p-3">{course?.title || enr.course_id}</td>
+											<td className="p-3">
+												<div className="flex items-center gap-2">
+													<div className="w-20 bg-kumo-surface-subtle rounded-full h-2 overflow-hidden">
+														<div
+															className="bg-kumo-brand h-2 rounded-full"
+															style={{ width: `${enr.progress ?? 0}%` }}
+														/>
+													</div>
+													<span className="text-xs font-mono">{enr.progress ?? 0}%</span>
+												</div>
+											</td>
+											<td className="p-3 text-xs text-kumo-subtle">
+												{enr.started_at
+													? new Date(enr.started_at).toLocaleDateString("vi-VN")
+													: "—"}
+											</td>
+											<td className="p-3 text-xs">
+												{enr.completed_at ? (
+													<Badge variant="success">
+														{new Date(enr.completed_at).toLocaleDateString("vi-VN")}
+													</Badge>
+												) : (
+													<span className="text-kumo-subtle">Đang học</span>
+												)}
+											</td>
+										</tr>
+									);
+								})}
+							</tbody>
+						</table>
+					</div>
+				)}
 			</div>
 		</div>
 	);
 }
 
 // ============================================================================
-// Orders Page
+// Settings Page (/settings)
 // ============================================================================
-
-export function OrdersPage() {
-	return (
-		<div className="p-6">
-			<div className="flex items-center gap-3 mb-6">
-				<Receipt className="w-6 h-6 text-gray-600" />
-				<h1 className="text-xl font-semibold">Orders</h1>
-			</div>
-
-			<div className="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
-				<Receipt className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-				<p className="font-medium">Order History</p>
-				<p className="text-sm">Membership and course purchases</p>
-			</div>
-		</div>
-	);
-}
-
-// ============================================================================
-// Settings Page
-// ============================================================================
-
-const PAYMENT_PROVIDERS = [
-	{ id: "stripe", name: "Stripe", description: "Credit cards, Apple Pay, Google Pay" },
-	{ id: "paypal", name: "PayPal", description: "PayPal balance and linked accounts" },
-	{ id: "sepay", name: "Sepay", description: "Vietnamese bank transfers and e-wallets" },
-];
 
 export function SettingsPage() {
 	return (
 		<div className="p-6 max-w-4xl">
 			<div className="flex items-center gap-3 mb-6">
-				<Gear className="w-6 h-6 text-gray-600" />
-				<h1 className="text-xl font-semibold">LMS Settings</h1>
+				<Gear className="w-6 h-6 text-kumo-brand" />
+				<div>
+					<h1 className="text-xl font-semibold">Cài đặt Cờ Vua Học Đường LMS</h1>
+					<p className="text-sm text-kumo-subtle">Cấu hình chung hệ thống học tập</p>
+				</div>
 			</div>
 
-			{/* General Settings */}
-			<section className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-				<h2 className="font-medium mb-4">General</h2>
+			<section className="bg-kumo-surface rounded-lg border border-kumo-line p-6 mb-6">
+				<h2 className="font-medium text-base mb-4">Cấu hình chung</h2>
 				<div className="space-y-4">
 					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-1">Mode</label>
-						<select className="w-full border rounded-md px-3 py-2">
-							<option value="full">Full (Membership + LMS)</option>
-							<option value="membership">Membership Only</option>
-							<option value="lms">LMS Only</option>
-						</select>
+						<label className="block text-sm font-medium text-kumo-subtle mb-1">
+							Chế độ vận hành
+						</label>
+						<Select defaultValue="full" className="w-full">
+							<option value="full">Toàn diện (Thẻ thư viện + Khóa học cờ)</option>
+							<option value="membership">Chỉ Thẻ thư viện</option>
+							<option value="lms">Chỉ Khóa học</option>
+						</Select>
 					</div>
 					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-						<select className="w-full border rounded-md px-3 py-2">
-							<option value="USD">USD - US Dollar</option>
-							<option value="VND">VND - Vietnamese Dong</option>
-							<option value="EUR">EUR - Euro</option>
-						</select>
-					</div>
-				</div>
-			</section>
-
-			{/* Payment Providers */}
-			<section className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-				<div className="flex items-center gap-2 mb-4">
-					<CreditCard className="w-5 h-5 text-gray-500" />
-					<h2 className="font-medium">Payment Providers</h2>
-				</div>
-				<div className="space-y-3">
-					{PAYMENT_PROVIDERS.map((provider) => (
-						<div
-							key={provider.id}
-							className="flex items-center justify-between p-4 border rounded-lg"
-						>
-							<div>
-								<p className="font-medium">{provider.name}</p>
-								<p className="text-sm text-gray-500">{provider.description}</p>
-							</div>
-							<button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">
-								Configure
-							</button>
-						</div>
-					))}
-				</div>
-			</section>
-
-			{/* Membership Settings */}
-			<section className="bg-white rounded-lg border border-gray-200 p-6">
-				<h2 className="font-medium mb-4">Membership</h2>
-				<div className="space-y-4">
-					<div className="flex items-center justify-between">
-						<div>
-							<p className="font-medium">Trial Period</p>
-							<p className="text-sm text-gray-500">Allow free trial before billing</p>
-						</div>
-						<input
-							type="number"
-							className="w-20 border rounded-md px-3 py-2 text-right"
-							placeholder="0"
-						/>
-						<span className="text-sm text-gray-500">days</span>
-					</div>
-					<div className="flex items-center justify-between">
-						<div>
-							<p className="font-medium">Grace Period</p>
-							<p className="text-sm text-gray-500">Days after expiry before access revoked</p>
-						</div>
-						<input
-							type="number"
-							className="w-20 border rounded-md px-3 py-2 text-right"
-							placeholder="3"
-						/>
-						<span className="text-sm text-gray-500">days</span>
+						<label className="block text-sm font-medium text-kumo-subtle mb-1">
+							Đơn vị tiền tệ
+						</label>
+						<Select defaultValue="VND" className="w-full">
+							<option value="VND">VND — Đồng Việt Nam</option>
+							<option value="USD">USD — Đô la Mỹ</option>
+						</Select>
 					</div>
 				</div>
 			</section>
@@ -223,16 +387,15 @@ export function SettingsPage() {
 }
 
 // ============================================================================
-// Plugin Admin Entry
+// Plugin Admin Exports (Named export `pages` for EmDash virtual module import)
 // ============================================================================
 
+export const pages = {
+	"/settings/setup": SetupPage,
+	"/students": StudentsPage,
+	"/settings": SettingsPage,
+};
+
 export default {
-	pages: {
-		"/plans": PlansPage,
-		"/members": MembersPage,
-		"/courses": CoursesPage,
-		"/students": StudentsPage,
-		"/orders": OrdersPage,
-		"/settings": SettingsPage,
-	},
+	pages,
 };

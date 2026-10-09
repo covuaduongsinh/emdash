@@ -1,9 +1,10 @@
 ---
 /**
  * /lesson/{slug} - Lesson viewer page
- * Layout: Fixed left sidebar (curriculum) | Scrollable content with TOC
+ * Layout: Fixed left sidebar (curriculum) | Scrollable content with TOC & Progress
+ * Enforces server-side access control (L7) and zero-hotpath-queries for anonymous visitors (L8).
  */
-import { getEmDashCollection } from "emdash";
+import { getEmDashCollection, getEmDashEntry, requestCached } from "emdash";
 import { PortableText } from "emdash/ui";
 import Layout from "virtual:emdash-lms/layout";
 import { basePath } from "virtual:emdash-lms/config";
@@ -11,42 +12,97 @@ import { basePath } from "virtual:emdash-lms/config";
 const { slug } = Astro.params;
 if (!slug) return Astro.redirect(`${basePath}/courses`);
 
-const { entries: lessons } = await getEmDashCollection("lessons");
-const lesson = lessons.find((l) => l.data.slug === slug || l.id === slug);
-if (!lesson) return Astro.redirect(`${basePath}/courses`);
+// 1. Fetch lesson by slug
+const lessonData = await requestCached(`lms:lesson:${slug}`, async () => {
+  const { entry: lesson } = await getEmDashEntry("lessons", slug);
+  if (!lesson) return null;
 
-const { entries: courses } = await getEmDashCollection("courses");
-const { entries: modules } = await getEmDashCollection("modules");
+  const lessonId = lesson.id;
+  const courseId = lesson.data.course_id;
+  const moduleId = lesson.data.module_id;
 
-const module = modules.find((m) => m.id === lesson.data.module_id || m.data.id === lesson.data.module_id);
-const course = module
-  ? courses.find((c) => c.id === module.data.course_id || c.data.id === module.data.course_id)
-  : courses.find((c) => c.id === lesson.data.course_id || c.data.id === lesson.data.course_id);
+  // Fetch course & module
+  const { entry: course } = courseId ? await getEmDashEntry("courses", courseId) : { entry: null };
+  const { entry: module } = moduleId ? await getEmDashEntry("modules", moduleId) : { entry: null };
 
-const courseSlug = course ? (course.data.slug || course.id) : null;
-const courseId = course ? (course.data.id || course.id) : null;
+  // Fetch course modules & lessons for sidebar navigation
+  const { entries: courseModules } = courseId
+    ? await getEmDashCollection("modules", {
+        where: { fieldFilters: { course_id: courseId } },
+      })
+    : { entries: [] };
 
-// Get all modules and lessons for sidebar navigation
-const courseModules = course
-  ? modules
-      .filter((m) => m.data.course_id === courseId || m.data.course_id === course.id)
-      .toSorted((a, b) => (a.data.sort_order ?? 0) - (b.data.sort_order ?? 0))
-      .map((mod) => ({
-        ...mod,
-        lessons: lessons
-          .filter((l) => l.data.module_id === mod.id || l.data.module_id === mod.data.id)
-          .toSorted((a, b) => (a.data.sort_order ?? 0) - (b.data.sort_order ?? 0)),
-      }))
-  : [];
+  const { entries: courseLessons } = courseId
+    ? await getEmDashCollection("lessons", {
+        where: { fieldFilters: { course_id: courseId } },
+      })
+    : { entries: [] };
 
-// Get sibling lessons for navigation
-const siblingLessons = lessons
-  .filter((l) => l.data.module_id === lesson.data.module_id)
-  .toSorted((a, b) => (a.data.sort_order ?? 0) - (b.data.sort_order ?? 0));
+  const sortedModules = courseModules.toSorted(
+    (a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0)
+  );
 
-const currentIndex = siblingLessons.findIndex((l) => l.id === lesson.id);
-const prevLesson = currentIndex > 0 ? siblingLessons[currentIndex - 1] : null;
-const nextLesson = currentIndex < siblingLessons.length - 1 ? siblingLessons[currentIndex + 1] : null;
+  const sidebarModules = sortedModules.map((mod) => ({
+    module: mod,
+    lessons: courseLessons
+      .filter((l) => l.data.module_id === mod.id)
+      .toSorted((a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0)),
+  }));
+
+  // Sibling lessons for pagination
+  const siblingLessons = courseLessons
+    .filter((l) => l.data.module_id === moduleId)
+    .toSorted((a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0));
+
+  const currentIndex = siblingLessons.findIndex((l) => l.id === lessonId);
+  const prevLesson = currentIndex > 0 ? siblingLessons[currentIndex - 1] : null;
+  const nextLesson = currentIndex < siblingLessons.length - 1 ? siblingLessons[currentIndex + 1] : null;
+
+  return {
+    lesson,
+    course,
+    module,
+    sidebarModules,
+    prevLesson,
+    nextLesson,
+  };
+});
+
+if (!lessonData || !lessonData.lesson) {
+  return Astro.redirect(`${basePath}/courses`);
+}
+
+const { lesson, course, module, sidebarModules, prevLesson, nextLesson } = lessonData;
+const user = Astro.locals.user;
+
+// 2. Server-side Access Control Check (L7 & L8)
+const isFree = course?.data.access_level === "free" || lesson.data.is_preview === true;
+let hasAccess = isFree;
+
+if (!hasAccess && user) {
+  // Check active membership or enrollment only if user is logged in
+  const { entries: memberships } = await getEmDashCollection("memberships", {
+    where: { fieldFilters: { user_id: user.id, status: "active" } },
+    limit: 1,
+  });
+  const activeMembership = memberships[0];
+  const isMemberValid =
+    activeMembership &&
+    (!activeMembership.data.expires_at ||
+      new Date(activeMembership.data.expires_at as string).getTime() > Date.now());
+
+  if (isMemberValid) {
+    hasAccess = true;
+  } else if (course?.id) {
+    const { entries: enrollments } = await getEmDashCollection("enrollments", {
+      where: { fieldFilters: { user_id: user.id, course_id: course.id } },
+      limit: 1,
+    });
+    if (enrollments.length > 0) {
+      hasAccess = true;
+    }
+  }
+}
 
 function formatDuration(minutes: number): string {
   const hours = Math.floor(minutes / 60);
@@ -58,13 +114,13 @@ function formatDuration(minutes: number): string {
 ---
 
 <Layout title={`${lesson.data.title} — covuahocduong.com`} description={lesson.data.excerpt}>
-  <div class="lms-lesson-layout">
-    {/* Left Sidebar - Fixed, full height, own scroll */}
-    {courseModules.length > 0 && (
+  <div class="lms-lesson-layout" data-lesson-id={lesson.id} data-course-id={course?.id} data-logged-in={user ? "true" : "false"}>
+    {/* Left Sidebar - Curriculum navigation */}
+    {sidebarModules.length > 0 && (
       <aside class="lms-lesson-sidebar" id="lesson-sidebar">
         <div class="lms-sidebar-header">
-          {course && courseSlug && (
-            <a href={`${basePath}/course/${courseSlug}`} class="lms-course-link">
+          {course && (
+            <a href={`${basePath}/course/${course.data.slug || course.id}`} class="lms-course-link">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="15 18 9 12 15 6"/>
               </svg>
@@ -73,7 +129,7 @@ function formatDuration(minutes: number): string {
           )}
         </div>
         <nav class="lms-sidebar-nav">
-          {courseModules.map((mod, i) => (
+          {sidebarModules.map((mod, i) => (
             <details class="lms-module-group" open={mod.lessons.some((l) => l.id === lesson.id) || i === 0}>
               <summary class="lms-module-title">
                 <span>{mod.data.title}</span>
@@ -100,10 +156,9 @@ function formatDuration(minutes: number): string {
       </aside>
     )}
 
-    {/* Main Content - Scrollable */}
+    {/* Main Content */}
     <main class="lms-lesson-content" id="lesson-content">
       <div class="lms-content-grid">
-        {/* Article */}
         <article class="lms-article">
           <header class="lms-article-header">
             <div class="lms-article-meta">
@@ -119,54 +174,100 @@ function formatDuration(minutes: number): string {
             <h1 class="lms-article-title">{lesson.data.title}</h1>
           </header>
 
-          {lesson.data.video_url && (
-            <div class="lms-video">
-              <iframe
-                src={lesson.data.video_url}
-                allowfullscreen
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              ></iframe>
+          {/* Access Control Gate */}
+          {!hasAccess ? (
+            <div class="lms-lock-card">
+              <div class="lms-lock-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              </div>
+              <h2>Nội dung dành cho Hội viên Thẻ thư viện</h2>
+              <p>
+                Bài học này nằm trong chuyên đề bài giảng nâng cao của Cờ Vua Học Đường. Vui lòng đăng ký Thẻ thư viện để mở khóa toàn bộ chuyên đề và bài tập cờ vua.
+              </p>
+              {lesson.data.excerpt && (
+                <div class="lms-lock-excerpt">
+                  <strong>Giới thiệu bài học:</strong> {lesson.data.excerpt}
+                </div>
+              )}
+              <div class="lms-lock-actions">
+                <a href={`${basePath}/plans`} class="lms-btn lms-btn-primary">
+                  Đăng ký Thẻ thư viện
+                </a>
+                {!user && (
+                  <a href="/_emdash/admin/login" class="lms-btn lms-btn-outline">
+                    Đăng nhập tài khoản
+                  </a>
+                )}
+              </div>
             </div>
-          )}
+          ) : (
+            <>
+              {lesson.data.video_url && (
+                <div class="lms-video">
+                  <iframe
+                    src={lesson.data.video_url}
+                    allowfullscreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  ></iframe>
+                </div>
+              )}
 
-          {lesson.data.content && (
-            <div class="lms-article-body" id="lesson-body">
-              <PortableText value={lesson.data.content} />
-            </div>
-          )}
+              {lesson.data.content && (
+                <div class="lms-article-body" id="lesson-body">
+                  <PortableText value={lesson.data.content} />
+                </div>
+              )}
 
-          {lesson.data.summary && (
-            <aside class="lms-summary-box">
-              <h3>Tóm tắt bài học</h3>
-              <PortableText value={lesson.data.summary} />
-            </aside>
-          )}
+              {lesson.data.summary && (
+                <aside class="lms-summary-box">
+                  <h3>Tóm tắt bài học</h3>
+                  <PortableText value={lesson.data.summary} />
+                </aside>
+              )}
 
-          {lesson.data.resources && lesson.data.resources.length > 0 && (
-            <aside class="lms-resources-box">
-              <h3>Tài liệu & Học liệu đính kèm</h3>
-              <ul>
-                {lesson.data.resources.map((r: { title: string; url: string }) => (
-                  <li><a href={r.url} target="_blank" rel="noopener">{r.title}</a></li>
-                ))}
-              </ul>
-            </aside>
-          )}
+              {lesson.data.resources && lesson.data.resources.length > 0 && (
+                <aside class="lms-resources-box">
+                  <h3>Tài liệu & Học liệu đính kèm</h3>
+                  <ul>
+                    {lesson.data.resources.map((r: { title: string; url: string }) => (
+                      <li><a href={r.url} target="_blank" rel="noopener">{r.title}</a></li>
+                    ))}
+                  </ul>
+                </aside>
+              )}
 
-          <nav class="lms-pagination">
-            {prevLesson ? (
-              <a href={`${basePath}/lesson/${prevLesson.data.slug || prevLesson.id}`} class="lms-page-prev">
-                <span class="lms-page-label">← Bài trước</span>
-                <span class="lms-page-title">{prevLesson.data.title}</span>
-              </a>
-            ) : <span></span>}
-            {nextLesson && (
-              <a href={`${basePath}/lesson/${nextLesson.data.slug || nextLesson.id}`} class="lms-page-next">
-                <span class="lms-page-label">Bài tiếp theo →</span>
-                <span class="lms-page-title">{nextLesson.data.title}</span>
-              </a>
-            )}
-          </nav>
+              {/* Lesson Completion Action */}
+              <div class="lms-completion-section">
+                <button id="btn-complete-lesson" class="lms-btn lms-btn-success">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  <span id="complete-btn-text">Đánh dấu Hoàn thành bài học</span>
+                </button>
+                <span id="complete-status" class="lms-complete-tag" style="display: none;">
+                  ✓ Đã hoàn thành
+                </span>
+              </div>
+
+              <nav class="lms-pagination">
+                {prevLesson ? (
+                  <a href={`${basePath}/lesson/${prevLesson.data.slug || prevLesson.id}`} class="lms-page-prev">
+                    <span class="lms-page-label">← Bài trước</span>
+                    <span class="lms-page-title">{prevLesson.data.title}</span>
+                  </a>
+                ) : <span></span>}
+                {nextLesson && (
+                  <a href={`${basePath}/lesson/${nextLesson.data.slug || nextLesson.id}`} class="lms-page-next">
+                    <span class="lms-page-label">Bài tiếp theo →</span>
+                    <span class="lms-page-title">{nextLesson.data.title}</span>
+                  </a>
+                )}
+              </nav>
+            </>
+          )}
         </article>
 
         {/* Right TOC */}
@@ -184,7 +285,115 @@ function formatDuration(minutes: number): string {
 </Layout>
 
 <script>
-  // Build TOC from headings
+  import { drainForSync, importProgress, exportProgress } from "@duongsinh/chess-kit/progress";
+
+  const container = document.querySelector(".lms-lesson-layout") as HTMLElement | null;
+  const lessonId = container?.dataset.lessonId;
+  const courseId = container?.dataset.courseId;
+  const isLoggedIn = container?.dataset.loggedIn === "true";
+
+  const completeBtn = document.getElementById("btn-complete-lesson");
+  const completeBtnText = document.getElementById("complete-btn-text");
+  const completeStatus = document.getElementById("complete-status");
+
+  // Check initial completion state
+  async function checkInitialState() {
+    if (!lessonId) return;
+
+    if (isLoggedIn && courseId) {
+      try {
+        // Sync any pending guest progress first
+        const pending = drainForSync();
+        if (Object.keys(pending.lessons).length > 0 || Object.keys(pending.puzzles).length > 0) {
+          await fetch("/_emdash/api/plugins/lms/progress/sync", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-EmDash-Request": "1" },
+            body: JSON.stringify({ progress: pending }),
+          });
+        }
+
+        // Check if current lesson is completed
+        const res = await fetch("/_emdash/api/plugins/lms/me/progress", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-EmDash-Request": "1" },
+          body: JSON.stringify({ courseId }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.data?.completedLessonIds?.includes(lessonId)) {
+            setCompletedUI();
+          }
+        }
+      } catch {
+        // Ignore network errors
+      }
+    } else {
+      // Guest localStorage check
+      const current = exportProgress();
+      if (current.lessons?.[lessonId]?.completed) {
+        setCompletedUI();
+      }
+    }
+  }
+
+  function setCompletedUI() {
+    if (completeBtn) completeBtn.style.display = "none";
+    if (completeStatus) completeStatus.style.display = "inline-flex";
+  }
+
+  async function markComplete() {
+    if (!lessonId) return;
+
+    if (isLoggedIn) {
+      try {
+        const res = await fetch("/_emdash/api/plugins/lms/progress/complete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-EmDash-Request": "1" },
+          body: JSON.stringify({ lessonId, courseId }),
+        });
+        if (res.ok) {
+          setCompletedUI();
+        }
+      } catch (err) {
+        console.error("Failed to mark lesson complete:", err);
+      }
+    } else {
+      // Guest progress saved locally
+      const current = exportProgress();
+      current.lessons[lessonId] = {
+        completed: true,
+        completedAt: new Date().toISOString(),
+      };
+      importProgress(current);
+      setCompletedUI();
+    }
+  }
+
+  if (completeBtn) {
+    completeBtn.addEventListener("click", markComplete);
+  }
+
+  // Requirement Protocol: Count [data-lms-requirement]
+  const requirements = document.querySelectorAll("[data-lms-requirement]");
+  let remainingCount = requirements.length;
+
+  if (remainingCount > 0) {
+    window.addEventListener("lms:requirement-done", () => {
+      remainingCount = Math.max(0, remainingCount - 1);
+      if (remainingCount === 0) {
+        markComplete();
+      }
+    });
+
+    window.addEventListener("duongsinh-chess:puzzle-solved", () => {
+      remainingCount = Math.max(0, remainingCount - 1);
+      if (remainingCount === 0) {
+        markComplete();
+      }
+    });
+  }
+
+  // Build TOC
   function buildToc() {
     const body = document.getElementById("lesson-body");
     const toc = document.getElementById("lms-toc");
@@ -214,5 +423,7 @@ function formatDuration(minutes: number): string {
 
     toc.appendChild(list);
   }
+
   buildToc();
+  checkInitialState();
 </script>

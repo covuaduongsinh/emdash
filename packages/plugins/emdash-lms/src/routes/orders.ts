@@ -2,63 +2,65 @@
  * Orders API Routes
  */
 
-import type { PluginContext } from "emdash";
+import { PluginRouteError, type RouteContext } from "emdash";
+import { z } from "zod";
 
 import type { Order } from "../types.js";
 
 const COLLECTION = "orders";
 
-interface OrdersRouteInput {
-	action: "list" | "get" | "create";
-	id?: string;
-	userId?: string;
-	data?: Partial<Order>;
-}
+export const ordersRouteInputSchema = z.object({
+	action: z.enum(["list", "get", "create"]),
+	id: z.string().optional(),
+	userId: z.string().optional(),
+	data: z.record(z.string(), z.unknown()).optional(),
+});
 
-export async function ordersRoute(ctx: PluginContext, input: OrdersRouteInput) {
-	const { action, id, userId, data } = input;
+export type OrdersRouteInput = z.infer<typeof ordersRouteInputSchema>;
 
-	if (!ctx.content) throw new Error("Content access not available");
+export async function ordersRoute(ctx: RouteContext) {
+	const { action, id, userId, data } = (ctx.input || {}) as OrdersRouteInput;
+
+	if (!ctx.content) {
+		throw PluginRouteError.internal("Content access not available");
+	}
 
 	switch (action) {
 		case "list":
 			return listOrders(ctx, userId);
 		case "get":
-			if (!id) throw new Error("Order ID required");
+			if (!id) throw PluginRouteError.badRequest("Order ID required");
 			return getOrder(ctx, id);
 		case "create":
-			if (!data) throw new Error("Order data required");
-			return createOrder(ctx, data);
+			if (!data) throw PluginRouteError.badRequest("Order data required");
+			return createOrder(ctx, data as Partial<Order>);
 		default:
-			throw new Error(`Unknown action: ${action}`);
+			throw PluginRouteError.badRequest(`Unknown action: ${action}`);
 	}
 }
 
-async function listOrders(ctx: PluginContext, userId?: string) {
+async function listOrders(ctx: RouteContext, userId?: string) {
 	const result = await ctx.content!.list(COLLECTION, {
+		where: userId ? { fieldFilters: { user_id: userId } } : undefined,
 		orderBy: { created_at: "desc" },
 	});
 
-	let items = result.items.map((item) => ({ id: item.id, ...item.data }));
-
-	if (userId) {
-		items = items.filter((item) => (item as Record<string, unknown>).user_id === userId);
-	}
-
-	return { items };
+	return { items: result.items.map((item) => ({ id: item.id, ...item.data })) };
 }
 
-async function getOrder(ctx: PluginContext, id: string) {
+async function getOrder(ctx: RouteContext, id: string) {
 	const item = await ctx.content!.get(COLLECTION, id);
-	if (!item) throw new Error("Order not found");
+	if (!item) throw PluginRouteError.notFound("Order not found");
 	return { id: item.id, ...item.data };
 }
 
-async function createOrder(ctx: PluginContext, data: Partial<Order>) {
-	if (!ctx.content?.create) throw new Error("Content write access not available");
+async function createOrder(ctx: RouteContext, data: Partial<Order>) {
+	if (!ctx.content?.create) {
+		throw PluginRouteError.forbidden("Content write access not available");
+	}
 
-	if (!data.user_id || !data.type || !data.item_id || !data.amount) {
-		throw new Error("Missing required order fields");
+	if (!data.user_id || !data.type || !data.item_id || data.amount === undefined) {
+		throw PluginRouteError.badRequest("Missing required order fields");
 	}
 
 	const orderData = {
@@ -66,7 +68,7 @@ async function createOrder(ctx: PluginContext, data: Partial<Order>) {
 		type: data.type,
 		item_id: data.item_id,
 		amount: data.amount,
-		currency: data.currency || "USD",
+		currency: data.currency || "VND",
 		status: "pending",
 		payment_provider: data.payment_provider || "",
 		metadata: data.metadata,
