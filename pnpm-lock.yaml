@@ -742,6 +742,15 @@ importers:
       '@cloudflare/ai-search-snippet':
         specifier: ^0.0.40
         version: 0.0.40
+      '@duongsinh/chess-kit':
+        specifier: workspace:*
+        version: link:../../packages/chess-kit
+      '@duongsinh/plugin-chess-lessons':
+        specifier: workspace:*
+        version: link:../../packages/plugins/chess-lessons
+      '@duongsinh/plugin-chess-puzzles':
+        specifier: workspace:*
+        version: link:../../packages/plugins/chess-puzzles
       '@emdash-cms/cloudflare':
         specifier: workspace:*
         version: link:../../packages/cloudflare

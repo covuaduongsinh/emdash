@@ -1,0 +1,54 @@
+---
+import { getEmDashEntry, decodeSlug } from "emdash";
+import Layout from "../../layouts/Layout.astro";
+import { LecturePage } from "@duongsinh/plugin-chess-lessons/astro";
+
+const rawSlug = Astro.params.slug;
+const slug = decodeSlug(rawSlug);
+
+if (!slug) {
+  return Astro.redirect("/404");
+}
+
+let lectureEntry: any = null;
+let cacheHint: any = null;
+
+try {
+  const res = await getEmDashEntry("chess_lectures", slug);
+  lectureEntry = res?.entry;
+  cacheHint = res?.cacheHint;
+} catch {
+  lectureEntry = null;
+}
+
+if (!lectureEntry) {
+  return Astro.redirect("/404");
+}
+
+if (cacheHint) {
+  Astro.cache?.set(cacheHint);
+}
+
+const l = lectureEntry.data || lectureEntry;
+const scriptData = typeof l.script === "string" ? JSON.parse(l.script) : l.script;
+
+const lecture = {
+  id: l.id || lectureEntry.id,
+  slug: l.slug || slug,
+  title: l.title || "Bài giảng cờ vua tương tác",
+  summary: l.summary,
+  level: l.level,
+  script: scriptData,
+};
+---
+
+<Layout
+  title={`${lecture.title} — Bài Giảng Cờ Vua Học Đường`}
+  description={lecture.summary || "Bài giảng cờ vua trực quan từng bước với bàn cờ tương tác."}
+>
+  <div class="py-8 bg-slate-50 min-h-[calc(100vh-200px)]">
+    <div class="wrap">
+      <LecturePage lecture={lecture} />
+    </div>
+  </div>
+</Layout>

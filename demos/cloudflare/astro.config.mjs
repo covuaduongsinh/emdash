@@ -2,6 +2,8 @@
 import cloudflare from "@astrojs/cloudflare";
 import { cacheCloudflare } from "@astrojs/cloudflare/cache";
 import react from "@astrojs/react";
+import { chessLessonsPlugin } from "@duongsinh/plugin-chess-lessons";
+import { chessPuzzlesPlugin } from "@duongsinh/plugin-chess-puzzles";
 import { d1, r2, cloudflareImages, cloudflareStream } from "@emdash-cms/cloudflare";
 import { aiSearch } from "@emdash-cms/cloudflare/plugins";
 import { chessfenpgnPlugin } from "@emdash-cms/plugin-chessfenpgn";
@@ -58,6 +60,8 @@ export default defineConfig({
 				// Test plugin that exercises all v2 APIs
 				formsPlugin(),
 				chessfenpgnPlugin(),
+				chessPuzzlesPlugin(),
+				chessLessonsPlugin(),
 				lmsPlugin({
 					mode: "full",
 					currency: {

@@ -1,0 +1,167 @@
+---
+import { getEmDashCollection } from "emdash";
+import Layout from "../../layouts/Layout.astro";
+import PageHero from "../../components/PageHero.astro";
+import { PuzzleOfTheDay } from "@duongsinh/plugin-chess-puzzles/astro";
+import { LEVEL_LIST } from "@duongsinh/chess-kit/core";
+
+// Lấy danh sách câu đố đã xuất bản
+let puzzles: Array<Record<string, any>> = [];
+let dailyPuzzle: any = null;
+
+try {
+  const result = await getEmDashCollection("chess_puzzles", {
+    orderBy: { created_at: "desc" },
+    limit: 50,
+  });
+  puzzles = (result.entries || []).map((e: any) => ({
+    id: e.data.id || e.id,
+    slug: e.data.slug || e.slug,
+    title: e.data.title || "Câu đố cờ vua",
+    level: e.data.level,
+    rating: e.data.rating,
+    prompt: e.data.prompt,
+    themes: e.data.themes,
+    puzzle: typeof e.data.puzzle === "string" ? JSON.parse(e.data.puzzle) : e.data.puzzle,
+    hint: e.data.hint,
+    explanation: e.data.explanation,
+    source: e.data.source,
+  }));
+
+  if (puzzles.length > 0) {
+    // Chọn câu đố ngẫu nhiên hoặc câu đầu tiên làm câu đố nổi bật trong ngày
+    dailyPuzzle = puzzles[0];
+  }
+} catch {
+  puzzles = [];
+}
+
+const levelCounts = LEVEL_LIST.map((lvl) => ({
+  ...lvl,
+  count: puzzles.filter((p) => p.level === lvl.id).length,
+}));
+---
+
+<Layout
+  title="Kho Câu Đố Chiến Thuật Cờ Vua — Cờ Vua Học Đường"
+  description="Luyện tập chiến thuật cờ vua hàng ngày theo lộ trình chuẩn 6 cấp độ từ cơ bản đến chuyên sâu."
+>
+  <PageHero
+    title="Kho Câu Đố Chiến Thuật"
+    lead="Rèn luyện tư duy quan sát, đòn phối hợp chiến thuật và kỹ năng tính toán biến thông qua ngân hàng thế cờ tương tác."
+    crumbCurrent="Câu đố chiến thuật"
+    badge="LUYỆN TẬP TƯ DUY"
+  />
+
+  <section class="sec">
+    <div class="wrap">
+      {dailyPuzzle && (
+        <div class="mb-12">
+          <div class="max-w-xl mx-auto">
+            <PuzzleOfTheDay puzzle={dailyPuzzle} title="Câu Đố Nổi Bật Trong Ngày" />
+          </div>
+        </div>
+      )}
+
+      <!-- Phân loại theo 6 cấp độ cờ Dương Sinh -->
+      <div class="mb-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <span>🎯</span> Phân loại theo cấp độ
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+          {levelCounts.map((lvl) => (
+            <div class="rounded-xl border border-gray-200 bg-white p-3 text-center shadow-xs hover:border-blue-300 transition-colors">
+              <div class="text-lg font-bold" style={`color: ${lvl.color}`}>
+                {lvl.nameVi}
+              </div>
+              <div class="text-xs text-gray-500 mt-0.5">{lvl.ratingRange[0]}–{lvl.ratingRange[1]} Elo</div>
+              <div class="text-xs font-semibold text-gray-700 mt-2 bg-gray-100 rounded-full py-0.5 px-2 inline-block">
+                {lvl.count} câu
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Danh sách câu đố -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <span>🧩</span> Danh sách bài tập ({puzzles.length})
+          </h2>
+        </div>
+
+        {puzzles.length === 0 ? (
+          <div class="rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-12 text-center">
+            <span class="text-4xl">♟️</span>
+            <h3 class="text-lg font-bold text-gray-900 mt-3">Chưa có câu đố nào được xuất bản</h3>
+            <p class="text-sm text-gray-500 mt-1 max-w-md mx-auto">
+              Giáo viên và Huấn luyện viên có thể vào trang Quản trị để soạn hoặc nhập câu đố từ Lichess, PGN hoặc EPD.
+            </p>
+            <a
+              href="/_emdash/admin/plugins/chess-puzzles/import"
+              class="mt-4 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-blue-700"
+            >
+              📥 Nhập câu đố trong Admin
+            </a>
+          </div>
+        ) : (
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {puzzles.map((p) => {
+              const levelObj = LEVEL_LIST.find((l) => l.id === p.level);
+              return (
+                <a
+                  href={`/cau-do/${p.slug || p.id}`}
+                  class="group flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-5 shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-blue-400"
+                >
+                  <div>
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                      {levelObj ? (
+                        <span
+                          class="rounded-md px-2 py-0.5 text-xs font-bold text-white uppercase"
+                          style={`background-color: ${levelObj.color}`}
+                        >
+                          {levelObj.nameVi}
+                        </span>
+                      ) : (
+                        <span class="rounded-md bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600">
+                          {p.level || "Tự do"}
+                        </span>
+                      )}
+                      {p.rating && (
+                        <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">
+                          Elo {p.rating}
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 class="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                      {p.title}
+                    </h3>
+
+                    {p.prompt && (
+                      <p class="text-xs text-gray-600 mt-1.5 line-clamp-2">
+                        {p.prompt}
+                      </p>
+                    )}
+
+                    {p.themes && (
+                      <div class="mt-2 text-2xs text-gray-400">
+                        Chủ đề: {p.themes}
+                      </div>
+                    )}
+                  </div>
+
+                  <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs font-semibold text-blue-600 group-hover:translate-x-0.5 transition-transform">
+                    <span>Vào giải câu đố</span>
+                    <span>&rarr;</span>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+</Layout>

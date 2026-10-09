@@ -1,0 +1,112 @@
+---
+import { getEmDashCollection } from "emdash";
+import Layout from "../../layouts/Layout.astro";
+import PageHero from "../../components/PageHero.astro";
+import { LEVEL_LIST } from "@duongsinh/chess-kit/core";
+
+let lectures: Array<Record<string, any>> = [];
+
+try {
+  const result = await getEmDashCollection("chess_lectures", {
+    orderBy: { created_at: "desc" },
+    limit: 50,
+  });
+  lectures = (result.entries || []).map((e: any) => ({
+    id: e.data.id || e.id,
+    slug: e.data.slug || e.slug,
+    title: e.data.title || "Bài giảng cờ vua",
+    level: e.data.level,
+    summary: e.data.summary,
+    script: typeof e.data.script === "string" ? JSON.parse(e.data.script) : e.data.script,
+  }));
+} catch {
+  lectures = [];
+}
+---
+
+<Layout
+  title="Thư Viện Bài Giảng Cờ Vua Trực Quan — Cờ Vua Học Đường"
+  description="Kho kịch bản bài giảng cờ vua tương tác theo từng bước thế cờ, phục vụ đào tạo và trình chiếu trên lớp học."
+>
+  <PageHero
+    title="Thư Viện Bài Giảng Tương Tác"
+    lead="Học cờ qua từng thế cờ trực quan sinh động, giải thích chi tiết ý đồ chiến lược và phân tích biến thế trực tiếp."
+    crumbCurrent="Bài giảng cờ vua"
+    badge="GIÁO TRÌNH TRỰC QUAN"
+  />
+
+  <section class="sec">
+    <div class="wrap">
+      {lectures.length === 0 ? (
+        <div class="rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-12 text-center">
+          <span class="text-4xl">📚</span>
+          <h3 class="text-lg font-bold text-gray-900 mt-3">Chưa có bài giảng nào được xuất bản</h3>
+          <p class="text-sm text-gray-500 mt-1 max-w-md mx-auto">
+            Huấn luyện viên có thể tạo bài giảng mới hoặc nạp bài học mẫu 5 bước sư phạm trong trang Quản trị.
+          </p>
+          <a
+            href="/_emdash/admin/plugins/chess-lessons/lessons"
+            class="mt-4 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-blue-700"
+          >
+            📋 Quản trị Bài giảng Cờ
+          </a>
+        </div>
+      ) : (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {lectures.map((l) => {
+            const levelObj = LEVEL_LIST.find((lvl) => lvl.id === l.level);
+            const stepCount = l.script?.steps?.length || 0;
+            return (
+              <div class="flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-5 shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-blue-400">
+                <div>
+                  <div class="flex items-center justify-between gap-2 mb-2">
+                    {levelObj ? (
+                      <span
+                        class="rounded-md px-2 py-0.5 text-xs font-bold text-white uppercase"
+                        style={`background-color: ${levelObj.color}`}
+                      >
+                        {levelObj.nameVi}
+                      </span>
+                    ) : (
+                      <span class="rounded-md bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600">
+                        {l.level || "Tất cả"}
+                      </span>
+                    )}
+                    <span class="text-xs text-gray-500 font-medium">
+                      {stepCount} bước giảng
+                    </span>
+                  </div>
+
+                  <h3 class="text-base font-bold text-gray-900">
+                    {l.title}
+                  </h3>
+
+                  {l.summary && (
+                    <p class="text-xs text-gray-600 mt-1.5 line-clamp-2">
+                      {l.summary}
+                    </p>
+                  )}
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
+                  <a
+                    href={`/bai-giang/${l.slug || l.id}`}
+                    class="text-xs font-semibold text-blue-600 hover:text-blue-800"
+                  >
+                    Xem bài học &rarr;
+                  </a>
+                  <a
+                    href={`/bai-giang/${l.slug || l.id}/trinh-chieu`}
+                    class="rounded bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-700 hover:bg-indigo-100"
+                  >
+                    🖥️ Trình chiếu
+                  </a>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  </section>
+</Layout>

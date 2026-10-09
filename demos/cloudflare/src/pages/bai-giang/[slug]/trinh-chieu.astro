@@ -1,0 +1,36 @@
+---
+import { getEmDashEntry, decodeSlug } from "emdash";
+import { LecturePresenter } from "@duongsinh/plugin-chess-lessons/astro";
+
+const rawSlug = Astro.params.slug;
+const slug = decodeSlug(rawSlug);
+
+if (!slug) {
+  return Astro.redirect("/404");
+}
+
+let lectureEntry: any = null;
+
+try {
+  const res = await getEmDashEntry("chess_lectures", slug);
+  lectureEntry = res?.entry;
+} catch {
+  lectureEntry = null;
+}
+
+if (!lectureEntry) {
+  return Astro.redirect("/404");
+}
+
+const l = lectureEntry.data || lectureEntry;
+const scriptData = typeof l.script === "string" ? JSON.parse(l.script) : l.script;
+
+const lecture = {
+  id: l.id || lectureEntry.id,
+  title: l.title || "Trình chiếu bài giảng cờ vua",
+  level: l.level,
+  script: scriptData,
+};
+---
+
+<LecturePresenter lecture={lecture} />

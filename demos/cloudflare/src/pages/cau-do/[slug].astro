@@ -1,0 +1,58 @@
+---
+import { getEmDashEntry, decodeSlug } from "emdash";
+import Layout from "../../layouts/Layout.astro";
+import { PuzzlePage } from "@duongsinh/plugin-chess-puzzles/astro";
+
+const rawSlug = Astro.params.slug;
+const slug = decodeSlug(rawSlug);
+
+if (!slug) {
+  return Astro.redirect("/404");
+}
+
+let puzzleEntry: any = null;
+let cacheHint: any = null;
+
+try {
+  const res = await getEmDashEntry("chess_puzzles", slug);
+  puzzleEntry = res?.entry;
+  cacheHint = res?.cacheHint;
+} catch {
+  puzzleEntry = null;
+}
+
+if (!puzzleEntry) {
+  return Astro.redirect("/404");
+}
+
+if (cacheHint) {
+  Astro.cache?.set(cacheHint);
+}
+
+const p = puzzleEntry.data || puzzleEntry;
+const puzzleData = typeof p.puzzle === "string" ? JSON.parse(p.puzzle) : p.puzzle;
+
+const puzzle = {
+  id: p.id || puzzleEntry.id,
+  title: p.title || "Câu đố cờ vua",
+  puzzle: puzzleData,
+  prompt: p.prompt,
+  level: p.level,
+  themes: p.themes,
+  rating: p.rating,
+  hint: p.hint,
+  explanation: p.explanation,
+  source: p.source,
+};
+---
+
+<Layout
+  title={`${puzzle.title} — Luyện tập Câu Đố Cờ Vua Học Đường`}
+  description={puzzle.prompt || "Thử thách tư duy chiến thuật cờ vua tương tác."}
+>
+  <div class="py-8 bg-slate-50 min-h-[calc(100vh-200px)]">
+    <div class="wrap">
+      <PuzzlePage puzzle={puzzle} />
+    </div>
+  </div>
+</Layout>
