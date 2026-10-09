@@ -3,7 +3,7 @@
  * /course/{slug} - Course detail page
  * Optimized query paths with requestCached and field-filtered collection queries (Max 3 queries).
  */
-import { getEmDashCollection, getEmDashEntry, requestCached } from "emdash";
+import { getEmDashCollection, getEmDashEntry } from "emdash";
 import { PortableText } from "emdash/ui";
 import Layout from "virtual:emdash-lms/layout";
 import { basePath } from "virtual:emdash-lms/config";
@@ -11,17 +11,16 @@ import { basePath } from "virtual:emdash-lms/config";
 const { slug } = Astro.params;
 if (!slug) return Astro.redirect(`${basePath}/courses`);
 
-// 1. Fetch single course by slug (Cached per-request)
-const courseData = await requestCached(`lms:course:${slug}`, async () => {
-  const { entry: course } = await getEmDashEntry("courses", slug);
-  if (!course) return null;
+// 1. Fetch single course by slug
+const { entry: course } = await getEmDashEntry("courses", slug);
+if (!course) return Astro.redirect(`${basePath}/courses`);
 
-  const courseId = course.id;
+const courseId = course.id;
 
-  // 2. Fetch modules for this course
-  const { entries: modules } = await getEmDashCollection("modules", {
-    where: { fieldFilters: { course_id: courseId } },
-  });
+// 2. Fetch modules for this course
+const { entries: modules } = await getEmDashCollection("modules", {
+  where: { fieldFilters: { course_id: courseId } },
+});
 
   // 3. Fetch lessons for this course
   const { entries: lessons } = await getEmDashCollection("lessons", {
@@ -44,21 +43,6 @@ const courseData = await requestCached(`lms:course:${slug}`, async () => {
     (sum, m) => sum + m.lessons.reduce((s, l) => s + (Number(l.data.duration_minutes) || 0), 0),
     0
   );
-
-  return {
-    course,
-    sortedModules,
-    moduleLessons,
-    totalLessons,
-    totalDuration,
-  };
-});
-
-if (!courseData || !courseData.course) {
-  return Astro.redirect(`${basePath}/courses`);
-}
-
-const { course, sortedModules, moduleLessons, totalLessons, totalDuration } = courseData;
 
 function formatDuration(minutes: number): string {
   const hours = Math.floor(minutes / 60);

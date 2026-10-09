@@ -4,7 +4,7 @@
  * Layout: Fixed left sidebar (curriculum) | Scrollable content with TOC & Progress
  * Enforces server-side access control (L7) and zero-hotpath-queries for anonymous visitors (L8).
  */
-import { getEmDashCollection, getEmDashEntry, requestCached } from "emdash";
+import { getEmDashCollection, getEmDashEntry } from "emdash";
 import { PortableText } from "emdash/ui";
 import Layout from "virtual:emdash-lms/layout";
 import { basePath } from "virtual:emdash-lms/config";
@@ -13,66 +13,50 @@ const { slug } = Astro.params;
 if (!slug) return Astro.redirect(`${basePath}/courses`);
 
 // 1. Fetch lesson by slug
-const lessonData = await requestCached(`lms:lesson:${slug}`, async () => {
-  const { entry: lesson } = await getEmDashEntry("lessons", slug);
-  if (!lesson) return null;
+const { entry: lesson } = await getEmDashEntry("lessons", slug);
+if (!lesson) return Astro.redirect(`${basePath}/courses`);
 
-  const lessonId = lesson.id;
-  const courseId = lesson.data.course_id;
-  const moduleId = lesson.data.module_id;
+const lessonId = lesson.id;
+const courseId = lesson.data.course_id;
+const moduleId = lesson.data.module_id;
 
-  // Fetch course & module
-  const { entry: course } = courseId ? await getEmDashEntry("courses", courseId) : { entry: null };
-  const { entry: module } = moduleId ? await getEmDashEntry("modules", moduleId) : { entry: null };
+// Fetch course & module
+const { entry: course } = courseId ? await getEmDashEntry("courses", courseId) : { entry: null };
+const { entry: module } = moduleId ? await getEmDashEntry("modules", moduleId) : { entry: null };
 
-  // Fetch course modules & lessons for sidebar navigation
-  const { entries: courseModules } = courseId
-    ? await getEmDashCollection("modules", {
-        where: { fieldFilters: { course_id: courseId } },
-      })
-    : { entries: [] };
+// Fetch course modules & lessons for sidebar navigation
+const { entries: courseModules } = courseId
+  ? await getEmDashCollection("modules", {
+      where: { fieldFilters: { course_id: courseId } },
+    })
+  : { entries: [] };
 
-  const { entries: courseLessons } = courseId
-    ? await getEmDashCollection("lessons", {
-        where: { fieldFilters: { course_id: courseId } },
-      })
-    : { entries: [] };
+const { entries: courseLessons } = courseId
+  ? await getEmDashCollection("lessons", {
+      where: { fieldFilters: { course_id: courseId } },
+    })
+  : { entries: [] };
 
-  const sortedModules = courseModules.toSorted(
-    (a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0)
-  );
+const sortedModules = courseModules.toSorted(
+  (a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0)
+);
 
-  const sidebarModules = sortedModules.map((mod) => ({
-    module: mod,
-    lessons: courseLessons
-      .filter((l) => l.data.module_id === mod.id)
-      .toSorted((a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0)),
-  }));
+const sidebarModules = sortedModules.map((mod) => ({
+  module: mod,
+  lessons: courseLessons
+    .filter((l) => l.data.module_id === mod.id)
+    .toSorted((a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0)),
+}));
 
-  // Sibling lessons for pagination
-  const siblingLessons = courseLessons
-    .filter((l) => l.data.module_id === moduleId)
-    .toSorted((a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0));
+// Sibling lessons for pagination
+const siblingLessons = courseLessons
+  .filter((l) => l.data.module_id === moduleId)
+  .toSorted((a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0));
 
-  const currentIndex = siblingLessons.findIndex((l) => l.id === lessonId);
-  const prevLesson = currentIndex > 0 ? siblingLessons[currentIndex - 1] : null;
-  const nextLesson = currentIndex < siblingLessons.length - 1 ? siblingLessons[currentIndex + 1] : null;
+const currentIndex = siblingLessons.findIndex((l) => l.id === lessonId);
+const prevLesson = currentIndex > 0 ? siblingLessons[currentIndex - 1] : null;
+const nextLesson = currentIndex < siblingLessons.length - 1 ? siblingLessons[currentIndex + 1] : null;
 
-  return {
-    lesson,
-    course,
-    module,
-    sidebarModules,
-    prevLesson,
-    nextLesson,
-  };
-});
-
-if (!lessonData || !lessonData.lesson) {
-  return Astro.redirect(`${basePath}/courses`);
-}
-
-const { lesson, course, module, sidebarModules, prevLesson, nextLesson } = lessonData;
 const user = Astro.locals.user;
 
 // 2. Server-side Access Control Check (L7 & L8)

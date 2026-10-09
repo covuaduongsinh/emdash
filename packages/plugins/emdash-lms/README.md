@@ -25,22 +25,22 @@ Plugin Hệ thống Quản lý Học tập (LMS) dành cho [EmDash CMS](https://
 
 Các endpoint được đăng ký tự động dưới `/_emdash/api/plugins/lms/`:
 
-| Route                    | Quyền            | Mô tả                                                        |
-| ------------------------ | ---------------- | ------------------------------------------------------------ |
-| `setup/run`              | `schema:manage`  | Đồng bộ schema, đăng ký bảng mồ côi (idempotent)             |
-| `me/access`              | `content:read`   | Kiểm tra quyền truy cập khóa học / bài học của user hiện tại |
-| `me/enroll`              | `content:read`   | Tự ghi danh vào khóa học miễn phí                            |
-| `me/progress`            | `content:read`   | Lấy danh sách bài đã học và tiến độ tổng quan                |
-| `progress/complete`      | `content:read`   | Đánh dấu hoàn thành bài học và tính lại % khóa học           |
-| `progress/sync`          | `content:read`   | Đồng bộ tiến độ làm bài từ trình duyệt lên máy chủ           |
-| `checkout/create`        | `content:read`   | Tạo đơn hàng VietQR SePay và sinh mã thanh toán định danh    |
-| `webhook/sepay`          | `public: true`   | Nhận webhook từ SePay để tự động kích hoạt đơn hàng & thẻ    |
-| `me/orders/get`          | `content:read`   | Thăm dò trạng thái thanh toán của học viên                   |
-| `quiz/present`           | `public: true`   | Tải đề thi trắc nghiệm & câu hỏi cờ (đã bóc tách lời giải)   |
-| `quiz/submit`            | `public: true`   | Nộp bài & chấm điểm server-side cho khách vãng lai           |
-| `me/quiz/submit`         | `content:read`   | Nộp bài & chấm điểm cho học viên, lưu `quiz_submissions`     |
-| `admin/quiz/*`           | `content:edit_any`| CRUD Quiz, câu hỏi, đổi thứ tự câu hỏi                      |
-| `admin/quiz/options`     | `content:read`   | Danh sách Quiz phục vụ chọn trong khối bài học               |
-| `admin/students`         | `content:read`   | Quản lý học viên và ghi danh thủ công                        |
-| `admin/orders`           | `plugins:manage` | Quản lý danh sách đơn hàng & xác nhận đơn thủ công           |
-| `admin/settings/payment` | `plugins:manage` | Cấu hình tham số cổng thanh toán SePay                       |
+| Route                    | Quyền              | Mô tả                                                        |
+| ------------------------ | ------------------ | ------------------------------------------------------------ |
+| `setup/run`              | `schema:manage`    | Đồng bộ schema, đăng ký bảng mồ côi (idempotent)             |
+| `me/access`              | `content:read`     | Kiểm tra quyền truy cập khóa học / bài học của user hiện tại |
+| `me/enroll`              | `content:read`     | Tự ghi danh vào khóa học miễn phí                            |
+| `me/progress`            | `content:read`     | Lấy danh sách bài đã học và tiến độ tổng quan                |
+| `progress/complete`      | `content:read`     | Đánh dấu hoàn thành bài học và tính lại % khóa học           |
+| `progress/sync`          | `content:read`     | Đồng bộ tiến độ làm bài từ trình duyệt lên máy chủ           |
+| `checkout/create`        | `content:read`     | Tạo đơn hàng VietQR SePay và sinh mã thanh toán định danh    |
+| `webhook/sepay`          | `public: true`     | Nhận webhook từ SePay để tự động kích hoạt đơn hàng & thẻ    |
+| `me/orders/get`          | `content:read`     | Thăm dò trạng thái thanh toán của học viên                   |
+| `quiz/present`           | `public: true`     | Tải đề thi trắc nghiệm & câu hỏi cờ (đã bóc tách lời giải)   |
+| `quiz/submit`            | `public: true`     | Nộp bài & chấm điểm server-side cho khách vãng lai           |
+| `me/quiz/submit`         | `content:read`     | Nộp bài & chấm điểm cho học viên, lưu `quiz_submissions`     |
+| `admin/quiz/*`           | `content:edit_any` | CRUD Quiz, câu hỏi, đổi thứ tự câu hỏi                       |
+| `admin/quiz/options`     | `content:read`     | Danh sách Quiz phục vụ chọn trong khối bài học               |
+| `admin/students`         | `content:read`     | Quản lý học viên và ghi danh thủ công                        |
+| `admin/orders`           | `plugins:manage`   | Quản lý danh sách đơn hàng & xác nhận đơn thủ công           |
+| `admin/settings/payment` | `plugins:manage`   | Cấu hình tham số cổng thanh toán SePay                       |

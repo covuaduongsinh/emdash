@@ -1,6 +1,28 @@
 ---
+import "@duongsinh/chess-kit/theme.css";
 import { ChessBoardIsland } from "./ChessBoardIsland.tsx";
+import type { BoardOrientation, BoardSize } from "@duongsinh/chess-kit/react";
+
+interface Props {
+	node?: {
+		fen?: string;
+		orientation?: BoardOrientation;
+		caption?: string;
+		arrows?: string;
+		highlights?: string;
+		size?: BoardSize;
+	};
+}
+
 const { node } = Astro.props;
 ---
-{import.meta.env.DEV && <div style="display:none" data-debug={JSON.stringify(node)}></div>}
-<ChessBoardIsland client:visible fen={node?.fen || ""} />
+
+<ChessBoardIsland
+	client:visible
+	fen={node?.fen || ""}
+	orientation={node?.orientation}
+	caption={node?.caption}
+	arrows={node?.arrows}
+	highlights={node?.highlights}
+	size={node?.size}
+/>

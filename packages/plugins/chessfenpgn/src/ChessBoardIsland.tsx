@@ -1,199 +1,87 @@
-import { Chess } from "chess.js";
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { Chessboard } from "react-chessboard";
+import {
+	Board,
+	type BoardOrientation,
+	type BoardSize,
+	PgnViewer,
+} from "@duongsinh/chess-kit/react";
+import React from "react";
 
-interface ChessBoardIslandProps {
+export interface ChessBoardIslandProps {
 	fen?: string;
 	pgn?: string;
+	orientation?: BoardOrientation;
+	caption?: string;
+	arrows?: string;
+	highlights?: string;
+	size?: BoardSize;
+	startPly?: number;
+	showHeaders?: boolean;
+	className?: string;
 }
 
-export function ChessBoardIsland({ fen, pgn }: ChessBoardIslandProps) {
-	// Khởi tạo danh sách FENs và lịch sử nước đi (history)
-	const { fens, initialIndex, history } = useMemo(() => {
-		if (pgn) {
-			const game = new Chess();
-			try {
-				game.loadPgn(pgn);
-				const hist = game.history();
-				const replayGame = new Chess();
-				const fenList = [replayGame.fen()];
-				for (const move of hist) {
-					replayGame.move(move);
-					fenList.push(replayGame.fen());
-				}
-				return { fens: fenList, initialIndex: fenList.length - 1, history: hist };
-			} catch (e) {
-				console.error("Invalid PGN", e);
-			}
-		} else if (fen) {
-			const game = new Chess();
-			try {
-				game.load(fen);
-				return { fens: [game.fen()], initialIndex: 0, history: [] };
-			} catch (e) {
-				console.error("Invalid FEN", e);
-			}
-		}
-		return { fens: [new Chess().fen()], initialIndex: 0, history: [] };
-	}, [fen, pgn]);
+export function ChessBoardIsland({
+	fen,
+	pgn,
+	orientation = "white",
+	caption,
+	arrows,
+	highlights,
+	size = "M",
+	startPly,
+	showHeaders = true,
+	className = "",
+}: ChessBoardIslandProps) {
+	// Nếu có chuỗi PGN -> hiển thị PgnViewer đầy đủ tương tác và duyệt nước cờ
+	if (pgn && pgn.trim().length > 0) {
+		return (
+			<div className={`chess-island-pgn ${className}`.trim()}>
+				<PgnViewer
+					pgn={pgn}
+					orientation={orientation === "auto" ? "white" : orientation}
+					startPly={startPly}
+					showHeaders={showHeaders}
+					caption={caption}
+				/>
+			</div>
+		);
+	}
 
-	const [currentIndex, setCurrentIndex] = useState(initialIndex);
-
-	useEffect(() => {
-		setCurrentIndex(initialIndex);
-	}, [initialIndex]);
-
-	const handleKeyDown = useCallback(
-		(e: React.KeyboardEvent<HTMLDivElement>) => {
-			if (e.key === "ArrowLeft") {
-				e.preventDefault();
-				setCurrentIndex((c) => Math.max(0, c - 1));
-			} else if (e.key === "ArrowRight") {
-				e.preventDefault();
-				setCurrentIndex((c) => Math.min(fens.length - 1, c + 1));
-			} else if (e.key === "ArrowUp") {
-				e.preventDefault();
-				setCurrentIndex(0);
-			} else if (e.key === "ArrowDown") {
-				e.preventDefault();
-				setCurrentIndex(fens.length - 1);
-			}
-		},
-		[fens.length],
-	);
-
-	const isPgn = !!pgn && fens.length > 1;
-
-	// Nhóm các nước đi thành từng cặp (Trắng, Đen)
-	const movePairs = useMemo(() => {
-		const pairs = [];
-		for (let i = 0; i < history.length; i += 2) {
-			pairs.push({
-				moveNumber: Math.floor(i / 2) + 1,
-				white: { san: history[i], index: i + 1 },
-				black: history[i + 1] ? { san: history[i + 1], index: i + 2 } : null,
-			});
-		}
-		return pairs;
-	}, [history]);
+	// Nếu là thế cờ tĩnh FEN -> hiển thị bàn cờ Board kèm chú thích
+	const resolvedFen =
+		fen && fen.trim().length > 0
+			? fen.trim()
+			: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 	return (
-		<div
+		<figure
 			style={{
-				maxWidth: isPgn ? 700 : 400,
+				maxWidth: typeof size === "number" ? size : size === "S" ? 320 : size === "L" ? 600 : 460,
 				margin: "20px auto",
-				fontFamily: "sans-serif",
-				outline: "none",
-				display: "flex",
-				flexWrap: "wrap",
-				gap: "20px",
-				justifyContent: "center",
+				textAlign: "center",
 			}}
-			tabIndex={isPgn ? 0 : undefined}
-			onKeyDown={isPgn ? handleKeyDown : undefined}
+			className={`chess-island-fen ${className}`.trim()}
 		>
-			<div style={{ flex: "1 1 300px", maxWidth: 400 }}>
-				<Chessboard position={fens[currentIndex]} arePiecesDraggable={false} />
-
-				{isPgn && (
-					<div
-						style={{ display: "flex", justifyContent: "center", gap: "10px", marginTop: "15px" }}
-					>
-						<button
-							onClick={() => setCurrentIndex(0)}
-							disabled={currentIndex === 0}
-							style={{ ...buttonStyle, opacity: currentIndex === 0 ? 0.5 : 1 }}
-						>
-							⏮
-						</button>
-						<button
-							onClick={() => setCurrentIndex((c) => Math.max(0, c - 1))}
-							disabled={currentIndex === 0}
-							style={{ ...buttonStyle, opacity: currentIndex === 0 ? 0.5 : 1 }}
-						>
-							◀
-						</button>
-						<button
-							onClick={() => setCurrentIndex((c) => Math.min(fens.length - 1, c + 1))}
-							disabled={currentIndex === fens.length - 1}
-							style={{ ...buttonStyle, opacity: currentIndex === fens.length - 1 ? 0.5 : 1 }}
-						>
-							▶
-						</button>
-						<button
-							onClick={() => setCurrentIndex(fens.length - 1)}
-							disabled={currentIndex === fens.length - 1}
-							style={{ ...buttonStyle, opacity: currentIndex === fens.length - 1 ? 0.5 : 1 }}
-						>
-							⏭
-						</button>
-					</div>
-				)}
-			</div>
-
-			{isPgn && (
-				<div
+			<Board
+				fen={resolvedFen}
+				orientation={orientation}
+				arrows={arrows}
+				highlights={highlights}
+				size={size}
+			/>
+			{caption && (
+				<figcaption
 					style={{
-						flex: "1 1 200px",
-						maxHeight: 400,
-						overflowY: "auto",
-						backgroundColor: "#f8fafc",
-						border: "1px solid #e2e8f0",
-						borderRadius: "8px",
-						padding: "12px",
+						marginTop: "8px",
+						fontSize: "0.875rem",
+						color: "var(--kumo-subtle, #6b7280)",
+						fontStyle: "italic",
 					}}
 				>
-					<h4 style={{ margin: "0 0 12px 0", fontSize: "14px", color: "#64748b" }}>
-						Biên bản ván cờ
-					</h4>
-					<div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-						{movePairs.map((pair) => (
-							<div key={pair.moveNumber} style={{ display: "flex", fontSize: "15px" }}>
-								<span style={{ width: "35px", color: "#94a3b8", userSelect: "none" }}>
-									{pair.moveNumber}.
-								</span>
-								<span
-									style={getMoveStyle(currentIndex === pair.white.index)}
-									onClick={() => setCurrentIndex(pair.white.index)}
-								>
-									{pair.white.san}
-								</span>
-								{pair.black && (
-									<span
-										style={getMoveStyle(currentIndex === pair.black.index)}
-										onClick={() => setCurrentIndex(pair.black.index)}
-									>
-										{pair.black.san}
-									</span>
-								)}
-							</div>
-						))}
-					</div>
-				</div>
+					{caption}
+				</figcaption>
 			)}
-		</div>
+		</figure>
 	);
 }
 
-const buttonStyle = {
-	padding: "8px 12px",
-	cursor: "pointer",
-	backgroundColor: "#f1f5f9",
-	border: "1px solid #cbd5e1",
-	borderRadius: "4px",
-	fontSize: "16px",
-	transition: "opacity 0.2s",
-};
-
-function getMoveStyle(isActive: boolean): React.CSSProperties {
-	return {
-		flex: 1,
-		cursor: "pointer",
-		padding: "2px 6px",
-		borderRadius: "4px",
-		backgroundColor: isActive ? "#3b82f6" : "transparent",
-		color: isActive ? "#ffffff" : "#334155",
-		fontWeight: isActive ? "bold" : "normal",
-		textAlign: "left",
-	};
-}
+export default ChessBoardIsland;

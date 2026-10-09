@@ -1,5 +1,26 @@
 ---
+import "@duongsinh/chess-kit/theme.css";
 import { ChessBoardIsland } from "./ChessBoardIsland.tsx";
+import type { BoardOrientation } from "@duongsinh/chess-kit/react";
+
+interface Props {
+	node?: {
+		pgn?: string;
+		orientation?: BoardOrientation;
+		startPly?: number;
+		showHeaders?: boolean;
+		caption?: string;
+	};
+}
+
 const { node } = Astro.props;
 ---
-<ChessBoardIsland client:visible pgn={node?.pgn || ""} />
+
+<ChessBoardIsland
+	client:visible
+	pgn={node?.pgn || ""}
+	orientation={node?.orientation}
+	startPly={node?.startPly}
+	showHeaders={node?.showHeaders !== false}
+	caption={node?.caption}
+/>
