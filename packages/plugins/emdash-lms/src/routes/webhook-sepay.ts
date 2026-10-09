@@ -40,8 +40,7 @@ export async function webhookSepayRoute(ctx: RouteContext) {
 		ctx.request.headers.get("x-api-key");
 
 	const configuredKey =
-		((await ctx.kv?.get("settings:sepay_api_key")) as string | null) ||
-		process.env.SEPAY_API_KEY;
+		((await ctx.kv?.get("settings:sepay_api_key")) as string | null) || process.env.SEPAY_API_KEY;
 
 	if (!verifySepayApiKey(authHeader, configuredKey)) {
 		ctx.log?.warn?.("SePay webhook: unauthorized request rejected (missing or invalid API key)");

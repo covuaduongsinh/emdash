@@ -57,8 +57,7 @@ export async function adminPaymentSettingsRoute(ctx: RouteContext) {
 				: "********"
 			: "";
 
-		const qr_template =
-			((await ctx.kv.get("settings:qr_template")) as string | null) || "compact";
+		const qr_template = ((await ctx.kv.get("settings:qr_template")) as string | null) || "compact";
 
 		const expires_in_hours = Number(
 			((await ctx.kv.get("settings:expires_in_hours")) as number | string | null) || 24,

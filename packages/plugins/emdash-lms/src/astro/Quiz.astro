@@ -1,0 +1,26 @@
+---
+/**
+ * Standalone Quiz Component for EmDash LMS
+ *
+ * @example
+ * ```astro
+ * ---
+ * import Quiz from "emdash-lms/astro/Quiz.astro";
+ * ---
+ * <Quiz id="quiz_intro" />
+ * ```
+ */
+import { QuizRunner } from "../react/QuizRunner.tsx";
+
+interface Props {
+	id: string;
+	lessonId?: string;
+	courseId?: string;
+}
+
+const { id, lessonId, courseId } = Astro.props;
+---
+
+<div class="lms-quiz-container">
+  <QuizRunner client:visible quizId={id} lessonId={lessonId} courseId={courseId} />
+</div>

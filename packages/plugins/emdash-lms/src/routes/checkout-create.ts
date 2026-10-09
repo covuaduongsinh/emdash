@@ -102,8 +102,7 @@ export async function checkoutCreateRoute(ctx: RouteContext) {
 		process.env.SEPAY_ACCOUNT_NAME ||
 		"";
 
-	const qrTemplate =
-		((await ctx.kv?.get("settings:qr_template")) as string | null) || "compact";
+	const qrTemplate = ((await ctx.kv?.get("settings:qr_template")) as string | null) || "compact";
 
 	const expiresInHours = Number(
 		((await ctx.kv?.get("settings:expires_in_hours")) as number | string | null) || 24,

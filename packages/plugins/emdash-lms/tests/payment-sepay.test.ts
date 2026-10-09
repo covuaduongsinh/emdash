@@ -6,10 +6,7 @@ import { PluginRouteError, type RouteContext } from "emdash";
 import { describe, expect, it, vi } from "vitest";
 
 import { createPlugin } from "../src/index.js";
-import {
-	adminOrdersConfirmRoute,
-	adminOrdersListRoute,
-} from "../src/routes/admin-orders.js";
+import { adminOrdersConfirmRoute, adminOrdersListRoute } from "../src/routes/admin-orders.js";
 import { adminPaymentSettingsRoute } from "../src/routes/admin-settings.js";
 import { checkoutCreateRoute } from "../src/routes/checkout-create.js";
 import { meOrdersGetRoute } from "../src/routes/me-orders-get.js";
@@ -149,7 +146,9 @@ describe("Phase 2b: SePay VietQR Payment & Webhook Suite", () => {
 		it("accepts webhook request with valid Authorization header (Apikey or Bearer)", async () => {
 			const orderCode = "LMS-AUTH1234";
 			const content = createMockContent({
-				membership_plans: [{ id: "plan_gold", name: "Thẻ Vàng", billing_period: "monthly", price: 500000 }],
+				membership_plans: [
+					{ id: "plan_gold", name: "Thẻ Vàng", billing_period: "monthly", price: 500000 },
+				],
 				orders: [
 					{
 						id: "ord_1",
@@ -253,7 +252,9 @@ describe("Phase 2b: SePay VietQR Payment & Webhook Suite", () => {
 		it("is idempotent: replaying the same webhook returns 200 without creating duplicate membership", async () => {
 			const orderCode = "LMS-REPLAY99";
 			const content = createMockContent({
-				membership_plans: [{ id: "plan_annual", name: "Thẻ Năm", billing_period: "yearly", price: 1200000 }],
+				membership_plans: [
+					{ id: "plan_annual", name: "Thẻ Năm", billing_period: "yearly", price: 1200000 },
+				],
 				orders: [
 					{
 						id: "ord_3",
@@ -421,7 +422,13 @@ describe("Phase 2b: SePay VietQR Payment & Webhook Suite", () => {
 			});
 
 			const ctx: Partial<RouteContext> = {
-				user: { id: "usr_student1", email: "student@dsc.edu.vn", role: 1, name: "Student 1", createdAt: new Date() },
+				user: {
+					id: "usr_student1",
+					email: "student@dsc.edu.vn",
+					role: 1,
+					name: "Student 1",
+					createdAt: new Date(),
+				},
 				content: content as any,
 				kv: kv as any,
 				input: {
@@ -504,7 +511,13 @@ describe("Phase 2b: SePay VietQR Payment & Webhook Suite", () => {
 			});
 
 			const ctx: Partial<RouteContext> = {
-				user: { id: "usr_attacker", email: "attacker@test.com", role: 1, name: "Attacker", createdAt: new Date() },
+				user: {
+					id: "usr_attacker",
+					email: "attacker@test.com",
+					role: 1,
+					name: "Attacker",
+					createdAt: new Date(),
+				},
 				content: content as any,
 				input: { orderId: "ord_other" },
 			};
@@ -519,7 +532,9 @@ describe("Phase 2b: SePay VietQR Payment & Webhook Suite", () => {
 	describe("5. Admin Orders Management & Manual Confirmation", () => {
 		it("allows admin to manually confirm an order and fulfill membership", async () => {
 			const content = createMockContent({
-				membership_plans: [{ id: "plan_manual", name: "Thẻ Học Đường", billing_period: "monthly", price: 300000 }],
+				membership_plans: [
+					{ id: "plan_manual", name: "Thẻ Học Đường", billing_period: "monthly", price: 300000 },
+				],
 				orders: [
 					{
 						id: "ord_manual_1",
@@ -534,7 +549,13 @@ describe("Phase 2b: SePay VietQR Payment & Webhook Suite", () => {
 			});
 
 			const ctx: Partial<RouteContext> = {
-				user: { id: "usr_admin", email: "admin@dsc.edu.vn", role: 4, name: "Coach Admin", createdAt: new Date() },
+				user: {
+					id: "usr_admin",
+					email: "admin@dsc.edu.vn",
+					role: 4,
+					name: "Coach Admin",
+					createdAt: new Date(),
+				},
 				content: content as any,
 				input: {
 					orderId: "ord_manual_1",

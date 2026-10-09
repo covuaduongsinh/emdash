@@ -35,3 +35,30 @@ Package này (`emdash-lms`) là bản fork nội bộ của **Công ty CP Cờ v
    - Trang `/course/[slug]`: Sử dụng `requestCached` và `fieldFilters` (tối đa 3 query).
    - Trang `/lesson/[slug]`: Kiểm tra quyền phía server (0 query phụ cho khách ẩn danh); hỗ trợ đếm yêu cầu bài học qua thuộc tính `[data-lms-requirement]` và sự kiện `lms:requirement-done`.
    - Trang `/checkout/[id]`: Tạm thời thông báo bảo trì thanh toán, route checkout và webhook được chuyển sang Giai đoạn 2b để đảm bảo an toàn tuyệt đối.
+
+## Thay đổi và nâng cấp tại Giai đoạn 2b (Cổng thanh toán SePay QR & Đơn hàng)
+
+1. **Cổng thanh toán SePay QR tự động (L5):**
+   - Tích hợp nhà cung cấp `SepayProvider` (`src/providers/sepay.ts`) sinh mã thanh toán định danh an toàn theo cấu trúc `LMS <orderId>` và URL VietQR chuẩn.
+   - Route `checkout/create` tạo đơn hàng `orders` trạng thái `pending`, sinh URL mã QR VietQR tự động.
+   - Route `webhook/sepay` xử lý webhook tự động kích hoạt đơn hàng `completed`, tự động tạo/cập nhật `enrollments` cho học viên, bảo vệ chống replay attack và xác thực API Key/Secret nghiêm ngặt.
+2. **Trang Quản trị Đơn hàng & Cài đặt Thanh toán:**
+   - Trang `/orders` quản lý danh sách đơn hàng, tìm kiếm, lọc trạng thái (`pending`, `completed`, `failed`), xác nhận thủ công hoặc hủy đơn.
+   - Trang `/settings/payment` cấu hình thông tin SePay (Số tài khoản, Ngân hàng, API Token, Webhook Secret, Bật/Tắt chế độ Test).
+
+## Thay đổi và nâng cấp tại Giai đoạn 3 (Quiz & Câu hỏi Cờ vua tương tác)
+
+1. **Schema & Định nghĩa Câu hỏi (L6, L12):**
+   - Mở rộng kiểu câu hỏi `questions.type` hỗ trợ `"chess"` (additive, tương thích ngược toàn bộ các kiểu `single`, `multiple`, `text`, `fill_blank`).
+   - Dữ liệu câu cờ lưu cấu trúc `answers = { fen, solution: UCI[], orientation, prompt }`.
+2. **Quản trị Soạn Quiz & Câu hỏi Cờ vua:**
+   - Bổ sung menu Quản trị "Soạn Quiz" (`/quizzes`) hỗ trợ CRUD Quiz và CRUD câu hỏi với giao diện Kumo.
+   - Tích hợp công cụ `PositionEditor` và `MoveRecorder` từ `@duongsinh/chess-kit/react` cho phép xếp thế cờ và kéo cờ đi nước lời giải trực quan ngay trong form soạn câu hỏi.
+   - Hỗ trợ đổi thứ tự câu hỏi (reorder sort_order) với route `admin/question/reorder`.
+3. **Bóc tách Dữ liệu An toàn & Chấm điểm Server-Side:**
+   - Route `quiz/present` (public) tự động bóc tách và ẩn toàn bộ lời giải `solution`, đáp án đúng `is_correct`, và giải thích `explanation` trước khi gửi về client.
+   - Route `quiz/submit` (public) và `me/quiz/submit` (xác thực học viên qua `ctx.user.id`) chấm điểm server-side chính xác cho 4 loại câu hỏi. Câu cờ được chấm bằng `gradeChessAnswer` từ `@duongsinh/chess-kit/core`.
+   - Tự động kiểm tra thời gian làm bài (timer_minutes), passmark, và lưu kết quả vào `quiz_submissions`.
+4. **Khối Bài học & Giao thức Hoàn thành Quiz:**
+   - Portable Text block `lms-quiz` và Astro component `Quiz.astro` / `QuizBlock.astro`.
+   - React component `QuizRunner` hiển thị đếm ngược thời gian, bàn cờ tương tác `MoveRecorder`, tự động nộp bài khi hết giờ và phát sự kiện `lms:requirement-done` khi học viên vượt qua điểm yêu cầu (`passed: true`).

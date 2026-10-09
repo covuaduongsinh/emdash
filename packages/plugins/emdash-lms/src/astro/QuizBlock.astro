@@ -1,0 +1,23 @@
+---
+/**
+ * Portable Text Block Component for `lms-quiz`
+ */
+import { QuizRunner } from "../react/QuizRunner.tsx";
+
+interface Props {
+	node?: {
+		quizId?: string;
+		_type?: string;
+		[key: string]: unknown;
+	};
+}
+
+const { node } = Astro.props;
+const quizId = node?.quizId;
+---
+
+{quizId ? (
+  <div class="lms-quiz-block" data-lms-requirement={`quiz:${quizId}`}>
+    <QuizRunner client:visible quizId={quizId} />
+  </div>
+) : null}

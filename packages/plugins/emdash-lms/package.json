@@ -27,10 +27,11 @@
     "e-learning"
   ],
   "type": "module",
-  "main": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
     "./astro": "./src/integration.ts",
+    "./astro/*": "./src/astro/*",
+    "./react": "./src/react/QuizRunner.tsx",
     "./admin": "./src/admin.tsx",
     "./pages/*": "./src/pages/*",
     "./styles/*": "./src/styles/*",

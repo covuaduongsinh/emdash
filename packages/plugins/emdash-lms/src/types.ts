@@ -174,7 +174,14 @@ export interface Quiz {
 	updated_at: string;
 }
 
-export type QuestionType = "single" | "multiple" | "text" | "fill_blank";
+export type QuestionType = "single" | "multiple" | "text" | "fill_blank" | "chess";
+
+export interface ChessQuestionAnswers {
+	fen: string;
+	solution: string[]; // UCI sequence e.g. ["e2e4", "e7e5"]
+	orientation?: "white" | "black";
+	prompt?: string;
+}
 
 export interface Question {
 	id: string;
@@ -182,7 +189,7 @@ export interface Question {
 	question: string;
 	question_image?: { src: string; alt?: string };
 	type: QuestionType;
-	answers: QuestionAnswer[];
+	answers: QuestionAnswer[] | ChessQuestionAnswers | string;
 	grade: number;
 	sort_order: number;
 	explanation?: string;

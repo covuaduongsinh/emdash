@@ -103,7 +103,8 @@ export const sepayProvider: PaymentProvider = {
 		headers: Record<string, string>,
 		config: PaymentProviderConfig,
 	): Promise<WebhookResult> {
-		const authHeader = headers["authorization"] || headers["x-sepay-api-key"] || headers["x-api-key"];
+		const authHeader =
+			headers["authorization"] || headers["x-sepay-api-key"] || headers["x-api-key"];
 		const apiKey = config.credentials.api_key || config.webhook_secret;
 
 		if (!verifySepayApiKey(authHeader, apiKey)) {

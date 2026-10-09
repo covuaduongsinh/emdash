@@ -20,6 +20,22 @@ import {
 	adminOrdersListRoute,
 	adminPaymentSettingsInputSchema,
 	adminPaymentSettingsRoute,
+	adminQuestionDeleteInputSchema,
+	adminQuestionDeleteRoute,
+	adminQuestionReorderInputSchema,
+	adminQuestionReorderRoute,
+	adminQuestionSaveInputSchema,
+	adminQuestionSaveRoute,
+	adminQuizDeleteInputSchema,
+	adminQuizDeleteRoute,
+	adminQuizGetInputSchema,
+	adminQuizGetRoute,
+	adminQuizListInputSchema,
+	adminQuizListRoute,
+	adminQuizOptionsInputSchema,
+	adminQuizOptionsRoute,
+	adminQuizSaveInputSchema,
+	adminQuizSaveRoute,
 	adminStudentsInputSchema,
 	adminStudentsRoute,
 	checkoutCreateInputSchema,
@@ -32,6 +48,7 @@ import {
 	meOrdersGetRoute,
 	meProgressInputSchema,
 	meProgressRoute,
+	meQuizSubmitRoute,
 	membersRoute,
 	membersRouteInputSchema,
 	ordersRoute,
@@ -42,6 +59,10 @@ import {
 	progressCompleteRoute,
 	progressSyncInputSchema,
 	progressSyncRoute,
+	quizPresentInputSchema,
+	quizPresentRoute,
+	quizSubmitInputSchema,
+	quizSubmitRoute,
 	setupRunInputSchema,
 	setupRunRoute,
 	webhookSepayInputSchema,
@@ -96,6 +117,7 @@ export interface LmsPluginOptions {
 
 const ADMIN_PAGES = [
 	{ path: "/settings/setup", label: "Cài đặt LMS", icon: "wrench", group: "lms" },
+	{ path: "/quizzes", label: "Quiz & Bài tập", icon: "clipboard-list", group: "lms" },
 	{ path: "/students", label: "Học viên", icon: "student", group: "lms" },
 	{ path: "/orders", label: "Đơn hàng", icon: "receipt", group: "lms" },
 	{ path: "/plans", label: "Thẻ thư viện", icon: "credit-card", group: "lms" },
@@ -133,6 +155,24 @@ export function createPlugin(_options: LmsPluginOptions = {}): ResolvedPlugin {
 		admin: {
 			entry: "emdash-lms/admin",
 			pages: ADMIN_PAGES,
+			portableTextBlocks: [
+				{
+					type: "lms-quiz",
+					label: "LMS Quiz",
+					icon: "clipboard-list",
+					description: "Chèn bài trắc nghiệm hoặc câu đố cờ vua vào bài học",
+					category: "Cờ vua",
+					fields: [
+						{
+							type: "select",
+							action_id: "quizId",
+							label: "Chọn Quiz",
+							options: [],
+							optionsRoute: "admin/quiz/options",
+						},
+					],
+				},
+			],
 		},
 
 		routes: {
@@ -216,6 +256,61 @@ export function createPlugin(_options: LmsPluginOptions = {}): ResolvedPlugin {
 				input: adminPaymentSettingsInputSchema,
 				permission: "schema:manage",
 				handler: adminPaymentSettingsRoute,
+			},
+			"admin/quiz/list": {
+				input: adminQuizListInputSchema,
+				permission: "content:read",
+				handler: adminQuizListRoute,
+			},
+			"admin/quiz/get": {
+				input: adminQuizGetInputSchema,
+				permission: "content:read",
+				handler: adminQuizGetRoute,
+			},
+			"admin/quiz/save": {
+				input: adminQuizSaveInputSchema,
+				permission: "content:edit_any",
+				handler: adminQuizSaveRoute,
+			},
+			"admin/quiz/delete": {
+				input: adminQuizDeleteInputSchema,
+				permission: "content:edit_any",
+				handler: adminQuizDeleteRoute,
+			},
+			"admin/question/save": {
+				input: adminQuestionSaveInputSchema,
+				permission: "content:edit_any",
+				handler: adminQuestionSaveRoute,
+			},
+			"admin/question/delete": {
+				input: adminQuestionDeleteInputSchema,
+				permission: "content:edit_any",
+				handler: adminQuestionDeleteRoute,
+			},
+			"admin/question/reorder": {
+				input: adminQuestionReorderInputSchema,
+				permission: "content:edit_any",
+				handler: adminQuestionReorderRoute,
+			},
+			"admin/quiz/options": {
+				input: adminQuizOptionsInputSchema,
+				permission: "content:create",
+				handler: adminQuizOptionsRoute,
+			},
+			"quiz/present": {
+				input: quizPresentInputSchema,
+				public: true,
+				handler: quizPresentRoute,
+			},
+			"quiz/submit": {
+				input: quizSubmitInputSchema,
+				public: true,
+				handler: quizSubmitRoute,
+			},
+			"me/quiz/submit": {
+				input: quizSubmitInputSchema,
+				permission: "content:read",
+				handler: meQuizSubmitRoute,
 			},
 		},
 	});

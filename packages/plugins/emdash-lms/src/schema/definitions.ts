@@ -234,7 +234,7 @@ export const LMS_COLLECTIONS: LmsCollectionDefinition[] = [
 				slug: "type",
 				label: "Type",
 				type: "select",
-				validation: { options: ["single", "multiple", "text", "fill_blank"] },
+				validation: { options: ["single", "multiple", "text", "fill_blank", "chess"] },
 				defaultValue: "single",
 			},
 			{ slug: "answers", label: "Answers", type: "json" },
