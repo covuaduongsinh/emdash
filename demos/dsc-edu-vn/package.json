@@ -13,6 +13,8 @@
     "@astrojs/react": "catalog:",
     "astro": "catalog:",
     "emdash": "workspace:*",
+    "emdash-lms": "workspace:*",
+    "@emdash-cms/plugin-chessfenpgn": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:"
   }

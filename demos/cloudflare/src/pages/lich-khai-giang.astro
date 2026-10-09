@@ -3,124 +3,150 @@ import Layout from '../layouts/Layout.astro';
 import PageHero from '../components/PageHero.astro';
 import ConsultForm from '../components/ConsultForm.astro';
 
-const upcomingClasses = [
+const upcomingTournaments = [
   {
-    code: 'LOP-VP-MN01',
-    level: 'Mầm non (4–6 tuổi)',
-    name: 'Cờ vua Vỡ lòng Kể chuyện K24',
-    branch: 'Cơ sở Vĩnh Phúc (16 Vĩnh Phúc, Ba Đình)',
-    time: 'Thứ 2 & Thứ 6 (Ca 1: 18h00 – 19h15)',
-    coach: 'Cô Mai Thị Thu (ĐH Sư Phạm)',
-    status: 'Còn 3 chỗ',
+    code: 'GIAI-HKPD-2025',
+    type: 'Hội khỏe Phù Đổng',
+    name: 'Môn Cờ vua - Hội khỏe Phù Đổng Toàn quốc',
+    scale: 'Quy mô Toàn quốc',
+    ageGroup: 'Tiểu học, THCS, THPT (U9, U11, U13, U15, U18)',
+    time: 'Tháng 4 – Tháng 8/2025',
+    location: 'Cấp Huyện/Tỉnh ➔ Vòng chung kết Toàn quốc',
+    format: 'Cờ tiêu chuẩn & Cờ nhanh (Hệ Thụy Sĩ 7–9 ván)',
+    status: 'Đang diễn ra cấp cơ sở',
     statusType: 'available',
   },
   {
-    code: 'LOP-VP-CB01',
-    level: 'Cơ bản (Tốt ➔ Mã)',
-    name: 'Lớp Cờ vua Nhập môn Thiếu nhi K32',
-    branch: 'Cơ sở Vĩnh Phúc (16 Vĩnh Phúc, Ba Đình)',
-    time: 'Thứ 2 & Thứ 6 (Ca 2: 19h15 – 20h30)',
-    coach: 'Thầy Bùi Đức Huy (ELO 2000)',
-    status: 'Sắp khai giảng',
+    code: 'GIAI-TNND-2025',
+    type: 'Giải Trẻ Quốc Gia',
+    name: 'Giải Vô địch Cờ vua Trẻ Xuất sắc Quốc gia',
+    scale: 'Toàn quốc (Liên đoàn Cờ Việt Nam)',
+    ageGroup: 'U6, U7, U9, U11, U13, U15, U17, U20',
+    time: 'Tháng 7/2025',
+    location: 'TP. Đà Nẵng / Cung Thể thao Tiên Sơn',
+    format: 'Cờ tiêu chuẩn, Cờ nhanh, Cờ chớp',
+    status: 'Sắp mở đăng ký',
     statusType: 'upcoming',
   },
   {
-    code: 'LOP-KL-CB01',
-    level: 'Cơ bản (Mã ➔ Tượng)',
-    name: 'Chiến thuật Trung cuộc & Đòn phối hợp K18',
-    branch: 'Cơ sở Kim Liên (22/11 Lương Định Của, Đống Đa)',
-    time: 'Tối Thứ 3 & Thứ 5 (19h30 – 20h45)',
-    coach: 'Thầy Bùi Việt Anh (ĐH Bách Khoa)',
-    status: 'Còn 2 chỗ',
+    code: 'GIAI-HOCDUONG-OPEN',
+    type: 'Cờ vua Học đường',
+    name: 'Giải Cờ vua Học sinh Mở rộng Toàn quốc — Cúp Cờ Vua Học Đường',
+    scale: 'Toàn quốc (Trực tiếp & Trực tuyến)',
+    ageGroup: 'Mầm non, Tiểu học & THCS (Bảng phong trào & Nâng cao)',
+    time: 'Định kỳ Quý II & Quý IV hàng năm',
+    location: 'Hà Nội & TP. Hồ Chí Minh',
+    format: 'Hệ Thụy Sĩ 7 ván, thời gian 15p+5s',
+    status: 'Mở ghi danh theo trường',
     statusType: 'available',
   },
   {
-    code: 'LOP-KL-NC01',
-    level: 'Nâng cao (Tượng ➔ Xe ➔ Hậu)',
-    name: 'Lớp Luyện tập Thi đấu & Tàn cuộc K12',
-    branch: 'Cơ sở Kim Liên (22/11 Lương Định Của, Đống Đa)',
-    time: 'Tối Thứ 7 (19h30 – 21h00)',
-    coach: 'Thầy Bùi Việt Anh (ELO 1900)',
-    status: 'Còn 1 chỗ',
-    statusType: 'critical',
-  },
-  {
-    code: 'LOP-KL-MN02',
-    level: 'Mầm non (4–6 tuổi)',
-    name: 'Khởi động Trí tuệ Mầm non K15',
-    branch: 'Cơ sở Kim Liên (22/11 Lương Định Của, Đống Đa)',
-    time: 'Tối Thứ 5 & Thứ 7 (18h15 – 19h30)',
-    coach: 'Thầy Dương Văn Duy (ELO 2000)',
-    status: 'Còn 4 chỗ',
+    code: 'GIAI-CLB-INTERSCHOOL',
+    type: 'Giao hữu Liên trường',
+    name: 'Giải Đấu Giao lưu CLB Cờ vua Các Trường Phổ thông',
+    scale: 'Khu vực Bắc - Trung - Nam',
+    ageGroup: 'Học sinh đang sinh hoạt tại các CLB Cờ vua trường',
+    time: 'Thứ 7 & Chủ Nhật cuối mỗi tháng',
+    location: 'Thi đấu luân phiên tại các trường thành viên',
+    format: 'Thi đấu đồng đội & cá nhân',
+    status: 'Đăng ký theo CLB',
     statusType: 'available',
   },
   {
-    code: 'LOP-ONL-VN05',
-    level: 'Mọi trình độ (6–14 tuổi)',
-    name: 'Lớp Cờ vua Online Tương tác Trực tiếp K50',
-    branch: 'Học Trực Tuyến Toàn Quốc (Zoom + Lichess)',
-    time: 'Tối Thứ 2 & Thứ 4 (19h30 – 20h45)',
-    coach: 'Đội ngũ Giáo viên DSC',
-    status: 'Mở ghi danh',
+    code: 'GIAI-ONLINE-MONTHLY',
+    type: 'Arena Trực tuyến',
+    name: 'Đấu trường Cờ vua Học đường Online Hàng tuần',
+    scale: 'Toàn quốc (Nền tảng thi đấu học đường)',
+    ageGroup: 'Tất cả học sinh 5–18 tuổi',
+    time: '20h00 Tối Chủ Nhật hàng tuần',
+    location: 'Nền tảng thi đấu cờ vua học đường (Lichess Team)',
+    format: 'Arena 90 phút (Cờ chớp 5+3)',
+    status: 'Miễn phí tham gia',
     statusType: 'available',
+  },
+];
+
+const tournamentGuides = [
+  {
+    title: 'Bộ Điều lệ mẫu chuẩn quốc gia',
+    desc: 'Cung cấp khung điều lệ mẫu chuẩn Liên đoàn Cờ Việt Nam, giúp các trường tổ chức giải cấp trường hoặc cấp cụm bài bản.',
+    icon: '📋',
+  },
+  {
+    title: 'Phần mềm bốc thăm Swiss-Manager',
+    desc: 'Hướng dẫn cài đặt, bốc thăm theo hệ Thụy Sĩ và xếp hạng chuẩn FIDE cho giáo viên và ban tổ chức trường học.',
+    icon: '💻',
+  },
+  {
+    title: 'Quy trình trọng tài & biên bản',
+    desc: 'Mẫu biên bản thi đấu, bảng ghi điểm, quy tắc xử lý khiếu nại và hướng dẫn phổ biến luật cho học sinh trước giờ đấu.',
+    icon: '⚖️',
+  },
+  {
+    title: 'Cơ cấu giải thưởng & Giấy khen',
+    desc: 'Mẫu chứng nhận thành tích, huy chương và phương án động viên phong trào cờ vua học đường bền vững.',
+    icon: '🏆',
   },
 ];
 ---
 
-<Layout title="Lịch Khai Giảng & Xếp Lớp — dsc.edu.vn">
+<Layout title="Lịch Thi Đấu & Sự Kiện Cờ Vua Học Đường Toàn Quốc">
   <PageHero
-    title="Lịch Khai Giảng & Xếp Lớp Mới"
-    lead="Cập nhật lịch mở lớp định kỳ tại Cơ sở Vĩnh Phúc (Ba Đình), Cơ sở Kim Liên (Đống Đa) và lớp Online toàn quốc. Hỗ trợ kiểm tra trình độ xếp lớp miễn phí."
-    crumbCurrent="Lịch khai giảng"
-    badge="TUYỂN SINH CÁC CƠ SỞ"
-    chips={['CS Vĩnh Phúc (T2 & T6)', 'CS Kim Liên (T3, T5 & T7)', 'Học bù linh hoạt']}
+    title="Lịch Thi Đấu & Sự Kiện Cờ Vua Học Đường"
+    lead="Cập nhật hệ thống giải đấu cờ vua học sinh toàn quốc, Hội khỏe Phù Đổng các cấp, giải trẻ quốc gia và hỗ trợ quy chuẩn tổ chức giải đấu tại các trường học trên cả nước."
+    crumbCurrent="Lịch thi đấu"
+    badge="HỆ THỐNG GIẢI ĐẤU TOÀN QUỐC"
+    chips={['Hội khỏe Phù Đổng', 'Giải Học sinh Toàn quốc', 'Giao lưu CLB Liên trường', 'Đấu trường Online']}
   />
 
+  <!-- Danh sách giải đấu chính -->
   <section class="sec alt reveal">
     <div class="wrap">
       <div class="shead">
-        <div class="overline overline--teal">LỊCH HỌC CÁC CƠ SỞ</div>
-        <h2>Danh sách các lớp cờ vua sắp khai giảng</h2>
-        <p>Chọn cơ sở và khung giờ thuận tiện nhất cho lịch học tập của bé</p>
+        <div class="overline overline--teal">LỊCH SỰ KIỆN & THI ĐẤU</div>
+        <h2>Hệ thống giải đấu cờ vua học đường năm học 2024 – 2025</h2>
+        <p>Theo dõi lịch trình thi đấu chính thức để lên kế hoạch tập luyện và đăng ký dự thi cho học sinh</p>
       </div>
 
       <div class="table-responsive">
         <table class="schedule-table">
           <thead>
             <tr>
-              <th>Mã & Tên lớp</th>
-              <th>Cấp độ & Lứa tuổi</th>
-              <th>Cơ sở đào tạo</th>
-              <th>Khung giờ học</th>
-              <th>Giáo viên phụ trách</th>
-              <th>Tình trạng</th>
-              <th>Hành động</th>
+              <th>Giải đấu & Mã giải</th>
+              <th>Loại hình</th>
+              <th>Lứa tuổi / Đối tượng</th>
+              <th>Thời gian & Địa điểm</th>
+              <th>Thể thức thi đấu</th>
+              <th>Trạng thái</th>
+              <th>Điều lệ & Đăng ký</th>
             </tr>
           </thead>
           <tbody>
-            {upcomingClasses.map((cls) => (
+            {upcomingTournaments.map((t) => (
               <tr>
                 <td>
-                  <div class="class-code">{cls.code}</div>
-                  <strong class="class-name">{cls.name}</strong>
+                  <div class="class-code">{t.code}</div>
+                  <strong class="class-name">{t.name}</strong>
+                  <span class="scale-tag">{t.scale}</span>
                 </td>
                 <td>
-                  <span class="level-chip">{cls.level}</span>
+                  <span class="level-chip">{t.type}</span>
                 </td>
                 <td>
-                  <div class="branch-text">{cls.branch}</div>
+                  <div class="age-text">{t.ageGroup}</div>
                 </td>
                 <td>
-                  <div class="time-text">{cls.time}</div>
+                  <div class="time-text"><strong>{t.time}</strong></div>
+                  <div class="loc-text">{t.location}</div>
                 </td>
                 <td>
-                  <div class="coach-text">{cls.coach}</div>
+                  <div class="format-text">{t.format}</div>
                 </td>
                 <td>
-                  <span class={`status-badge status-${cls.statusType}`}>{cls.status}</span>
+                  <span class={`status-badge status-${t.statusType}`}>{t.status}</span>
                 </td>
                 <td>
-                  <a href="#tu-van" class="btn btn--primary btn--sm">Giữ chỗ</a>
+                  <a href="#tu-van" class="btn btn--primary btn--sm">Nhận điều lệ</a>
                 </td>
               </tr>
             ))}
@@ -130,22 +156,43 @@ const upcomingClasses = [
     </div>
   </section>
 
-  <!-- CTA Box -->
-  <section class="sec reveal" style="padding-top: 20px;">
+  <!-- Hỗ trợ tổ chức giải đấu tại trường học -->
+  <section class="sec reveal">
+    <div class="wrap">
+      <div class="shead">
+        <div class="overline overline--teal">DÀNH CHO NHÀ TRƯỜNG & THẦY CÔ</div>
+        <h2>Tổ chức giải cờ vua cấp trường chuẩn chỉnh & nhanh chóng</h2>
+        <p>Cờ Vua Học Đường cung cấp miễn phí bộ tài liệu, công cụ và chuyên gia hỗ trợ các trường tổ chức giải đấu nội bộ</p>
+      </div>
+
+      <div class="guides-grid">
+        {tournamentGuides.map((g) => (
+          <div class="guide-card">
+            <div class="guide-icon">{g.icon}</div>
+            <h3>{g.title}</h3>
+            <p>{g.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Box kết nối ban tổ chức -->
+  <section class="sec reveal" style="padding-top: 10px;">
     <div class="wrap">
       <div class="schedule-cta">
         <div class="schedule-cta-in">
-          <h2>Chưa tìm thấy lịch học phù hợp với con?</h2>
-          <p>DSC có hỗ trợ sắp xếp lớp học theo nhóm riêng, điều chỉnh ca học hoặc lớp kèm 1-1 theo nguyện vọng của phụ huynh.</p>
+          <h2>Nhà trường cần hỗ trợ tổ chức giải đấu hoặc tập huấn trọng tài?</h2>
+          <p>Ban Chuyên môn Cờ Vua Học Đường sẵn sàng đồng hành cùng Ban Giám hiệu, Đoàn - Đội và tổ Thể dục tổ chức giải đấu trường học chuyên nghiệp, hấp dẫn.</p>
           <a href="#tu-van" class="btn btn--onnavy btn--lg">
-            Liên hệ ban học vụ tư vấn lịch riêng →
+            Gửi yêu cầu hỗ trợ tổ chức giải đấu →
           </a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Form thu lead -->
+  <!-- Form kết nối -->
   <section class="sec reveal">
     <div class="wrap">
       <ConsultForm id="tu-van" />
@@ -166,7 +213,7 @@ const upcomingClasses = [
     width: 100%;
     border-collapse: collapse;
     text-align: left;
-    min-width: 840px;
+    min-width: 960px;
   }
 
   .schedule-table th {
@@ -186,6 +233,7 @@ const upcomingClasses = [
     border-bottom: 1px solid var(--line-soft);
     font-size: 14.5px;
     color: var(--ink);
+    vertical-align: middle;
   }
 
   .schedule-table tbody tr:hover {
@@ -194,7 +242,7 @@ const upcomingClasses = [
 
   .class-code {
     font-family: var(--font-cond);
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 700;
     color: var(--muted);
     letter-spacing: 0.05em;
@@ -205,6 +253,15 @@ const upcomingClasses = [
     color: var(--navy);
     font-size: 15px;
     margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  .scale-tag {
+    display: inline-block;
+    font-size: 11.5px;
+    color: var(--teal-deep);
+    font-weight: 600;
+    margin-top: 3px;
   }
 
   .level-chip {
@@ -213,21 +270,35 @@ const upcomingClasses = [
     color: var(--navy);
     font-size: 12.5px;
     font-weight: 600;
-    padding: 3px 10px;
+    padding: 4px 10px;
     border-radius: var(--r-pill);
+    white-space: nowrap;
   }
 
-  .branch-text, .time-text, .coach-text {
+  .age-text, .format-text {
+    font-size: 13.5px;
+    color: var(--ink-light);
+    line-height: 1.4;
+  }
+
+  .time-text {
+    color: var(--navy);
     font-size: 14px;
-    color: var(--text-secondary);
+  }
+
+  .loc-text {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
   }
 
   .status-badge {
     display: inline-block;
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 700;
     padding: 4px 10px;
     border-radius: var(--r-pill);
+    white-space: nowrap;
   }
 
   .status-available {
@@ -245,6 +316,58 @@ const upcomingClasses = [
     color: #e0564e;
   }
 
+  .guides-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-top: 36px;
+  }
+
+  @media (max-width: 900px) {
+    .guides-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .guides-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .guide-card {
+    background: #fff;
+    padding: 28px 24px;
+    border-radius: var(--r-xl);
+    border: 1px solid var(--line);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .guide-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--sh-md);
+  }
+
+  .guide-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+  }
+
+  .guide-card h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 8px;
+    line-height: 1.35;
+  }
+
+  .guide-card p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
   .schedule-cta {
     background: linear-gradient(135deg, var(--navy), var(--navy-ink));
     border-radius: var(--r-2xl);
@@ -257,18 +380,18 @@ const upcomingClasses = [
   }
 
   .schedule-cta-in {
-    max-width: 680px;
+    max-width: 720px;
     margin: 0 auto;
   }
 
   .schedule-cta h2 {
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 900;
     margin-bottom: 14px;
   }
 
   .schedule-cta p {
-    font-size: 16.5px;
+    font-size: 16px;
     line-height: 1.65;
     color: rgba(255, 255, 255, 0.85);
     margin-bottom: 28px;

@@ -1,0 +1,176 @@
+---
+---
+
+<footer class="ftr">
+  <div class="ftr-pat" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="ftr-grid">
+      <div>
+        <a href="/" aria-label="Dương Sinh Chess Academy">
+          <img src="/brand/logo-horizontal-white.svg" alt="Dương Sinh Chess Academy - DSC" class="flogo" />
+        </a>
+        <p>
+          Học viện cờ vua chuẩn quốc tế dành cho trẻ em. Nuôi dưỡng tư duy logic, rèn luyện bản lĩnh thi đấu và phát triển trí tuệ toàn diện.
+        </p>
+      </div>
+
+      <div>
+        <h4>Khám phá</h4>
+        <ul>
+          <li><a href="/dao-tao">Chương trình đào tạo</a></li>
+          <li><a href="/lich-khai-giang">Lịch khai giảng</a></li>
+          <li><a href="/huan-luyen-vien">Đội ngũ Giáo viên</a></li>
+          <li><a href="/co-so">Hệ thống cơ sở</a></li>
+          <li><a href="/blog">Tin tức & Học thuật</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Cơ sở đào tạo</h4>
+        <ul>
+          <li><strong>CS1 (Ba Đình):</strong> Số 16 phố Vĩnh Phúc</li>
+          <li><strong>CS2 (Đống Đa):</strong> Số 22/11 Lương Định Của</li>
+          <li><strong>Online:</strong> Toàn quốc qua Zoom & Lichess</li>
+          <li><a href="/co-so" style="color: var(--teal); font-weight: 500;">Xem chi tiết bản đồ →</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Liên hệ tuyển sinh</h4>
+        <div class="crow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+          </svg>
+          <div><strong>Hotline:</strong> 0983.119.819</div>
+        </div>
+        <div class="crow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          <div><strong>Email:</strong> covuaduongsinh@gmail.com</div>
+        </div>
+        <div class="crow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+            <path d="M2 12h20"></path>
+          </svg>
+          <div><strong>Website:</strong> dsc.edu.vn · covuaduongsinh.com</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ftr-bot">
+      <div>© {new Date().getFullYear()} Công ty Cổ phần Cờ vua Dương Sinh (DSC). Bảo lưu mọi quyền.</div>
+      <div>Vui Trí Tuệ · Kết nối trí tuệ — Toả sáng ngày mai</div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .ftr {
+    background: var(--navy-ink);
+    color: rgba(255, 255, 255, 0.72);
+    padding: 64px 0 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ftr-pat {
+    position: absolute;
+    inset: 0;
+    background-image: url('/brand/pattern-tile-white.svg');
+    background-size: 72px;
+    opacity: 0.04;
+    pointer-events: none;
+  }
+
+  .ftr-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+    gap: 40px;
+    padding-bottom: 38px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .flogo {
+    height: 44px;
+    margin-bottom: 16px;
+  }
+
+  .ftr p {
+    font-size: 14.5px;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .ftr h4 {
+    color: #fff;
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    font-family: var(--font-cond);
+  }
+
+  .ftr ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ftr ul a {
+    font-size: 14px;
+    transition: color var(--dur);
+  }
+
+  .ftr ul a:hover {
+    color: var(--teal);
+  }
+
+  .crow {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .crow svg {
+    width: 17px;
+    height: 17px;
+    color: var(--teal);
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+
+  .ftr-bot {
+    position: relative;
+    padding-top: 22px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  @media (max-width: 860px) {
+    .ftr-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .ftr-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

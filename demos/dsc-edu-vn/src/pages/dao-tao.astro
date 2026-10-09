@@ -9,9 +9,9 @@ const levels = [
     piece: 'Tốt',
     tag: 'Nhập môn',
     icon: '/brand/pieces/wp.svg',
-    title: 'Cấp độ 1 — Tốt (Vỡ lòng & Luật chơi)',
-    desc: 'Làm quen với bàn cờ, cách di chuyển và bắt quân của 6 loại quân cờ. Học các quy tắc chiếu, chiếu hết, phong cấp và nhập thành.',
-    outcomes: ['Hiểu rõ luật cờ vua FIDE', 'Biết cách ghi biên bản ván đấu', 'Hình thành phản xạ tập trung 45-60 phút'],
+    title: 'Cấp độ 1 — Tốt (Vỡ lòng & Quy tắc cơ bản)',
+    desc: 'Làm quen với bàn cờ 64 ô, cách di chuyển và ăn quân của 6 loại quân cờ. Hiểu rõ quy tắc chiếu, chiếu hết, phong cấp, nhập thành và bắt tốt qua đường.',
+    outcomes: ['Nắm vững luật cờ vua quốc tế FIDE chuẩn', 'Biết cách ghi biên bản ván cờ học đường', 'Rèn luyện thói quen tập trung trong 45–60 phút'],
     bg: 'var(--navy)',
   },
   {
@@ -20,8 +20,8 @@ const levels = [
     tag: 'Cơ bản 1',
     icon: '/brand/pieces/wn.svg',
     title: 'Cấp độ 2 — Mã (Tư duy không gian & Đòn đôi)',
-    desc: 'Khám phá sự biến hóa của quân Mã, nhận diện đòn bắt đôi hiểm hóc. Làm quen với các khái niệm an toàn vua và trung tâm bàn cờ.',
-    outcomes: ['Thành thạo đòn tấn công đôi', 'Khai cuộc theo nguyên lý chuẩn', 'Tính toán trước 2–3 nước đi'],
+    desc: 'Khám phá sự biến hóa và linh hoạt của quân Mã, nhận diện đòn bắt đôi và chiếu mở. Nắm vững nguyên tắc an toàn vua và chiếm lĩnh trung tâm bàn cờ.',
+    outcomes: ['Thành thạo đòn chiến thuật bắt đôi', 'Khai cuộc theo đúng 3 nguyên lý chuẩn', 'Tính toán trước 2–3 nước cờ logic'],
     bg: 'var(--navy-soft)',
   },
   {
@@ -29,9 +29,9 @@ const levels = [
     piece: 'Tượng',
     tag: 'Cơ bản 2',
     icon: '/brand/pieces/wb.svg',
-    title: 'Cấp độ 3 — Tượng (Kiểm soát đường chéo & Giằng)',
-    desc: 'Nắm vững sức mạnh cặp Tượng, khai thác đòn giằng và đòn xiên. Học cách phối hợp Tượng – Mã để làm chủ thế trận.',
-    outcomes: ['Thực hiện đòn giằng và mở đường', 'Chiến thuật phối hợp đa quân', 'Giải được bài tập thế cờ 2 nước'],
+    title: 'Cấp độ 3 — Tượng (Kiểm soát đường chéo & Đòn giằng)',
+    desc: 'Khai thác tối đa sức mạnh cặp Tượng trên các đường chéo mở. Làm chủ đòn giằng, đòn xiên và phối hợp hài hòa giữa Tượng – Mã trong trung cuộc.',
+    outcomes: ['Sử dụng đòn giằng và mở đường chính xác', 'Chiến thuật phối hợp quân nhịp nhàng', 'Giải thành thạo bài tập thế cờ 2–3 nước'],
     bg: 'var(--navy-soft)',
   },
   {
@@ -40,8 +40,8 @@ const levels = [
     tag: 'Cơ bản 3',
     icon: '/brand/pieces/wr.svg',
     title: 'Cấp độ 4 — Xe (Cột mở & Chiến lược tàn cuộc)',
-    desc: 'Kiểm soát hàng ngang số 7 và cột mở. Nắm vững kỹ thuật tàn cuộc cơ bản với Xe và Tốt, nguyên tắc hình học bàn cờ.',
-    outcomes: ['Khai thác cột mở tối đa', 'Thành thạo tàn cuộc Xe cơ bản', 'Tư duy lập kế hoạch trung cuộc'],
+    desc: 'Nắm quyền kiểm soát các cột mở và hàng ngang số 7. Trang bị kỹ thuật cờ tàn căn bản với Xe và Tốt, nguyên lý hình học bàn cờ và quy tắc ô vuông.',
+    outcomes: ['Khai thác sức mạnh Xe trên cột mở', 'Thành thạo kỹ thuật cờ tàn Xe cơ bản', 'Lập kế hoạch tấn công và phòng thủ trung cuộc'],
     bg: 'var(--navy-soft)',
   },
   {
@@ -50,8 +50,8 @@ const levels = [
     tag: 'Nâng cao 1',
     icon: '/brand/pieces/wq.svg',
     title: 'Cấp độ 5 — Hậu (Phối hợp toàn năng)',
-    desc: 'Phát huy sức mạnh áp đảo của quân Hậu. Học các hệ thống khai cuộc chuyên sâu, chiến thuật tấn công cánh Vua và phản công.',
-    outcomes: ['Xây dựng kho khai cuộc riêng', 'Phân tích điểm yếu đối phương', 'Thi đấu giải cấp trường / quận'],
+    desc: 'Phát huy sức mạnh áp đảo của quân Hậu trong phối hợp lực lượng. Nghiên cứu các hệ thống khai cuộc bài bản, chiến thuật công thành và phản công.',
+    outcomes: ['Xây dựng kho biến thể khai cuộc ưa thích', 'Phân tích cấu trúc Tốt và điểm yếu', 'Nâng cao khả năng phân tích logic & trung tàn cuộc'],
     bg: 'var(--navy-soft)',
   },
   {
@@ -59,21 +59,21 @@ const levels = [
     piece: 'Vua',
     tag: 'Nâng cao 2',
     icon: '/brand/pieces/wk.svg',
-    title: 'Cấp độ 6 — Vua (Bản lĩnh thủ lĩnh & Giải đấu)',
-    desc: 'Tư duy chiến lược cao cấp, tâm lý thi đấu đỉnh cao. Rèn luyện sự điềm tĩnh, tính toán sâu 5–7 nước và xử lý áp lực thời gian.',
-    outcomes: ['Đạt chuẩn Elo FIDE 1200–1600', 'Sẵn sàng giải Thành phố & Quốc gia', 'Tư duy lãnh đạo và ra quyết định'],
+    title: 'Cấp độ 6 — Vua (Bản lĩnh tư duy & Phong cách thủ lĩnh)',
+    desc: 'Tư duy chiến lược cao cấp, rèn luyện tâm lý điềm tĩnh và kiểm soát áp lực. Tính toán sâu 5–7 nước, làm chủ thời gian và ra quyết định chính xác.',
+    outcomes: ['Nắm vững tư duy chiến lược trung tàn cuộc', 'Hình thành bản lĩnh kiên định và phong thái điềm đạm', 'Phát triển năng lực lãnh đạo và tư duy phản biện'],
     bg: 'var(--teal-soft)',
   },
 ];
 ---
 
-<Layout title="Chương trình Đào tạo Cờ Vua 6 Cấp Độ — dsc.edu.vn">
+<Layout title="Khung Giáo Trình Cờ Vua Học Đường Toàn Diện — covuahocduong.com">
   <PageHero
-    title="Chương trình Đào tạo Cờ Vua Chuẩn Hóa"
-    lead="Lộ trình 6 cấp độ độc quyền của Học viện Cờ Vua Dương Sinh giúp trẻ phát triển toàn diện tư duy logic, phản xạ chiến thuật và bản lĩnh thi đấu."
-    crumbCurrent="Chương trình đào tạo"
-    badge="HỆ THỐNG GIÁO TRÌNH ĐỘC QUYỀN"
-    chips={['Sĩ số 8–10 học viên', 'Giáo trình trực quan', 'Đánh giá năng lực định kỳ', '100% HLV FIDE']}
+    title="Khung Giáo Trình Cờ Vua Học Đường"
+    lead="Chương trình chuẩn hóa năng lực từ Mầm non đến Phổ thông trung học, được thiết kế khoa học giúp học sinh phát triển tư duy logic, tính kiên nhẫn và bản lĩnh học đường."
+    crumbCurrent="Giáo trình học đường"
+    badge="CHUẨN HỌC ĐƯỜNG TOÀN DIỆN"
+    chips={['Chuẩn FIDE Quốc tế', 'Phương pháp sư phạm trực quan', 'Hệ thống bài tập FEN/PGN', 'Dành cho trường học toàn quốc']}
   />
 
   <!-- 1. Lộ trình 6 cấp -->
@@ -82,7 +82,7 @@ const levels = [
       <div class="shead">
         <div class="overline overline--teal">CHUẨN HÓA NĂNG LỰC</div>
         <h2>Hệ thống 6 Cấp Độ Đào Tạo (Tốt ➔ Vua)</h2>
-        <p>Mỗi cấp độ đều có chuẩn đầu ra rõ ràng về kiến thức, kỹ thuật và kỹ năng tư duy.</p>
+        <p>Mỗi cấp độ đều có chuẩn đầu ra rõ ràng về kiến thức, kỹ thuật chiến thuật và kỹ năng tư duy học đường.</p>
       </div>
 
       <div class="level-grid">
@@ -101,7 +101,7 @@ const levels = [
             <p class="level-desc">{lvl.desc}</p>
 
             <div class="level-outcomes">
-              <div class="outcome-label">Chuẩn đầu ra:</div>
+              <div class="outcome-label">Chuẩn đầu ra trọng tâm:</div>
               <ul>
                 {lvl.outcomes.map((item) => (
                   <li>
@@ -121,104 +121,114 @@ const levels = [
   <section class="sec reveal">
     <div class="wrap">
       <div class="shead">
-        <div class="overline">PHƯƠNG PHÁP THEO LỨA TUỔI</div>
-        <h2>Phương pháp giảng dạy phù hợp tâm lý</h2>
-        <p>Tối ưu hóa khả năng tiếp thu và cảm hứng học tập của từng độ tuổi</p>
+        <div class="overline">PHƯƠNG PHÁP THEO BẬC HỌC</div>
+        <h2>Phương pháp giảng dạy phù hợp từng lứa tuổi</h2>
+        <p>Tối ưu hóa khả năng tiếp thu và truyền cảm hứng say mê cờ vua cho học sinh theo từng giai đoạn phát triển</p>
       </div>
 
       <div class="age-grid">
-        <div class="age-card">
+        <div class="age-card" id="mam-non">
           <div class="age-head">
             <div class="age-icon-wrap">
               <img src="/brand/pieces/wn.svg" alt="Mầm non" />
             </div>
             <div>
               <span class="age-badge">4 – 6 TUỔI</span>
-              <h3>Lớp Cờ vua Mầm non — Học qua Kể chuyện</h3>
+              <h3>Bậc Mầm Non — Cờ Vua Kể Chuyện</h3>
             </div>
           </div>
           <p>
-            Trẻ mầm non tiếp thu thế giới qua hình ảnh và cảm xúc. DSC áp dụng phương pháp nhân cách hóa quân cờ thành những người bạn ngộ nghĩnh, giúp trẻ làm quen với luật cờ một cách tự nhiên, rèn luyện tính kiên nhẫn và ngồi yên tập trung.
+            Trẻ mầm non tiếp thu thế giới qua hình tượng và cảm xúc. Phương pháp nhân cách hóa các quân cờ thành những nhân vật ngộ nghĩnh giúp trẻ yêu thích bàn cờ, ghi nhớ luật chơi tự nhiên, đồng thời rèn luyện tính tập trung và tư duy không gian từ sớm.
           </p>
         </div>
 
-        <div class="age-card">
+        <div class="age-card" id="tieu-hoc">
           <div class="age-head">
             <div class="age-icon-wrap">
-              <img src="/brand/pieces/wq.svg" alt="Học sinh" />
+              <img src="/brand/pieces/wb.svg" alt="Tiểu học" />
             </div>
             <div>
-              <span class="age-badge">6 – 14 TUỔI</span>
-              <h3>Lớp Cờ vua Học sinh — Tư duy Chiến thuật</h3>
+              <span class="age-badge">LỚP 1 – 5</span>
+              <h3>Bậc Tiểu Học — Rèn Luyện Tư Duy Chiến Thuật</h3>
             </div>
           </div>
           <p>
-            Tập trung phát triển tư duy phản biện, khả năng phân tích đa chiều và tính toán nước cờ sâu. Học sinh được rèn luyện tác phong thi đấu chuyên nghiệp, tính kỷ luật và bản lĩnh đối mặt với thành công cũng như thất bại.
+            Giai đoạn vàng để hình thành tư duy logic và kỹ năng giải quyết vấn đề. Học sinh tiểu học được học cách giải các thế cờ thực chiến, rèn tính cẩn trọng "nghĩ trước khi đi", tinh thần thể thao trung thực và biết tôn trọng đối thủ.
+          </p>
+        </div>
+
+        <div class="age-card" id="trung-hoc">
+          <div class="age-head">
+            <div class="age-icon-wrap">
+              <img src="/brand/pieces/wq.svg" alt="Trung học" />
+            </div>
+            <div>
+              <span class="age-badge">LỚP 6 – 12</span>
+              <h3>Bậc THCS & THPT — Chiến Lược, Logic & Phản Biện</h3>
+            </div>
+          </div>
+          <p>
+            Tập trung phát triển tư duy phản biện, lập kế hoạch chiến lược và quản lý thời gian. Học sinh được trang bị phương pháp tư duy logic đa chiều, rèn luyện tính kỷ luật và sự kiềm chế cảm xúc trong mọi tình huống.
           </p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 3. Bảng học phí & quyền lợi -->
+  <!-- 3. Mô hình triển khai học đường -->
   <section class="sec alt reveal">
     <div class="wrap">
       <div class="shead">
-        <div class="overline overline--teal">HỌC PHÍ MINH BẠCH</div>
-        <h2>Các gói đào tạo & Quyền lợi học viên</h2>
-        <p>Cam kết chất lượng đào tạo và sự tiến bộ rõ rệt sau mỗi khóa học</p>
+        <div class="overline overline--teal">MÔ HÌNH HỌC ĐƯỜNG</div>
+        <h2>Các mô hình triển khai cờ vua trong trường học</h2>
+        <p>Linh hoạt ứng dụng vào chương trình giáo dục thể chất, hoạt động trải nghiệm và câu lạc bộ ngoại khóa</p>
       </div>
 
-      <div class="pricing-grid">
-        <!-- Gói 1: Học thử -->
-        <div class="pricing-card">
-          <div class="plan-name">BUỔI HỌC THỬ</div>
-          <div class="plan-price">0đ <small>/ buổi đầu tiên</small></div>
-          <p class="plan-desc">Trải nghiệm không gian học tập và kiểm tra trình độ cùng HLV.</p>
-          <ul class="plan-features">
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> 90 phút học trực tiếp</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Đánh giá chỉ số tư duy</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Tư vấn lộ trình 1-1 cho phụ huynh</li>
+      <div class="model-grid">
+        <!-- Mô hình 1 -->
+        <div class="model-card">
+          <div class="model-badge">MÔ HÌNH 01</div>
+          <h3>CLB Cờ Vua Ngoại Khóa Trường Học</h3>
+          <p class="model-desc">Thành lập câu lạc bộ cờ vua sinh hoạt định kỳ sau giờ học, tạo sân chơi trí tuệ lành mạnh cho học sinh toàn trường.</p>
+          <ul class="model-features">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Sinh hoạt 1–2 buổi / tuần</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Cung cấp trọn bộ giáo án và tài liệu</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Sinh hoạt chuyên đề và giao lưu nội bộ</li>
           </ul>
-          <a href="#tu-van" class="btn btn--ghost" style="width: 100%;">Đăng ký học thử</a>
         </div>
 
-        <!-- Gói 2: Tiêu chuẩn (Phổ biến) -->
-        <div class="pricing-card featured">
-          <div class="featured-tag">Phổ biến nhất</div>
-          <div class="plan-name">KHÓA TIÊU CHUẨN</div>
-          <div class="plan-price">750.000đ <small>/ tháng</small></div>
-          <p class="plan-desc">Khóa học nền tảng toàn diện giúp bé tiến bộ nhanh và yêu thích cờ vua.</p>
-          <ul class="plan-features">
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> 8 buổi học (90 phút/buổi)</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Sĩ số tối đa 8–10 học viên</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Giáo trình in màu độc quyền DSC</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Tham gia giải đấu giao hữu nội bộ</li>
+        <!-- Mô hình 2 -->
+        <div class="model-card featured">
+          <div class="model-ribbon">Phổ biến</div>
+          <div class="model-badge">MÔ HÌNH 02</div>
+          <h3>Tích Hợp Tiết Học Thể Chất & Kỹ Năng</h3>
+          <p class="model-desc">Đưa cờ vua vào môn Giáo dục Thể chất hoặc chương trình kỹ năng sống theo định hướng phát triển phẩm chất học sinh.</p>
+          <ul class="model-features">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> 100% học sinh khối lớp được tiếp cận</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Hỗ trợ tập huấn phương pháp cho giáo viên</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Đánh giá sự phát triển tư duy định kỳ</li>
           </ul>
-          <a href="#tu-van" class="btn btn--primary" style="width: 100%;">Đăng ký nhập học</a>
         </div>
 
-        <!-- Gói 3: Chuyên sâu -->
-        <div class="pricing-card">
-          <div class="plan-name">KHÓA CHUYÊN SÂU</div>
-          <div class="plan-price">1.050.000đ <small>/ tháng</small></div>
-          <p class="plan-desc">Dành cho học viên định hướng thi đấu và nâng cao đẳng cấp Elo.</p>
-          <ul class="plan-features">
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> 8 buổi học chuyên sâu (120 phút)</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Sĩ số nhóm nhỏ 4–6 học viên</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Huấn luyện trực tiếp cùng Đại kiện tướng</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Luyện thi giải Thành phố & Quốc gia</li>
+        <!-- Mô hình 3 -->
+        <div class="model-card">
+          <div class="model-badge">MÔ HÌNH 03</div>
+          <h3>Bồi Dưỡng Chuyên Sâu & Năng Khiếu Học Đường</h3>
+          <p class="model-desc">Bồi dưỡng các học sinh có niềm say mê và năng khiếu vượt trội, phát triển chuyên sâu kho lý thuyết và thế cờ nghệ thuật.</p>
+          <ul class="model-features">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Kế hoạch bồi dưỡng chuyên đề nâng cao</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Phân tích chuyên sâu các ván cờ kinh điển</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Cố vấn chuyên môn bởi các Kiện tướng & Giảng viên</li>
           </ul>
-          <a href="#tu-van" class="btn btn--ghost" style="width: 100%;">Tư vấn chuyên sâu</a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 4. Form thu lead -->
+  <!-- 4. Form nhận tài liệu & kết nối -->
   <section class="sec reveal" style="padding-top: 30px;">
     <div class="wrap">
-      <ConsultForm id="tu-van" />
+      <ConsultForm id="ket-noi" />
     </div>
   </section>
 </Layout>
@@ -248,14 +258,14 @@ const levels = [
   .level-head {
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: 18px;
+    margin-bottom: 18px;
   }
 
   .level-icon-box {
-    width: 60px;
-    height: 60px;
-    border-radius: var(--r-md);
+    width: 64px;
+    height: 64px;
+    border-radius: var(--r-lg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -269,11 +279,11 @@ const levels = [
 
   .level-step {
     font-family: var(--font-cond);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
+    letter-spacing: 0.08em;
     color: var(--teal-deep);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
   }
 
   .level-title {
@@ -284,7 +294,7 @@ const levels = [
   }
 
   .level-desc {
-    font-size: 14.5px;
+    font-size: 15px;
     line-height: 1.6;
     color: var(--text-secondary);
     margin-bottom: 20px;
@@ -294,12 +304,15 @@ const levels = [
     background: var(--bg);
     border-radius: var(--r-md);
     padding: 16px 20px;
+    border: 1px solid var(--line-soft);
   }
 
   .outcome-label {
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 700;
-    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--navy);
     margin-bottom: 8px;
   }
 
@@ -309,7 +322,7 @@ const levels = [
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
   }
 
   .level-outcomes li {
@@ -321,23 +334,23 @@ const levels = [
   }
 
   .level-outcomes svg {
-    width: 15px;
-    height: 15px;
-    color: var(--teal);
+    width: 14px;
+    height: 14px;
+    stroke: var(--teal-deep);
     flex-shrink: 0;
   }
 
-  /* Age cards */
+  /* Age groups */
   .age-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 28px;
   }
 
   .age-card {
     background: #fff;
     border-radius: var(--r-xl);
-    padding: 36px;
+    padding: 32px;
     border: 1px solid var(--line);
     box-shadow: var(--sh-sm);
   }
@@ -346,12 +359,12 @@ const levels = [
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
   }
 
   .age-icon-wrap {
-    width: 60px;
-    height: 60px;
+    width: 56px;
+    height: 56px;
     border-radius: var(--r-lg);
     background: var(--navy-soft);
     display: flex;
@@ -361,45 +374,42 @@ const levels = [
   }
 
   .age-icon-wrap img {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
   }
 
   .age-badge {
-    display: inline-block;
-    background: var(--teal-soft);
-    color: var(--teal-deep);
     font-family: var(--font-cond);
     font-size: 12px;
     font-weight: 700;
-    padding: 2px 8px;
-    border-radius: var(--r-pill);
-    margin-bottom: 4px;
+    color: var(--teal-deep);
+    letter-spacing: 0.08em;
   }
 
   .age-head h3 {
-    font-size: 20px;
-    font-weight: 900;
+    font-size: 18px;
+    font-weight: 800;
     color: var(--navy);
+    margin-top: 2px;
   }
 
   .age-card p {
-    font-size: 15px;
+    font-size: 14.5px;
     line-height: 1.65;
-    color: var(--muted);
+    color: var(--text-secondary);
   }
 
-  /* Pricing */
-  .pricing-grid {
+  /* Models */
+  .model-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 28px;
   }
 
-  .pricing-card {
+  .model-card {
     background: #fff;
-    border-radius: var(--r-2xl);
-    padding: 36px 30px;
+    border-radius: var(--r-xl);
+    padding: 36px 28px;
     border: 1px solid var(--line);
     box-shadow: var(--sh-sm);
     display: flex;
@@ -408,73 +418,66 @@ const levels = [
     transition: transform var(--dur);
   }
 
-  .pricing-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--sh-md);
+  .model-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--sh-hover);
   }
 
-  .pricing-card.featured {
-    border: 2px solid var(--navy);
-    box-shadow: var(--sh-lg);
+  .model-card.featured {
+    border-color: var(--teal);
+    box-shadow: 0 12px 32px rgba(43, 57, 144, 0.12);
   }
 
-  .featured-tag {
+  .model-ribbon {
     position: absolute;
-    top: -13px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--teal);
+    top: 16px;
+    right: 16px;
+    background: var(--coral);
     color: #fff;
-    font-size: 12.5px;
-    font-weight: 700;
-    padding: 4px 14px;
+    font-family: var(--font-cond);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 4px 10px;
     border-radius: var(--r-pill);
   }
 
-  .plan-name {
+  .model-badge {
     font-family: var(--font-cond);
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 700;
-    letter-spacing: 0.12em;
-    color: var(--navy);
-    text-transform: uppercase;
+    color: var(--teal-deep);
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
   }
 
-  .plan-price {
-    font-family: var(--font-cond);
-    font-size: 38px;
+  .model-card h3 {
+    font-size: 20px;
     font-weight: 900;
     color: var(--navy);
-    margin: 12px 0 8px;
+    margin-bottom: 12px;
   }
 
-  .plan-price small {
-    font-family: var(--font);
-    font-size: 14px;
-    font-weight: 400;
-    color: var(--muted);
-  }
-
-  .plan-desc {
-    font-size: 14px;
-    line-height: 1.55;
-    color: var(--muted);
+  .model-desc {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--text-secondary);
     margin-bottom: 24px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--line-soft);
-  }
-
-  .plan-features {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
     flex-grow: 1;
   }
 
-  .plan-features li {
+  .model-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-top: 1px solid var(--line-soft);
+    padding-top: 20px;
+  }
+
+  .model-features li {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -482,15 +485,15 @@ const levels = [
     color: var(--text-secondary);
   }
 
-  .plan-features svg {
-    width: 17px;
-    height: 17px;
-    color: var(--teal);
+  .model-features svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--teal-deep);
     flex-shrink: 0;
   }
 
   @media (max-width: 900px) {
-    .level-grid, .age-grid, .pricing-grid {
+    .level-grid, .age-grid, .model-grid {
       grid-template-columns: 1fr;
     }
   }

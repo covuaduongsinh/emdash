@@ -2,15 +2,13 @@
 import cloudflare from "@astrojs/cloudflare";
 import { cacheCloudflare } from "@astrojs/cloudflare/cache";
 import react from "@astrojs/react";
-import {
-	d1,
-	r2,
-	cloudflareImages,
-	cloudflareStream,
-} from "@emdash-cms/cloudflare";
+import { d1, r2, cloudflareImages, cloudflareStream } from "@emdash-cms/cloudflare";
 import { aiSearch } from "@emdash-cms/cloudflare/plugins";
+import { chessfenpgnPlugin } from "@emdash-cms/plugin-chessfenpgn";
 import { formsPlugin } from "@emdash-cms/plugin-forms";
 import { defineConfig, fontProviders } from "astro/config";
+import { lmsPlugin } from "emdash-lms";
+import { lmsIntegration } from "emdash-lms/astro";
 import emdash from "emdash/astro";
 
 export default defineConfig({
@@ -59,6 +57,26 @@ export default defineConfig({
 			plugins: [
 				// Test plugin that exercises all v2 APIs
 				formsPlugin(),
+				chessfenpgnPlugin(),
+				lmsPlugin({
+					mode: "full",
+					currency: {
+						base: "VND",
+						display: "VND",
+						exchangeRate: 1,
+					},
+					courses: {
+						enabled: true,
+						individualPurchase: true,
+					},
+					membership: {
+						enabled: true,
+					},
+					checkout: {
+						enabled: true,
+						providers: ["sepay", "stripe"],
+					},
+				}),
 				aiSearch({
 					// AI Search instance name (created on first index). Default: "emdash-content".
 					instanceName: "emdash-content",
@@ -73,6 +91,11 @@ export default defineConfig({
 					},
 				}),
 			],
+		}),
+		lmsIntegration({
+			layout: "./src/layouts/Layout.astro",
+			basePath: "",
+			styles: "plugin",
 		}),
 	],
 	// Preferred edge HTML cache: native Workers Caching via the Astro Cloudflare
@@ -108,6 +131,13 @@ export default defineConfig({
 			cssVariable: "--font-cond",
 			weights: [700, 900],
 			fallbacks: ["sans-serif"],
+		},
+		{
+			provider: fontProviders.google(),
+			name: "JetBrains Mono",
+			cssVariable: "--font-mono",
+			weights: [400, 500],
+			fallbacks: ["monospace"],
 		},
 	],
 	devToolbar: { enabled: false },

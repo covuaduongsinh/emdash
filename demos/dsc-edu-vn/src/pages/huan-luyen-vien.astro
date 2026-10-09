@@ -3,65 +3,80 @@ import Layout from '../layouts/Layout.astro';
 import PageHero from '../components/PageHero.astro';
 import ConsultForm from '../components/ConsultForm.astro';
 
-const coaches = [
+const specialists = [
   {
     name: 'Thầy Bùi Việt Anh',
-    role: 'GIÁO VIÊN PHỤ TRÁCH · CƠ SỞ KIM LIÊN',
-    title: 'ELO 1900 · Cựu Phó Chủ Nhiệm CLB Cờ Vua ĐH Bách Khoa Hà Nội',
-    bio: 'Tốt nghiệp Đại học Bách Khoa Hà Nội, giàu kinh nghiệm quản lý và huấn luyện đội tuyển cờ vua sinh viên. Thầy có phương pháp giảng dạy giàu tính tư duy, giúp học sinh nắm vững các đòn phối hợp chiến thuật và kỹ năng phân tích thế trận sâu sắc.',
+    role: 'TRƯỞNG BAN CHUYÊN MÔN CỜ VUA HỌC ĐƯỜNG',
+    title: 'ELO 1900 · Chủ nhiệm Đề án Chuẩn hóa Giáo trình Học đường',
+    bio: 'Tốt nghiệp Đại học Bách Khoa Hà Nội, giàu kinh nghiệm quản lý và huấn luyện đội tuyển cờ vua trẻ. Thầy chủ trì nghiên cứu và xây dựng khung giáo trình cờ vua học đường 6 cấp độ, tích hợp phương pháp tư duy toán học và giải quyết vấn đề cho học sinh phổ thông.',
     icon: '/brand/pieces/wk.svg',
-    strengths: ['Chiến thuật trung cuộc & đòn phối hợp', 'Tư duy logic & giải bài tập thế cờ', 'Lập kế hoạch và quản lý thời gian thi đấu'],
+    strengths: ['Xây dựng khung giáo trình & giáo án sư phạm', 'Phương pháp tư duy logic & giải bài tập thế cờ', 'Tập huấn giáo viên Thể dục & Tổng phụ trách'],
   },
   {
     name: 'Thầy Bùi Đức Huy',
-    role: 'GIÁO VIÊN / HLV · CƠ SỞ VĨNH PHÚC',
-    title: 'ELO 2000 · Huy Chương Đồng Hội Khỏe Phù Đổng cấp Tỉnh',
-    bio: 'Đạt đẳng cấp ELO 2000 với bề dày thành tích thi đấu tại các giải cờ vua trẻ và Hội khỏe Phù Đổng. Phong cách giảng dạy nhiệt huyết, truyền cảm hứng và khơi gợi niềm say mê khám phá nước đi hay cho học viên.',
+    role: 'PHỤ TRÁCH BỒI DƯỠNG NÂNG CAO & CHIẾN LƯỢC TRUNG TÀN CUỘC',
+    title: 'ELO 2000 · Giảng viên Chuyên môn Cờ Vua Học Đường',
+    bio: 'Đạt đẳng cấp ELO 2000, phụ trách nghiên cứu phương pháp giảng dạy chiến thuật trung tàn cuộc chuyên sâu và bồi dưỡng tư duy chiến lược logic cho học sinh phổ thông.',
     icon: '/brand/pieces/wn.svg',
-    strengths: ['Khai cuộc hiện đại & phản xạ cờ nhanh', 'Kỹ thuật tấn công cánh Vua', 'Phân tích ván đấu thực chiến qua máy tính'],
+    strengths: ['Chiến thuật tư duy & đòn phối hợp hiện đại', 'Kỹ thuật phân tích cờ thế chuyên sâu', 'Ứng dụng công cụ Engine phân tích thế cờ'],
   },
   {
     name: 'Cô Mai Thị Thu',
-    role: 'CHUYÊN GIA SƯ PHẠM MẦM NON · CƠ SỞ VĨNH PHÚC',
-    title: 'Cử nhân GD Mầm non & Sư phạm Tiếng Anh · HCB HKPĐ Tỉnh',
-    bio: 'Tốt nghiệp Đại học Sư phạm chuyên ngành Giáo dục Mầm non, từng đạt Huy chương Bạc HKPĐ cấp tỉnh. Cô có chuyên môn sâu về tâm lý trẻ nhỏ lứa tuổi 4–6, áp dụng phương pháp cờ vua kể chuyện giúp trẻ rèn luyện tính kiên nhẫn và phản xạ tập trung.',
+    role: 'CHUYÊN GIA SƯ PHẠM MẦM NON & CỜ VUA KHỞI ĐẦU',
+    title: 'Cử nhân GD Mầm non ĐH Sư Phạm Hà Nội',
+    bio: 'Tốt nghiệp Đại học Sư phạm Hà Nội chuyên ngành Giáo dục Mầm non. Cô là tác giả chuỗi bài giảng "Cờ vua Kể chuyện", giúp trẻ em lứa tuổi mầm non và lớp 1 tiếp cận cờ vua tự nhiên, rèn luyện sự tập trung và tính kỷ luật.',
     icon: '/brand/pieces/wb.svg',
-    strengths: ['Phương pháp dạy cờ qua câu chuyện & hình ảnh', 'Tâm lý học lứa tuổi mầm non và tiểu học', 'Rèn luyện thói quen tập trung và tính kỷ luật'],
+    strengths: ['Phương pháp sư phạm cờ vua mầm non', 'Tâm lý học lứa tuổi & kích thích trí tò mò', 'Xây dựng thói quen kiên nhẫn & quan sát cho trẻ'],
   },
   {
     name: 'Thầy Dương Văn Duy',
-    role: 'GIÁO VIÊN · CƠ SỞ KIM LIÊN',
-    title: 'ELO 2000 · Đại học Bách Khoa Hà Nội',
-    bio: 'Đạt đẳng cấp ELO 2000, nhiều năm kinh nghiệm quản lý lớp học và hướng dẫn học viên nhập môn. Luôn kiên nhẫn, gần gũi và theo sát tiến độ từng buổi học của từng học viên.',
+    role: 'CHUYÊN GIA CÔNG NGHỆ & HỌC LIỆU TRỰC TUYẾN',
+    title: 'ELO 2000 · Kỹ sư Phần mềm ĐH Bách Khoa Hà Nội',
+    bio: 'Đạt đẳng cấp ELO 2000, phụ trách phát triển hệ thống học liệu trực tuyến, công cụ giải cờ thế FEN/PGN và nền tảng bài giảng số cho các trường học trên toàn quốc.',
     icon: '/brand/pieces/wq.svg',
-    strengths: ['Kỹ năng nắm bắt tâm lý học viên', 'Phương pháp kèm cặp tiến độ cá nhân hóa', 'Đồng hành rèn luyện tác phong thi đấu nghiêm túc'],
+    strengths: ['Ứng dụng công nghệ trong giảng dạy cờ vua', 'Nền tảng học liệu & bài giảng điện tử', 'Thiết kế bài tập tương tác & FEN/PGN Viewer'],
   },
   {
     name: 'Cô Đỗ Nhật Quyên',
-    role: 'GIÁO VIÊN · CƠ SỞ VĨNH PHÚC',
-    title: 'ELO 1800 · Chuyên trách lớp Cơ bản',
-    bio: 'Đạt đẳng cấp ELO 1800, phụ trách các lớp vỡ lòng và cơ bản tại cơ sở Vĩnh Phúc. Tận tâm, chu đáo và luôn tạo không khí lớp học sôi nổi, hào hứng cho các kỳ thủ nhí.',
+    role: 'CHUYÊN GIA BỒI DƯỠNG NĂNG KHIẾU TIỂU HỌC',
+    title: 'ELO 1800 · Cố vấn Chuyên môn Khối Tiểu học',
+    bio: 'Đạt đẳng cấp ELO 1800, nhiều năm nghiên cứu các mô hình cờ vua học đường quốc tế. Phụ trách thẩm định giáo án giảng dạy cờ vua tích hợp trong môn Giáo dục Thể chất khối Tiểu học.',
     icon: '/brand/pieces/wr.svg',
-    strengths: ['Hướng dẫn luật cờ & biên bản chuẩn FIDE', 'Bài tập phát hiện đòn chiến thuật cơ bản', 'Tạo động lực và sự tự tin cho học viên mới'],
+    strengths: ['Chuẩn hóa quy tắc bàn cờ & biên bản FIDE', 'Bài tập phát hiện đòn chiến thuật theo chủ đề', 'Phương pháp tạo động lực cho học sinh tiểu học'],
   },
   {
     name: 'Thầy Phạm Quốc An',
-    role: 'GIÁO VIÊN / TRỢ GIẢNG · CƠ SỞ KIM LIÊN',
-    title: 'HLV Trẻ Nhiệt Huyết · Khối Phong Trào',
-    bio: 'Tham gia giảng dạy và hỗ trợ học vụ tại cơ sở Kim Liên, đồng hành cùng các bạn nhỏ trong các giờ luyện giải đố và thi đấu giao hữu nội bộ.',
+    role: 'ĐIỀU PHỐI VIÊN MẠNG LƯỚI CLB TRƯỜNG HỌC',
+    title: 'Chuyên viên Phát triển Phong trào Thể thao Học sinh',
+    bio: 'Phụ trách kết nối, hỗ trợ trang thiết bị dụng cụ và hướng dẫn quy trình thành lập câu lạc bộ cờ vua cho các trường phổ thông trên khắp 63 tỉnh thành.',
     icon: '/brand/pieces/wp.svg',
-    strengths: ['Hỗ trợ thực hành thế cờ 1-1', 'Tổ chức giải đấu mini trong lớp', 'Theo dõi và ghi nhận tiến độ học viên'],
+    strengths: ['Quy trình thành lập & vận hành CLB trường học', 'Tổ chức ngày hội cờ vua học đường', 'Kết nối giao lưu liên trường & tài trợ học liệu'],
+  },
+];
+
+const standards = [
+  {
+    title: 'Sư phạm nhân văn & Tôn trọng cá tính',
+    desc: 'Không đặt nặng áp lực điểm số; lấy sự phát triển tư duy, tính kiên nhẫn và nhân cách của học sinh làm trọng tâm.',
+  },
+  {
+    title: 'Chuẩn mực quốc tế FIDE & Sư phạm học đường',
+    desc: 'Mọi tài liệu, quy tắc bàn cờ và giáo trình đều tuân thủ chặt chẽ quy chuẩn sư phạm của Bộ GD&ĐT và Liên đoàn Cờ Thế giới.',
+  },
+  {
+    title: 'Tinh thần Fair Play & Tác phong văn minh',
+    desc: 'Học sinh được giáo dục tinh thần bắt tay tôn trọng đối thủ trước và sau ván đấu, chấp nhận thất bại như một cơ hội để học hỏi và hoàn thiện.',
   },
 ];
 ---
 
-<Layout title="Đội ngũ Giáo viên & Huấn luyện viên — dsc.edu.vn">
+<Layout title="Hội Đồng Cố Vấn & Ban Chuyên Môn Cờ Vua Học Đường Toàn Quốc">
   <PageHero
-    title="Đội ngũ Giáo viên & Huấn luyện viên DSC"
-    lead="Đội ngũ thầy cô tại Học viện Cờ Vua Dương Sinh là những kỳ thủ đạt đẳng cấp ELO cao (1800–2000), được đào tạo bài bản về chuyên môn và nghiệp vụ sư phạm mầm non, tiểu học."
-    crumbCurrent="Huấn luyện viên"
-    badge="ĐỘI NGŨ CHUYÊN MÔN DSC"
-    chips={['Giàu thành tích thi đấu (ELO 1800–2000)', 'Tốt nghiệp ĐH Sư Phạm & Bách Khoa', 'Tận tâm, kiên nhẫn & yêu trẻ']}
+    title="Hội Đồng Cố Vấn & Ban Chuyên Môn"
+    lead="Tập hợp các đại kiện tướng, kiện tướng quốc gia, chuyên gia sư phạm mầm non và giáo dục thể chất hàng đầu, chung tay kiến tạo nền tảng cờ vua học đường chuẩn mực cho học sinh Việt Nam."
+    crumbCurrent="Ban chuyên môn"
+    badge="HỘI ĐỒNG CHUYÊN GIA TOÀN QUỐC"
+    chips={['Kiện tướng ELO 1800–2000', 'ĐH Sư Phạm & ĐH Bách Khoa', 'Bảo trợ 850+ trường học', 'Khung giáo trình chuẩn quốc gia']}
   />
 
   <!-- Stats Strip -->
@@ -70,35 +85,35 @@ const coaches = [
       <div class="stats-strip">
         <div class="stat-box">
           <div class="stat-val">100%</div>
-          <div class="stat-lbl">Giáo viên đạt chuẩn ELO & Sư phạm</div>
+          <div class="stat-lbl">Giáo trình thẩm định sư phạm</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">63</div>
+          <div class="stat-lbl">Tỉnh thành kết nối chuyên gia</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">850+</div>
+          <div class="stat-lbl">Trường học & CLB được bảo trợ</div>
         </div>
         <div class="stat-box">
           <div class="stat-val">2000</div>
-          <div class="stat-lbl">Mức ELO tối đa của đội ngũ HLV</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-val">2</div>
-          <div class="stat-lbl">Cơ sở đào tạo (Vĩnh Phúc & Kim Liên)</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-val">100%</div>
-          <div class="stat-lbl">Đánh giá tiến độ học viên định kỳ</div>
+          <div class="stat-lbl">Đẳng cấp ELO hội đồng chuyên môn</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Coach Cards Grid -->
+  <!-- Specialist Cards Grid -->
   <section class="sec reveal">
     <div class="wrap">
       <div class="shead">
-        <div class="overline overline--teal">HỒ SƠ GIẢNG VIÊN</div>
-        <h2>Gặp gỡ các Thầy Cô tại Dương Sinh</h2>
-        <p>Những người thầy thắp lửa đam mê trí tuệ và đồng hành cùng sự trưởng thành của con</p>
+        <div class="overline overline--teal">HỘI ĐỒNG CHUYÊN MÔN</div>
+        <h2>Đội ngũ Chuyên gia & Cố vấn Cờ Vua Học Đường</h2>
+        <p>Những người thầy tâm huyết kiến tạo chương trình, bồi dưỡng giáo viên và thắp lửa đam mê trí tuệ cho thế hệ trẻ</p>
       </div>
 
-      <div class="coaches-grid">
-        {coaches.map((c) => (
+      <div class="specialists-grid">
+        {specialists.map((c) => (
           <div class="c-card">
             <div class="c-top">
               <div class="c-avatar-box">
@@ -114,7 +129,7 @@ const coaches = [
             <p class="c-bio">{c.bio}</p>
 
             <div class="c-strengths">
-              <div class="strength-heading">Thế mạnh giảng dạy:</div>
+              <div class="strength-heading">Nhiệm vụ & Chuyên môn phụ trách:</div>
               <ul>
                 {c.strengths.map((s) => (
                   <li>
@@ -130,8 +145,28 @@ const coaches = [
     </div>
   </section>
 
-  <!-- Form thu lead -->
+  <!-- Giá trị chuẩn mực sư phạm -->
   <section class="sec alt reveal">
+    <div class="wrap">
+      <div class="shead">
+        <div class="overline overline--teal">NGUYÊN TẮC CỐT LÕI</div>
+        <h2>Chuẩn Mực Sư Phạm & Tinh Thần Thể Thao Học Đường</h2>
+        <p>Cờ vua học đường hướng đến giáo dục toàn diện — rèn luyện trí tuệ, định hình nhân cách và bản lĩnh sống</p>
+      </div>
+
+      <div class="standards-grid">
+        {standards.map((s) => (
+          <div class="standard-card">
+            <h3>{s.title}</h3>
+            <p>{s.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Form kết nối chuyên gia -->
+  <section class="sec reveal">
     <div class="wrap">
       <ConsultForm id="tu-van" />
     </div>
@@ -148,7 +183,7 @@ const coaches = [
 
   .stat-val {
     font-family: var(--font-cond);
-    font-size: 42px;
+    font-size: 40px;
     font-weight: 900;
     color: var(--navy);
     line-height: 1;
@@ -156,12 +191,12 @@ const coaches = [
   }
 
   .stat-lbl {
-    font-size: 14px;
+    font-size: 13.5px;
     color: var(--muted);
     font-weight: 500;
   }
 
-  .coaches-grid {
+  .specialists-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 32px;
@@ -190,8 +225,8 @@ const coaches = [
   }
 
   .c-avatar-box {
-    width: 80px;
-    height: 80px;
+    width: 76px;
+    height: 76px;
     border-radius: var(--r-lg);
     background: linear-gradient(135deg, var(--navy), var(--navy-ink));
     display: flex;
@@ -201,23 +236,23 @@ const coaches = [
   }
 
   .c-icon {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
   }
 
   .c-role {
     font-family: var(--font-cond);
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 700;
     letter-spacing: 0.08em;
     color: var(--teal-deep);
   }
 
   .c-name {
-    font-size: 22px;
+    font-size: 21px;
     font-weight: 900;
     color: var(--navy);
-    margin: 3px 0 6px;
+    margin: 3px 0 4px;
   }
 
   .c-title-badge {
@@ -225,6 +260,7 @@ const coaches = [
     font-size: 13px;
     color: var(--text-secondary);
     font-weight: 500;
+    line-height: 1.4;
   }
 
   .c-bio {
@@ -244,7 +280,7 @@ const coaches = [
   .strength-heading {
     font-size: 13px;
     font-weight: 700;
-    color: var(--ink);
+    color: var(--navy);
     margin-bottom: 8px;
   }
 
@@ -272,12 +308,40 @@ const coaches = [
     flex-shrink: 0;
   }
 
+  .standards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 24px;
+  }
+
+  .standard-card {
+    background: #fff;
+    padding: 32px 28px;
+    border-radius: var(--r-xl);
+    border: 1px solid var(--line);
+  }
+
+  .standard-card h3 {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 12px;
+  }
+
+  .standard-card p {
+    font-size: 14.5px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin: 0;
+  }
+
   @media (max-width: 900px) {
     .stats-strip {
       grid-template-columns: repeat(2, 1fr);
       gap: 20px;
     }
-    .coaches-grid {
+    .specialists-grid, .standards-grid {
       grid-template-columns: 1fr;
     }
   }

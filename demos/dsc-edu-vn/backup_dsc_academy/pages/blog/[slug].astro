@@ -1,0 +1,228 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import ConsultForm from '../../components/ConsultForm.astro';
+
+const { slug } = Astro.params;
+
+const article = {
+  title: 'Tại sao cờ vua là môn thể thao trí tuệ lý tưởng cho trẻ 4–6 tuổi?',
+  category: 'Phương pháp giáo dục',
+  date: '15/09/2026',
+  author: 'HLV. Dương Sinh',
+  readTime: '4 phút đọc',
+};
+---
+
+<Layout title={`${article.title} — dsc.edu.vn`}>
+  <PageHero
+    title={article.title}
+    lead={`Chuyên mục: ${article.category} · Tác giả: ${article.author} · Ngày đăng: ${article.date}`}
+    crumbCurrent="Chi tiết bài viết"
+    badge={article.category.toUpperCase()}
+  />
+
+  <section class="sec alt">
+    <div class="wrap">
+      <div class="article-container">
+        <!-- Nội dung chính -->
+        <article class="article-content">
+          <p class="lead-paragraph">
+            Nhiều phụ huynh thường nghĩ cờ vua là môn học trừu tượng và khó tiếp cận đối với trẻ nhỏ dưới 6 tuổi. Tuy nhiên, theo các nghiên cứu từ các chuyên gia tâm lý học giáo dục hàng đầu, lứa tuổi 4–6 lại là giai đoạn vàng phát triển não bộ mạnh mẽ nhất.
+          </p>
+
+          <h2>1. Phát triển tư duy không gian và nhận diện quy luật</h2>
+          <p>
+            Bàn cờ vua với 64 ô đen trắng đan xen cùng sự chuyển động đa dạng của các quân cờ (quân Mã nhảy chữ L, quân Tượng đi chéo, quân Xe đi thẳng) là một thế giới mô phỏng không gian trực quan hoàn hảo. Việc quan sát và di chuyển quân cờ giúp trẻ kích hoạt vùng não phải phụ trách hình tượng và không gian.
+          </p>
+
+          <blockquote class="quote-box">
+            "Cờ vua không chỉ dạy trẻ cách chơi một trò chơi, mà dạy trẻ cách suy nghĩ trước khi hành động trong cuộc sống."
+            <cite>— HLV. Dương Sinh (Chủ nhiệm DSC Academy)</cite>
+          </blockquote>
+
+          <h2>2. Rèn luyện sự kiên nhẫn và khả năng tập trung sâu</h2>
+          <p>
+            Trong kỷ nguyên của màn hình điện thoại và video ngắn, khả năng tập trung của trẻ em ngày càng bị phân mảnh. Một ván cờ vua đòi hỏi trẻ phải ngồi yên, tập trung theo dõi từng nước đi của đối thủ và suy nghĩ phương án đáp trả.
+          </p>
+          <p>
+            Tại Học viện Cờ Vua Dương Sinh, phương pháp <em>"Cờ vua Kể chuyện"</em> biến mỗi quân cờ thành một người bạn đồng hành, giúp trẻ duy trì sự hào hứng và tập trung tự nhiên suốt 60–90 phút học tập.
+          </p>
+
+          <h2>3. Học cách quản lý cảm xúc và chấp nhận thử thách</h2>
+          <p>
+            Không ai có thể thắng mọi ván cờ. Khi thua một ván đấu, trẻ học được cách nhìn nhận lại sai lầm của mình, không đổ lỗi cho ngoại cảnh và nỗ lực hơn trong ván tiếp theo. Đây là phẩm chất quan trọng bậc nhất giúp hình thành bản lĩnh kiên cường cho con khi trưởng thành.
+          </p>
+
+          <div class="article-author-card">
+            <div class="author-avatar">
+              <img src="/brand/pieces/wk.svg" alt="Tác giả" />
+            </div>
+            <div>
+              <div class="author-role">TÁC GIẢ BÀI VIẾT</div>
+              <div class="author-name">HLV. Dương Sinh</div>
+              <p class="author-desc">
+                Chủ nhiệm Học viện Cờ Vua Dương Sinh (DSC), người sáng lập chương trình đào tạo cờ vua 6 cấp độ chuẩn hóa.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Sidebar form đăng ký -->
+        <aside class="article-sidebar">
+          <div class="sidebar-box">
+            <h3>Đăng ký cho bé học thử</h3>
+            <p>Kiểm tra trình độ và trải nghiệm buổi học cờ vua đầu tiên hoàn toàn miễn phí tại cơ sở DSC gần nhất.</p>
+            <a href="/lien-he" class="btn btn--primary" style="width: 100%; margin-top: 14px;">
+              Đăng ký ngay
+            </a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .article-container {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 48px;
+  }
+
+  .article-content {
+    background: #fff;
+    border-radius: var(--r-xl);
+    padding: 44px;
+    border: 1px solid var(--line);
+    box-shadow: var(--sh-sm);
+  }
+
+  .lead-paragraph {
+    font-size: 18.5px;
+    line-height: 1.7;
+    color: var(--navy);
+    font-weight: 500;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .article-content h2 {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--navy);
+    margin: 32px 0 14px;
+  }
+
+  .article-content p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin-bottom: 18px;
+  }
+
+  .quote-box {
+    margin: 28px 0;
+    padding: 24px 28px;
+    background: var(--navy-soft);
+    border-left: 4px solid var(--navy);
+    border-radius: 0 var(--r-md) var(--r-md) 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.6;
+  }
+
+  .quote-box cite {
+    display: block;
+    margin-top: 10px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--teal-deep);
+    font-style: normal;
+  }
+
+  .article-author-card {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    background: var(--bg);
+    border-radius: var(--r-lg);
+    padding: 24px;
+    margin-top: 40px;
+    border: 1px solid var(--line);
+  }
+
+  .author-avatar {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--navy), var(--navy-ink));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .author-avatar img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .author-role {
+    font-family: var(--font-cond);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--teal-deep);
+  }
+
+  .author-name {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--navy);
+    margin: 2px 0 4px;
+  }
+
+  .author-desc {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--muted);
+    margin: 0 !important;
+  }
+
+  /* Sidebar */
+  .sidebar-box {
+    position: sticky;
+    top: 100px;
+    background: #fff;
+    border-radius: var(--r-xl);
+    padding: 32px 24px;
+    border: 1px solid var(--line);
+    box-shadow: var(--sh-sm);
+    text-align: center;
+  }
+
+  .sidebar-box h3 {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--navy);
+    margin-bottom: 10px;
+  }
+
+  .sidebar-box p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  @media (max-width: 900px) {
+    .article-container {
+      grid-template-columns: 1fr;
+    }
+    .article-content {
+      padding: 28px 20px;
+    }
+  }
+</style>

@@ -7,11 +7,12 @@ const { currentPath = '/' } = Astro.props;
 
 const navItems = [
   { href: '/', label: 'Trang chủ' },
-  { href: '/dao-tao', label: 'Đào tạo' },
-  { href: '/lich-khai-giang', label: 'Lịch khai giảng' },
-  { href: '/huan-luyen-vien', label: 'Huấn luyện viên' },
-  { href: '/co-so', label: 'Cơ sở' },
-  { href: '/blog', label: 'Tin tức' },
+  { href: '/dao-tao', label: 'Khung giáo trình' },
+  { href: '/courses', label: 'Kho học liệu' },
+  { href: '/plans', label: 'Thẻ Thư Viện' },
+  { href: '/co-so', label: 'CLB Trường học' },
+  { href: '/huan-luyen-vien', label: 'Ban chuyên môn' },
+  { href: '/blog', label: 'Tài liệu & Nghiên cứu' },
   { href: '/lien-he', label: 'Liên hệ' },
 ];
 ---
@@ -19,8 +20,8 @@ const navItems = [
 <header class="hdr" id="site-header">
   <div class="wrap">
     <div class="hdr-in">
-      <a href="/" class="hdr-brand" aria-label="Dương Sinh Chess Academy">
-        <img src="/brand/logo-horizontal-navy.svg" alt="Dương Sinh Chess Academy - DSC" class="hdr-logo" />
+      <a href="/" class="hdr-brand" aria-label="Cờ Vua Học Đường">
+        <img src="/brand/logo-horizontal-navy.svg" alt="Cờ Vua Học Đường - covuahocduong.com" class="hdr-logo" />
       </a>
 
       <nav class="nav" id="main-nav">
@@ -32,11 +33,11 @@ const navItems = [
             </a>
           );
         })}
-        <a href="/#tu-van" class="btn btn--primary btn--sm navcta">Đăng ký tư vấn</a>
+        <a href="/#ket-noi" class="btn btn--primary btn--sm navcta">Kết nối học đường</a>
       </nav>
 
       <div class="hdr-cta">
-        <a href="/#tu-van" class="btn btn--primary btn--sm">Đăng ký học thử</a>
+        <a href="/#ket-noi" class="btn btn--primary btn--sm">Kết nối học đường</a>
         <button class="burger" id="burger-btn" aria-label="Mở danh mục điều hướng">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="3" y1="6" x2="21" y2="6"></line>

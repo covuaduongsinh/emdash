@@ -1,0 +1,180 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import ConsultForm from '../components/ConsultForm.astro';
+---
+
+<Layout title="Liên hệ & Đăng ký Tuyển sinh — dsc.edu.vn">
+  <PageHero
+    title="Liên Hệ & Tuyển Sinh DSC"
+    lead="Đội ngũ chuyên viên tư vấn học vụ Học viện Cờ Vua Dương Sinh sẵn sàng giải đáp mọi thắc mắc và hỗ trợ phụ huynh sắp xếp lịch học thử cho con."
+    crumbCurrent="Liên hệ"
+    badge="HỖ TRỢ PHỤ HUYNH 24/7"
+  />
+
+  <section class="sec alt reveal">
+    <div class="wrap">
+      <div class="contact-grid">
+        <!-- Cột trái: Thông tin học viện -->
+        <div class="contact-info-card">
+          <span class="c-tag">TRỤ SỞ & HỖ TRỢ</span>
+          <h2>Thông tin Học viện Cờ Vua Dương Sinh</h2>
+          <p class="c-lead">Quý phụ huynh có thể liên hệ trực tiếp qua hotline hoặc ghé thăm các cơ sở đào tạo của chúng tôi tại Hà Nội.</p>
+
+          <div class="contact-items">
+            <div class="contact-item">
+              <div class="c-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              </div>
+              <div>
+                <div class="item-lbl">Cơ sở 1 (Ba Đình)</div>
+                <div class="item-val">Số 16 phố Vĩnh Phúc, Q. Ba Đình, Hà Nội</div>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="c-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              </div>
+              <div>
+                <div class="item-lbl">Cơ sở 2 (Đống Đa)</div>
+                <div class="item-val">Số 22, ngõ 11 Lương Định Của, Q. Đống Đa, Hà Nội</div>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="c-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+              </div>
+              <div>
+                <div class="item-lbl">Hotline tư vấn tuyển sinh (24/7)</div>
+                <div class="item-val"><a href="tel:0983119819">0983.119.819</a></div>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="c-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              </div>
+              <div>
+                <div class="item-lbl">Hòm thư điện tử</div>
+                <div class="item-val"><a href="mailto:covuaduongsinh@gmail.com">covuaduongsinh@gmail.com</a></div>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="c-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+              </div>
+              <div>
+                <div class="item-lbl">Fanpage Facebook chính thức</div>
+                <div class="item-val"><a href="https://facebook.com/covuaduongsinh" target="_blank" rel="noopener noreferrer">facebook.com/covuaduongsinh</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cột phải: Form tư vấn -->
+        <div class="contact-form-card">
+          <ConsultForm id="lien-he-form" hasNote={true} />
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: 40px;
+    align-items: start;
+  }
+
+  .contact-info-card {
+    background: #fff;
+    border-radius: var(--r-2xl);
+    padding: 44px;
+    border: 1px solid var(--line);
+    box-shadow: var(--sh-sm);
+  }
+
+  .c-tag {
+    display: inline-block;
+    background: var(--navy-soft);
+    color: var(--navy);
+    font-family: var(--font-cond);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 3px 10px;
+    border-radius: var(--r-pill);
+    margin-bottom: 12px;
+  }
+
+  .contact-info-card h2 {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--navy);
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+
+  .c-lead {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+
+  .contact-items {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .contact-item {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .c-icon-box {
+    width: 46px;
+    height: 46px;
+    border-radius: var(--r-md);
+    background: var(--navy-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .c-icon-box svg {
+    width: 22px;
+    height: 22px;
+    color: var(--navy);
+  }
+
+  .item-lbl {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 3px;
+  }
+
+  .item-val {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .item-val a:hover {
+    color: var(--teal-deep);
+  }
+
+  @media (max-width: 900px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

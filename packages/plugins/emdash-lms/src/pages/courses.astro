@@ -1,0 +1,116 @@
+---
+/**
+ * /courses - Course listing page
+ */
+import { getEmDashCollection } from "emdash";
+import Layout from "virtual:emdash-lms/layout";
+import { basePath } from "virtual:emdash-lms/config";
+
+const { entries: courses, cacheHint } = await getEmDashCollection("courses");
+Astro.response.headers.set("Cache-Control", cacheHint ?? "public, max-age=60");
+
+const publishedCourses = courses
+  .filter((c) => c.data.status === "published" || c.data.status === "publish")
+  .toSorted((a, b) => (b.data.featured ? 1 : 0) - (a.data.featured ? 1 : 0));
+
+const featuredCourses = publishedCourses.filter((c) => c.data.featured).slice(0, 3);
+const allCourses = publishedCourses;
+
+// SVG placeholder for courses without images
+const placeholderImage = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="225" viewBox="0 0 400 225"><rect fill="#e5e7eb" width="400" height="225"/><g fill="#9ca3af"><rect x="175" y="85" width="50" height="35" rx="3"/><circle cx="200" cy="70" r="12"/><path d="M165 130h70M175 145h50" stroke="#9ca3af" stroke-width="2" fill="none"/></g></svg>`)}`;
+
+function formatDuration(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hours === 0) return `${mins} phút`;
+  if (mins === 0) return `${hours} giờ`;
+  return `${hours} giờ ${mins} phút`;
+}
+
+const difficultyLabels: Record<string, string> = {
+  beginner: "Nhập môn & Vỡ lòng",
+  intermediate: "Căn bản & Trung cấp",
+  advanced: "Nâng cao & Chiến lược",
+};
+---
+
+<Layout title="Kho Học Liệu & Bài Giảng Trực Tuyến — covuahocduong.com" description="Khám phá kho bài giảng và tài liệu cờ vua học đường chuẩn hóa">
+  <div class="lms-courses">
+    <header class="lms-hero">
+      <div class="lms-container">
+        <h1>Kho Học Liệu & Bài Giảng Trực Tuyến</h1>
+        <p>Hệ thống bài giảng video, sơ đồ tư duy và thế cờ tương tác chuẩn hóa sư phạm</p>
+      </div>
+    </header>
+
+    {featuredCourses.length > 0 && (
+      <section class="lms-section lms-featured">
+        <div class="lms-container">
+          <h2 class="lms-section-title">Chuyên Đề Trọng Tâm</h2>
+          <div class="lms-featured-grid">
+            {featuredCourses.map((course) => (
+              <a
+                href={`${basePath}/course/${course.data.slug || course.id}`}
+                class="lms-course-card lms-course-card--featured"
+              >
+                <img
+                  src={course.data.featured_image || placeholderImage}
+                  alt={course.data.title}
+                  loading="lazy"
+                />
+                <div class="lms-course-card-body">
+                  <h3>{course.data.title}</h3>
+                  {course.data.excerpt && <p>{course.data.excerpt}</p>}
+                  <div class="lms-course-meta">
+                    {course.data.difficulty && (
+                      <span class="lms-difficulty-badge">{difficultyLabels[course.data.difficulty] || course.data.difficulty}</span>
+                    )}
+                    {course.data.duration_hours && (
+                      <span class="lms-duration">{formatDuration(course.data.duration_hours * 60)}</span>
+                    )}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <section class="lms-section">
+      <div class="lms-container">
+        <h2 class="lms-section-title">Tất Cả Chuyên Đề Bài Giảng</h2>
+        {allCourses.length === 0 ? (
+          <p class="lms-empty">Chưa có bài giảng nào được phát hành.</p>
+        ) : (
+          <div class="lms-courses-grid">
+            {allCourses.map((course) => (
+              <a
+                href={`${basePath}/course/${course.data.slug || course.id}`}
+                class="lms-course-card"
+              >
+                <img
+                  src={course.data.featured_image || placeholderImage}
+                  alt={course.data.title}
+                  loading="lazy"
+                />
+                <div class="lms-course-card-body">
+                  <h3>{course.data.title}</h3>
+                  {course.data.excerpt && <p>{course.data.excerpt}</p>}
+                  <div class="lms-course-meta">
+                    {course.data.difficulty && (
+                      <span class="lms-difficulty-badge">{difficultyLabels[course.data.difficulty] || course.data.difficulty}</span>
+                    )}
+                    {course.data.duration_hours && (
+                      <span class="lms-duration">{formatDuration(course.data.duration_hours * 60)}</span>
+                    )}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  </div>
+</Layout>

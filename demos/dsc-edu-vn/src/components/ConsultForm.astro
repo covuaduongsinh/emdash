@@ -4,17 +4,17 @@ interface Props {
   hasNote?: boolean;
 }
 
-const { id = 'tu-van', hasNote = false } = Astro.props;
+const { id = 'ket-noi', hasNote = false } = Astro.props;
 ---
 
 <div class="cform" id={id}>
   <!-- Cột trái Navy -->
   <div class="cform-l">
     <div class="pat" aria-hidden="true"></div>
-    <div class="overline overline--light" style="margin-bottom: 12px;">TƯ VẤN & TUYỂN SINH</div>
-    <h2>Đăng ký học thử & Đánh giá năng lực miễn phí</h2>
+    <div class="overline overline--light" style="margin-bottom: 12px;">ĐỒNG HÀNH CÙNG HỌC ĐƯỜNG</div>
+    <h2>Kết nối phong trào & Nhận tài liệu Cờ Vua Học Đường</h2>
     <p>
-      Hãy để đội ngũ giáo viên giàu chuyên môn của DSC kiểm tra trình độ cờ vua và tư vấn lộ trình học tối ưu nhất cho sự phát triển tư duy của con bạn.
+      Dành cho Ban giám hiệu, Giáo viên, Phụ huynh và Câu lạc bộ trên cả nước quan tâm đến việc phát triển tư duy cờ vua cho học sinh.
     </p>
 
     <div class="perks">
@@ -22,19 +22,19 @@ const { id = 'tu-van', hasNote = false } = Astro.props;
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
-        <span><strong>1 buổi học thử trực tiếp</strong> cùng giáo viên chuyên trách</span>
+        <span><strong>Bộ khung giáo trình & bài tập</strong> cờ vua học đường chuẩn hóa</span>
       </div>
       <div class="perk">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
-        <span>Báo cáo <strong>đánh giá chỉ số tư duy & khả năng tập trung</strong></span>
+        <span>Hướng dẫn <strong>thành lập & vận hành CLB cờ vua</strong> tại trường</span>
       </div>
       <div class="perk">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
-        <span>Lộ trình cá nhân hóa theo <strong>6 cấp độ chuẩn hóa</strong></span>
+        <span>Hỗ trợ <strong>chuyên môn & điều lệ</strong> tổ chức giải đấu học sinh</span>
       </div>
     </div>
 
@@ -45,8 +45,8 @@ const { id = 'tu-van', hasNote = false } = Astro.props;
   <div class="cform-r">
     <form class="consult-form" id="consult-form-element">
       <div class="fld" id="fld-name">
-        <label for="consult-name">Họ và tên phụ huynh / học viên *</label>
-        <input type="text" id="consult-name" name="name" placeholder="Ví dụ: Nguyễn Văn A" required minlength="2" />
+        <label for="consult-name">Họ và tên của bạn *</label>
+        <input type="text" id="consult-name" name="name" placeholder="Ví dụ: Thầy Nguyễn Văn A / Phụ huynh Trần Thị B" required minlength="2" />
         <div class="emsg">Vui lòng nhập họ tên hợp lệ (ít nhất 2 ký tự)</div>
       </div>
 
@@ -58,35 +58,50 @@ const { id = 'tu-van', hasNote = false } = Astro.props;
             <div class="emsg">Số điện thoại từ 9-11 số</div>
           </div>
           <div>
-            <label for="consult-age">Độ tuổi của con</label>
-            <select id="consult-age" name="age">
-              <option value="4-6">Mầm non (4–6 tuổi)</option>
-              <option value="6-8" selected>Tiểu học (6–8 tuổi)</option>
-              <option value="9-12">Tiểu học (9–12 tuổi)</option>
-              <option value="12+">Trung học (trên 12 tuổi)</option>
+            <label for="consult-role">Bạn là?</label>
+            <select id="consult-role" name="role">
+              <option value="school">Ban giám hiệu / Nhà trường</option>
+              <option value="teacher" selected>Giáo viên / HLV Cờ vua</option>
+              <option value="parent">Phụ huynh học sinh</option>
+              <option value="club">Đại diện CLB Cờ vua</option>
             </select>
           </div>
         </div>
       </div>
 
       <div class="fld">
-        <label for="consult-branch">Cơ sở đăng ký học</label>
-        <select id="consult-branch" name="branch">
-          <option value="vinh_phuc">Cơ sở 1: Số 16 Vĩnh Phúc, Ba Đình, Hà Nội</option>
-          <option value="kim_lien">Cơ sở 2: Số 22/11 Lương Định Của, Đống Đa, Hà Nội</option>
-          <option value="online">Lớp học Cờ vua Trực tuyến (Online Toàn quốc)</option>
-        </select>
+        <div class="row2">
+          <div>
+            <label for="consult-region">Tỉnh / Thành phố</label>
+            <select id="consult-region" name="region">
+              <option value="hanoi" selected>Hà Nội</option>
+              <option value="hcm">TP. Hồ Chí Minh</option>
+              <option value="danang">Đà Nẵng / Miền Trung</option>
+              <option value="haiphong">Hải Phòng / Quảng Ninh</option>
+              <option value="other">Tỉnh / Thành khác</option>
+            </select>
+          </div>
+          <div>
+            <label for="consult-demand">Nhu cầu kết nối</label>
+            <select id="consult-demand" name="demand">
+              <option value="curriculum" selected>Nhận tài liệu giáo trình</option>
+              <option value="open_club">Tư vấn mở CLB tại trường</option>
+              <option value="tournament">Hỗ trợ tổ chức giải đấu</option>
+              <option value="student_consult">Tư vấn học cờ cho con</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       {hasNote && (
         <div class="fld">
-          <label for="consult-note">Ghi chú thêm về học viên (nếu có)</label>
-          <textarea id="consult-note" name="note" placeholder="Ví dụ: Bé đã biết đi quân cơ bản, muốn học ca tối thứ 6..."></textarea>
+          <label for="consult-note">Ghi chú thêm (nếu có)</label>
+          <textarea id="consult-note" name="note" placeholder="Ví dụ: Trường chúng tôi có 500 học sinh, muốn tìm hiểu giáo trình..."></textarea>
         </div>
       )}
 
       <button type="submit" class="btn btn--primary btn--lg" style="width: 100%; margin-top: 6px;">
-        <span>Gửi đăng ký tư vấn</span>
+        <span>Gửi thông tin kết nối</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <line x1="5" y1="12" x2="19" y2="12"></line>
           <polyline points="12 5 19 12 12 19"></polyline>
@@ -94,7 +109,7 @@ const { id = 'tu-van', hasNote = false } = Astro.props;
       </button>
 
       <p class="privacy">
-        🔒 Cam kết bảo mật thông tin. DSC liên hệ lại trong vòng 2 giờ làm việc.
+        🔒 Cam kết bảo mật thông tin. Ban điều phối Cờ Vua Học Đường sẽ liên hệ hỗ trợ bạn sớm nhất.
       </p>
     </form>
 
@@ -104,12 +119,12 @@ const { id = 'tu-van', hasNote = false } = Astro.props;
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
       </div>
-      <h3>Đã gửi đăng ký thành công!</h3>
+      <h3>Đã gửi thông tin kết nối thành công!</h3>
       <p id="success-msg">
-        Cảm ơn Quý phụ huynh! Đội ngũ tư vấn học vụ Dương Sinh Chess Academy sẽ liên hệ sớm nhất để xác nhận lịch học thử cho bé.
+        Cảm ơn bạn! Ban điều phối phong trào Cờ Vua Học Đường Việt Nam sẽ liên hệ và gửi tài liệu hỗ trợ qua thông tin liên lạc của bạn.
       </p>
       <button type="button" class="btn btn--ghost btn--sm" id="btn-reset-form">
-        Gửi đăng ký khác
+        Gửi yêu cầu khác
       </button>
     </div>
   </div>

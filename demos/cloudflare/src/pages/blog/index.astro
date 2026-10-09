@@ -1,63 +1,77 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import PageHero from '../../components/PageHero.astro';
+import { getEmDashCollection, getTermsForEntries } from "emdash";
+import Layout from "../../layouts/Layout.astro";
+import PageHero from "../../components/PageHero.astro";
+import { getReadingTime } from "../../utils/reading-time";
 
-const posts = [
-  {
-    slug: 'loi-ich-co-vua-voi-tre-mam-non',
-    title: 'Tại sao cờ vua là môn thể thao trí tuệ lý tưởng cho trẻ 4–6 tuổi?',
-    category: 'Phương pháp giáo dục',
-    date: '15/09/2026',
-    readTime: '4 phút đọc',
-    excerpt: 'Nhiều phụ huynh lo ngại con 4 tuổi còn quá nhỏ để học cờ vua. Tuy nhiên, các nghiên cứu tâm lý học cho thấy đây là độ tuổi vàng để khơi dậy tư duy logic...',
-    icon: '/brand/pieces/wn.svg',
-  },
-  {
-    slug: '5-sai-lam-khai-cuoc-pho-bien',
-    title: '5 sai lầm khai cuộc phổ biến nhất của các kỳ thủ nhí và cách khắc phục',
-    category: 'Kiến thức chuyên môn',
-    date: '10/09/2026',
-    readTime: '6 phút đọc',
-    excerpt: 'Đưa Hậu ra quá sớm, quên không nhập thành hay đi một quân quá nhiều lần trong khai cuộc là những lỗi căn bản khiến ván cờ nhanh chóng rơi vào bế tắc...',
-    icon: '/brand/pieces/wb.svg',
-  },
-  {
-    slug: 'ren-luyen-tinh-kien-nhan-cho-con',
-    title: 'Học cách chấp nhận thất bại và rèn luyện bản lĩnh qua từng ván cờ',
-    category: 'Góc phụ huynh',
-    date: '02/09/2026',
-    readTime: '5 phút đọc',
-    excerpt: 'Trên bàn cờ vua, mọi nước đi sai lầm đều có cái giá phải trả. Nhưng chính những lần thua ván cờ sẽ dạy cho trẻ bài học sâu sắc về sự kiên cường và tinh thần trách nhiệm...',
-    icon: '/brand/pieces/wk.svg',
-  },
-  {
-    slug: 'giai-dau-mua-thu-dsc-2026',
-    title: 'Tổng kết Giải Cờ Vua Mùa Thu DSC Open 2026: Tỏa sáng tài năng trẻ',
-    category: 'Hoạt động & Giải đấu',
-    date: '28/08/2026',
-    readTime: '3 phút đọc',
-    excerpt: 'Hơn 200 kỳ thủ nhí từ các cơ sở của DSC đã cùng nhau tranh tài kịch tính qua 7 ván đấu Thụy Sĩ, cống hiến những nước đi bất ngờ và đầy cảm xúc...',
-    icon: '/brand/pieces/wq.svg',
-  },
-  {
-    slug: 'bi-quyet-giai-the-co-nhanh',
-    title: 'Bí quyết giúp trẻ rèn luyện kỹ năng phát hiện đòn chiến thuật nhanh',
-    category: 'Kiến thức chuyên môn',
-    date: '18/08/2026',
-    readTime: '5 phút đọc',
-    excerpt: 'Kỹ năng giải bài tập thế cờ hàng ngày giúp não bộ hình thành các mẫu hình chiến thuật (pattern recognition), từ đó phản xạ nhanh nhạy trong thực chiến...',
-    icon: '/brand/pieces/wr.svg',
-  },
-  {
-    slug: 'dong-hanh-cung-con-hoc-co',
-    title: 'Cẩm nang dành cho phụ huynh: Đồng hành cùng con học cờ vua tại nhà',
-    category: 'Góc phụ huynh',
-    date: '10/08/2026',
-    readTime: '4 phút đọc',
-    excerpt: 'Ba mẹ không biết chơi cờ vẫn có thể đồng hành cùng con bằng cách lắng nghe con chia sẻ về ván cờ, tạo không gian giải đố và động viên con đúng cách...',
-    icon: '/brand/pieces/wp.svg',
-  },
+const { entries: emdashPosts, cacheHint } = await getEmDashCollection("posts", {
+  orderBy: { published_at: "desc" },
+});
+
+if (cacheHint) {
+  Astro.cache?.set(cacheHint);
+}
+
+// Batched query for categories/tags
+const termsByEntry = await getTermsForEntries(
+  "posts",
+  emdashPosts.map((p) => p.data.id),
+  "category"
+);
+
+function getImageUrl(img: unknown): string | undefined {
+  if (!img || typeof img !== "object") return undefined;
+  const image = img as Record<string, unknown>;
+  if (typeof image.src === "string" && image.src) {
+    return image.src;
+  }
+  const meta = image.meta as Record<string, unknown> | undefined;
+  const storageKey =
+    (typeof meta?.storageKey === "string" ? meta.storageKey : undefined) ||
+    (typeof image.id === "string" ? image.id : undefined);
+  if (storageKey) {
+    return `/_emdash/api/media/file/${storageKey}`;
+  }
+  return undefined;
+}
+
+const formatDate = (d: Date | string | undefined) => {
+  if (!d) return "";
+  const dateObj = typeof d === "string" ? new Date(d) : d;
+  return dateObj.toLocaleDateString("vi-VN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+};
+
+const pieceIcons = [
+  "/brand/pieces/wn.svg",
+  "/brand/pieces/wb.svg",
+  "/brand/pieces/wk.svg",
+  "/brand/pieces/wq.svg",
+  "/brand/pieces/wr.svg",
+  "/brand/pieces/wp.svg",
 ];
+
+const posts = emdashPosts.map((p, idx) => {
+  const cat = termsByEntry.get(p.data.id)?.[0]?.label || "Tin tức & Kiến thức";
+  const readMins = getReadingTime(p.data.content);
+  const featImg = getImageUrl(p.data.featured_image);
+  return {
+    slug: p.data.slug || p.id,
+    title: p.data.title || "Bài viết",
+    category: cat,
+    date: formatDate(p.data.publishedAt || p.data.createdAt),
+    readTime: `${readMins} phút đọc`,
+    excerpt: p.data.excerpt || (typeof p.data.title === "string" ? p.data.title : ""),
+    image: featImg,
+    icon: pieceIcons[idx % pieceIcons.length],
+  };
+});
+
+// Categories list for filter buttons
+const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
 ---
 
 <Layout title="Tin tức & Học thuật Cờ Vua — dsc.edu.vn">
@@ -70,45 +84,75 @@ const posts = [
 
   <section class="sec alt reveal">
     <div class="wrap">
-      <!-- Categories Filter -->
-      <div class="blog-filters">
-        <button class="filter-btn active">Tất cả bài viết</button>
-        <button class="filter-btn">Phương pháp giáo dục</button>
-        <button class="filter-btn">Kiến thức chuyên môn</button>
-        <button class="filter-btn">Góc phụ huynh</button>
-        <button class="filter-btn">Hoạt động & Giải đấu</button>
-      </div>
+      {categories.length > 1 && (
+        <div class="blog-filters">
+          <button class="filter-btn active" data-cat="all">Tất cả bài viết ({posts.length})</button>
+          {categories.map((cat) => (
+            <button class="filter-btn" data-cat={cat}>{cat}</button>
+          ))}
+        </div>
+      )}
 
-      <!-- Posts Grid -->
-      <div class="posts-grid">
-        {posts.map((p) => (
-          <article class="post-card">
-            <div class="post-thumb">
-              <img src={p.icon} alt={p.title} class="post-icon" />
-              <span class="post-cat-tag">{p.category}</span>
-            </div>
-            <div class="post-body">
-              <div class="post-meta">
-                <span>{p.date}</span>
-                <span class="meta-dot"></span>
-                <span>{p.readTime}</span>
+      {posts.length === 0 ? (
+        <div class="empty-state">
+          <p>Chưa có bài viết nào được xuất bản.</p>
+        </div>
+      ) : (
+        <div class="posts-grid">
+          {posts.map((p) => (
+            <article class="post-card" data-category={p.category}>
+              <div class="post-thumb">
+                {p.image ? (
+                  <img src={p.image} alt={p.title} class="post-cover-img" />
+                ) : (
+                  <img src={p.icon} alt={p.title} class="post-icon" />
+                )}
+                <span class="post-cat-tag">{p.category}</span>
               </div>
-              <h3 class="post-title">
-                <a href={`/blog/${p.slug}`}>{p.title}</a>
-              </h3>
-              <p class="post-excerpt">{p.excerpt}</p>
-              <div class="post-foot">
-                <a href={`/blog/${p.slug}`} class="read-more">
-                  Đọc tiếp bài viết →
-                </a>
+              <div class="post-body">
+                <div class="post-meta">
+                  {p.date && <span>{p.date}</span>}
+                  {p.date && <span class="meta-dot"></span>}
+                  <span>{p.readTime}</span>
+                </div>
+                <h3 class="post-title">
+                  <a href={`/blog/${p.slug}`}>{p.title}</a>
+                </h3>
+                {p.excerpt && <p class="post-excerpt">{p.excerpt}</p>}
+                <div class="post-foot">
+                  <a href={`/blog/${p.slug}`} class="read-more">
+                    Đọc tiếp bài viết →
+                  </a>
+                </div>
               </div>
-            </div>
-          </article>
-        ))}
-      </div>
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   </section>
 </Layout>
+
+<script>
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.post-card');
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.getAttribute('data-cat');
+
+      cards.forEach((card) => {
+        if (cat === 'all' || card.getAttribute('data-category') === cat) {
+          (card as HTMLElement).style.display = 'flex';
+        } else {
+          (card as HTMLElement).style.display = 'none';
+        }
+      });
+    });
+  });
+</script>
 
 <style>
   .blog-filters {
@@ -152,43 +196,60 @@ const posts = [
   .post-card {
     background: #fff;
     border-radius: var(--r-xl);
-    overflow: hidden;
     border: 1px solid var(--line);
-    box-shadow: var(--sh-sm);
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    transition: transform var(--dur);
+    box-shadow: var(--sh-sm);
+    transition: all var(--dur) var(--ease);
   }
 
   .post-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--sh-md);
+    transform: translateY(-5px);
+    box-shadow: var(--sh-hover);
+    border-color: var(--teal);
   }
 
   .post-thumb {
-    height: 160px;
-    background: linear-gradient(135deg, var(--navy), var(--navy-ink));
+    position: relative;
+    height: 180px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-ink) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
+    overflow: hidden;
+  }
+
+  .post-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .post-icon {
-    width: 72px;
-    height: 72px;
+    width: 80px;
+    height: 80px;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
+    transition: transform var(--dur) var(--ease);
+  }
+
+  .post-card:hover .post-icon {
+    transform: scale(1.1) rotate(5deg);
   }
 
   .post-cat-tag {
     position: absolute;
     bottom: 12px;
     left: 14px;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(8px);
-    color: #fff;
-    font-size: 11.5px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(4px);
+    color: var(--navy);
+    font-family: var(--font-cond);
+    font-size: 11px;
     font-weight: 700;
-    padding: 3px 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 10px;
     border-radius: var(--r-pill);
   }
 
@@ -203,55 +264,84 @@ const posts = [
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 12.5px;
-    color: var(--muted);
+    font-size: 13px;
+    color: var(--text-muted);
     margin-bottom: 10px;
+    font-weight: 500;
   }
 
   .meta-dot {
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background: var(--line);
+    background: var(--line-soft);
   }
 
   .post-title {
     font-size: 18px;
-    font-weight: 900;
-    line-height: 1.35;
+    font-weight: 800;
+    line-height: 1.45;
+    margin-bottom: 10px;
+  }
+
+  .post-title a {
     color: var(--navy);
-    margin-bottom: 12px;
+    text-decoration: none;
+    transition: color var(--dur);
   }
 
   .post-title a:hover {
-    color: var(--teal-deep);
+    color: var(--teal);
   }
 
   .post-excerpt {
-    font-size: 14px;
+    font-size: 14.5px;
     line-height: 1.6;
-    color: var(--muted);
+    color: var(--text-secondary);
     margin-bottom: 20px;
     flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .post-foot {
     border-top: 1px solid var(--line-soft);
     padding-top: 14px;
+    margin-top: auto;
   }
 
   .read-more {
-    font-size: 13.5px;
+    font-size: 14px;
     font-weight: 700;
-    color: var(--navy);
-    transition: color var(--dur);
+    color: var(--teal-deep);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: gap var(--dur);
   }
 
   .read-more:hover {
-    color: var(--teal-deep);
+    gap: 8px;
+    color: var(--navy);
   }
 
-  @media (max-width: 900px) {
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 16px;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 960px) {
+    .posts-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
     .posts-grid {
       grid-template-columns: 1fr;
     }

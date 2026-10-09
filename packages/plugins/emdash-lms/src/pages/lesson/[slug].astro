@@ -1,0 +1,218 @@
+---
+/**
+ * /lesson/{slug} - Lesson viewer page
+ * Layout: Fixed left sidebar (curriculum) | Scrollable content with TOC
+ */
+import { getEmDashCollection } from "emdash";
+import { PortableText } from "emdash/ui";
+import Layout from "virtual:emdash-lms/layout";
+import { basePath } from "virtual:emdash-lms/config";
+
+const { slug } = Astro.params;
+if (!slug) return Astro.redirect(`${basePath}/courses`);
+
+const { entries: lessons } = await getEmDashCollection("lessons");
+const lesson = lessons.find((l) => l.data.slug === slug || l.id === slug);
+if (!lesson) return Astro.redirect(`${basePath}/courses`);
+
+const { entries: courses } = await getEmDashCollection("courses");
+const { entries: modules } = await getEmDashCollection("modules");
+
+const module = modules.find((m) => m.id === lesson.data.module_id || m.data.id === lesson.data.module_id);
+const course = module
+  ? courses.find((c) => c.id === module.data.course_id || c.data.id === module.data.course_id)
+  : courses.find((c) => c.id === lesson.data.course_id || c.data.id === lesson.data.course_id);
+
+const courseSlug = course ? (course.data.slug || course.id) : null;
+const courseId = course ? (course.data.id || course.id) : null;
+
+// Get all modules and lessons for sidebar navigation
+const courseModules = course
+  ? modules
+      .filter((m) => m.data.course_id === courseId || m.data.course_id === course.id)
+      .toSorted((a, b) => (a.data.sort_order ?? 0) - (b.data.sort_order ?? 0))
+      .map((mod) => ({
+        ...mod,
+        lessons: lessons
+          .filter((l) => l.data.module_id === mod.id || l.data.module_id === mod.data.id)
+          .toSorted((a, b) => (a.data.sort_order ?? 0) - (b.data.sort_order ?? 0)),
+      }))
+  : [];
+
+// Get sibling lessons for navigation
+const siblingLessons = lessons
+  .filter((l) => l.data.module_id === lesson.data.module_id)
+  .toSorted((a, b) => (a.data.sort_order ?? 0) - (b.data.sort_order ?? 0));
+
+const currentIndex = siblingLessons.findIndex((l) => l.id === lesson.id);
+const prevLesson = currentIndex > 0 ? siblingLessons[currentIndex - 1] : null;
+const nextLesson = currentIndex < siblingLessons.length - 1 ? siblingLessons[currentIndex + 1] : null;
+
+function formatDuration(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hours === 0) return `${mins} phút`;
+  if (mins === 0) return `${hours} giờ`;
+  return `${hours} giờ ${mins} phút`;
+}
+---
+
+<Layout title={`${lesson.data.title} — covuahocduong.com`} description={lesson.data.excerpt}>
+  <div class="lms-lesson-layout">
+    {/* Left Sidebar - Fixed, full height, own scroll */}
+    {courseModules.length > 0 && (
+      <aside class="lms-lesson-sidebar" id="lesson-sidebar">
+        <div class="lms-sidebar-header">
+          {course && courseSlug && (
+            <a href={`${basePath}/course/${courseSlug}`} class="lms-course-link">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+              <span>{course.data.title}</span>
+            </a>
+          )}
+        </div>
+        <nav class="lms-sidebar-nav">
+          {courseModules.map((mod, i) => (
+            <details class="lms-module-group" open={mod.lessons.some((l) => l.id === lesson.id) || i === 0}>
+              <summary class="lms-module-title">
+                <span>{mod.data.title}</span>
+                <span class="lms-module-count">{mod.lessons.length}</span>
+              </summary>
+              <ul class="lms-lesson-list">
+                {mod.lessons.map((l) => (
+                  <li>
+                    <a
+                      href={`${basePath}/lesson/${l.data.slug || l.id}`}
+                      class={l.id === lesson.id ? "lms-lesson-link lms-active" : "lms-lesson-link"}
+                    >
+                      <span class="lms-lesson-name">{l.data.title}</span>
+                      {l.data.duration_minutes && (
+                        <span class="lms-lesson-dur">{formatDuration(l.data.duration_minutes)}</span>
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          ))}
+        </nav>
+      </aside>
+    )}
+
+    {/* Main Content - Scrollable */}
+    <main class="lms-lesson-content" id="lesson-content">
+      <div class="lms-content-grid">
+        {/* Article */}
+        <article class="lms-article">
+          <header class="lms-article-header">
+            <div class="lms-article-meta">
+              {module && <span class="lms-meta-module">{module.data.title}</span>}
+              {lesson.data.duration_minutes != null && lesson.data.duration_minutes > 0 && (
+                <>
+                  {module && <span class="lms-meta-sep">·</span>}
+                  <span class="lms-meta-time">{formatDuration(lesson.data.duration_minutes)}</span>
+                </>
+              )}
+              {lesson.data.is_preview && <span class="lms-meta-free">Học thử</span>}
+            </div>
+            <h1 class="lms-article-title">{lesson.data.title}</h1>
+          </header>
+
+          {lesson.data.video_url && (
+            <div class="lms-video">
+              <iframe
+                src={lesson.data.video_url}
+                allowfullscreen
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              ></iframe>
+            </div>
+          )}
+
+          {lesson.data.content && (
+            <div class="lms-article-body" id="lesson-body">
+              <PortableText value={lesson.data.content} />
+            </div>
+          )}
+
+          {lesson.data.summary && (
+            <aside class="lms-summary-box">
+              <h3>Tóm tắt bài học</h3>
+              <PortableText value={lesson.data.summary} />
+            </aside>
+          )}
+
+          {lesson.data.resources && lesson.data.resources.length > 0 && (
+            <aside class="lms-resources-box">
+              <h3>Tài liệu & Học liệu đính kèm</h3>
+              <ul>
+                {lesson.data.resources.map((r: { title: string; url: string }) => (
+                  <li><a href={r.url} target="_blank" rel="noopener">{r.title}</a></li>
+                ))}
+              </ul>
+            </aside>
+          )}
+
+          <nav class="lms-pagination">
+            {prevLesson ? (
+              <a href={`${basePath}/lesson/${prevLesson.data.slug || prevLesson.id}`} class="lms-page-prev">
+                <span class="lms-page-label">← Bài trước</span>
+                <span class="lms-page-title">{prevLesson.data.title}</span>
+              </a>
+            ) : <span></span>}
+            {nextLesson && (
+              <a href={`${basePath}/lesson/${nextLesson.data.slug || nextLesson.id}`} class="lms-page-next">
+                <span class="lms-page-label">Bài tiếp theo →</span>
+                <span class="lms-page-title">{nextLesson.data.title}</span>
+              </a>
+            )}
+          </nav>
+        </article>
+
+        {/* Right TOC */}
+        <aside class="lms-toc-sidebar">
+          <div class="lms-toc-sticky">
+            <nav class="lms-toc" aria-label="Table of contents">
+              <h4 class="lms-toc-title">Mục lục bài giảng</h4>
+              <div class="lms-toc-content" id="lms-toc"></div>
+            </nav>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+</Layout>
+
+<script>
+  // Build TOC from headings
+  function buildToc() {
+    const body = document.getElementById("lesson-body");
+    const toc = document.getElementById("lms-toc");
+    if (!body || !toc) return;
+
+    const headings = body.querySelectorAll("h2, h3");
+    if (headings.length === 0) {
+      const tocNav = document.querySelector(".lms-toc") as HTMLElement | null;
+      if (tocNav) tocNav.style.display = "none";
+      return;
+    }
+
+    const list = document.createElement("ul");
+    list.className = "lms-toc-list";
+
+    headings.forEach((h, i) => {
+      if (!h.id) h.id = `section-${i}`;
+      const li = document.createElement("li");
+      li.className = h.tagName === "H3" ? "lms-toc-item lms-toc-nested" : "lms-toc-item";
+      const a = document.createElement("a");
+      a.href = `#${h.id}`;
+      a.className = "lms-toc-link";
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+
+    toc.appendChild(list);
+  }
+  buildToc();
+</script>
