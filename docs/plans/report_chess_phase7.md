@@ -99,3 +99,42 @@ Toàn bộ 8 giai đoạn của dự án "Dương Sinh Chess Suite" đã đượ
 5. **GĐ5 (`chess-puzzles`):** Kho câu đố chiến thuật, bộ soạn tương tác, trình nhập hàng loạt (Lichess CSV, EPD, PGN) và Portable Text block.
 6. **GĐ6 (`chess-lessons`):** Quản lý bài giảng cờ, trình chiếu giảng dạy bảo mật cho HLV, khung lộ trình 6 cấp độ và bộ nhập bài giảng từ Obsidian Markdown.
 7. **GĐ7 (`covuahocduong.com` Integration):** Đăng ký toàn bộ plugin suite, trang công khai `/cau-do`, `/bai-giang`, `/bai-giang/[slug]/trinh-chieu`, kiểm tra 0 query regression và hoàn thiện quy trình đóng gói.
+
+---
+
+## 6. Sổ tay Hướng dẫn Nghiệp vụ Nhanh cho Huấn luyện viên (HLV)
+
+### 6.1 Soạn câu đố chiến thuật tương tác
+1. Truy cập `/_emdash/admin` -> Menu **Câu đố** -> **Thêm mới**.
+2. Nhập tiêu đề, chọn cấp độ cờ (Tốt → Vua), nhập điểm Elo dự kiến và chủ đề chiến thuật.
+3. Trong ô thế cờ: Kéo thả các quân cờ trên bàn cờ để đặt thế cờ xuất phát hoặc dán chuỗi FEN.
+4. Nhập chuỗi nước đi chuẩn UCI cho lời giải (ví dụ: `e2e4 e7e5 g1f3`).
+
+### 6.2 Soạn bài giảng & kịch bản bài học cờ
+1. Truy cập Menu **Bài học cờ** -> **Tạo bài giảng mới**.
+2. Dùng widget **Bộ soạn kịch bản bài giảng cờ vua**:
+   - Nhấn **+ Thêm bước giảng**. Bước mới tự động kế thừa thế cờ từ bước liền trước.
+   - Di chuyển quân cờ trên bàn cờ của bước để tạo diễn biến tiếp theo.
+   - Nhập **Lời giảng cho học sinh** (hiển thị công khai) và **Ghi chú bảo mật cho HLV** (chỉ HLV nhìn thấy khi trình chiếu).
+
+### 6.3 Soạn bài kiểm tra trắc nghiệm cờ vua (Quiz)
+1. Truy cập Menu **Soạn Quiz** trong Quản trị LMS.
+2. Thêm câu hỏi mới và chọn loại câu hỏi là **Thế cờ (Chess)**.
+3. Thiết lập thế cờ FEN, chọn góc nhìn bên đi (Trắng/Đen) và chỉ định các nước đi lời giải hợp lệ.
+
+### 6.4 Nhập nội dung hàng loạt từ Obsidian Markdown
+1. Truy cập Menu **Nhập Obsidian** trong mục Bài học cờ.
+2. Dán nội dung file `.md` từ vault bài giảng (hỗ trợ các code fence ````fen`, ````pgn`, ````puzzle`, ````lecture`).
+3. Hệ thống sẽ tự động phân tích và tạo bài học bản nháp kèm theo toàn bộ block cờ tương tác vào đúng khóa học và chương tương ứng.
+
+### 6.5 Sử dụng Chế độ Trình chiếu Giảng dạy trên Lớp
+1. Mở trang bài giảng: `https://covuahocduong.com/bai-giang/[slug]/trinh-chieu`.
+2. Phím tắt điều khiển:
+   - `←` / `→` hoặc `PageUp` / `PageDown`: Lùi / Tiến từng bước giảng.
+   - `B` (Black screen): Tắt màn hình đen tạm thời để học sinh tập trung nghe HLV phân tích.
+   - Bấm **Bắt đầu đồng hồ** ở góc trên để theo dõi thời gian giảng dạy bài học.
+
+### 6.6 Theo dõi Tiến độ Học sinh & Duyệt Đơn hàng
+1. **Tiến độ học sinh:** Vào mục **Học viên** trong Admin LMS để xem danh sách các bài học đã hoàn thành của từng tài khoản.
+2. **Quản lý Đơn hàng:** Vào mục **Đơn hàng** trong Admin LMS để tra cứu trạng thái thanh toán VietQR / SePay. Nếu học viên chuyển khoản ghi sai nội dung, HLV có thể bấm **Xác nhận thủ công** để kích hoạt Thẻ Thư Viện ngay lập tức.
+
